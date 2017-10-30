@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <div class="jumbotron text-left">
+      {% if session.logged_in == NULL %}
+        <h3><a href="/login" class="btn btn-success btn-lg">登录</a></h3>
+      {% else %}
+        <ol>
+        <h3><li><a href="http://telegra.ph/%E4%B8%8A%E6%B5%B7%E6%B6%88%E9%98%B2%E9%9D%99%E4%B8%AD%E9%80%9A%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C%E7%B2%BE%E7%AE%80%E7%89%88-10-18">上海消防静中通操作手册（精简版）</a></li></h3>
+        <h3><li><a href="http://telegra.ph/%E4%B8%8A%E6%B5%B7%E6%B6%88%E9%98%B2%E9%9D%99%E4%B8%AD%E9%80%9A%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C%E8%AF%A6%E7%BB%86%E7%89%88-10-19">上海消防静中通操作手册（详细版）</a></li></h3>
+        <h3><li><a href="http://telegra.ph/570L-%E6%93%8D%E4%BD%9C%E7%AE%80%E4%BB%8B-10-20">570L 简要操作说明</a></li></h3>
+        </ol>
+      {% endif %}
+  </div>
+{% endblock %}

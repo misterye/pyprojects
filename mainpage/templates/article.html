@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block body %}
+  {% if session['username'] == article.owner %}
+  <h2>{{article.title}}</h2>
+  <small>发布者：{{article.author}}</small>
+  <br>
+  <small>发布日期：{{article.create_date}}</small>
+  <hr>
+  <div>
+    {{article.body | safe}}
+  </div>
+  {% elif article.owner == 'public' %}
+    <h1>{{article.title}}</h1>
+    <small>发布者：{{article.author}}</small>
+    <br>
+    <small>发布日期：{{article.create_date}}</small>
+    <hr>
+    <div>
+      {{article.body | safe}}
+    </div>
+  {% endif %}
+{% endblock%}

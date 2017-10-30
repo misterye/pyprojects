@@ -1,0 +1,19 @@
+#!/bin/bash
+#/etc/init.d/remotecontrol
+
+case "$1" in
+    start)
+        echo "Starting remotecontrol ... (This is a test blog system.)"
+        /home/yebin/remotecontrol/.venv/bin/python /home/yebin/remotecontrol/app.py > /dev/null 2>&1 &
+        ;;
+    stop)
+        echo "Stopping remotecontrol ...(This is a test blog system.)"
+        killall /home/yebin/remotecontrol/.venv/bin/python
+        ;;
+    *)
+        echo "Usage: /etc/init.d/remotecontrol{start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

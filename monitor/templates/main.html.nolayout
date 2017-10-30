@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>Online Status</title>
+    <!--<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">    
+    <!--<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <!--<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>-->
+    <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>-->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+</head>
+<body>
+    <!--<h1>当前已登录用户数</h1>-->
+    <!--<h2>当前有 <span id="connected">{{ connected }}</span> 名用户登录在线。</h2>-->
+
+    {% block body %}
+    <h2>当前终端在线状态</h2>
+    <table border="1" class="table table-striped table-bordered table-condensed">
+	<tr>
+            <th>用户名称</th>
+	    <!--<th style="display:none;">终端名称</th>-->
+	    <th>终端名称</th>
+	    <th>在线状态</th>
+	</tr>
+        {% for t in range(ccount) %}
+            <tr>
+                <td>{{names[t]}}</td>
+                <!--<td style="display:none;">{{clients[t]}}</td>-->
+                <td>{{clients[t]}}</td>
+                <td><td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h3><span>终端总数：{{ ccount }} 。</span></h3>
+    {% endblock %}
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var url = "http://" + document.domain + ":" + location.port;
+            //var socket = io.connect('http://' + document.domain + ':' + location.port);
+            var socket = io.connect(url);
+            socket.on('msg', function(msg) {
+                $("#connected").html(msg.count);
+            });
+            document.getElementsByTagName("table")[0].rows[0].cells[0].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[1].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[2].style.backgroundColor = "#dddddd";
+            
+            socket.emit('status');
+            socket.on('online', function(msg) {
+                for (var i = 0; i < {{ ccount }}; i++) {
+                    document.getElementsByTagName("table")[0].rows[i+1].cells[0].style.backgroundColor = "#ffffff";
+                    document.getElementsByTagName("table")[0].rows[i+1].cells[1].style.backgroundColor = "#ffffff";
+                    if (msg.nclient == document.getElementsByTagName("table")[0].rows[i+1].cells[0].innerHTML && msg.flag == 1) {
+                        //document.getElementsByTagName("table")[0].rows[i+1].cells[2].innerText = "ONLINE";
+                        document.getElementsByTagName("table")[0].rows[i+1].cells[2].style.backgroundColor = "lightgreen";
+                	} else {
+                        //document.getElementsByTagName("table")[0].rows[i+1].cells[2].innerText = "OFFLINE";
+                        document.getElementsByTagName("table")[0].rows[i+1].cells[2].style.backgroundColor = "#ffffff";
+                        }
+                }
+            });
+
+
+        });
+    </script>
+</body>
+</html>
+

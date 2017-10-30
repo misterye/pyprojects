@@ -1,0 +1,29 @@
+#!/bin/bash
+#/etc/init.d/expovlog
+
+### BEGIN INIT INFO
+# Provides:          expovlog
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: expovlog
+# Description:       expovlog pop & imap daemon
+### END INIT INFO
+
+case "$1" in
+    start)
+        echo "Starting expovlog service..."
+        /usr/bin/python /home/yebin/pyprojects/monitor/expovlog.py > /dev/null 2>&1 &
+        ;;
+    stop)
+        echo "Stopping expovlog service..."
+        killall /usr/bin/python
+        ;;
+    *)
+        echo "Usage: /etc/init.d/expovlog{start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

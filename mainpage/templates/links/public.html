@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <div class="jumbotron text-left">
+      {% if session.logged_in == NULL %}
+        <h2><a href="/login" class="btn btn-success btn-lg">登录</a></h2>
+      {% else %}
+        <h2>您好，卫星通信微信公众号用户!</h2>
+        <ul class="list-group">
+          {% for article in articles %}
+            {% if article.owner == 'public' %}
+            <h3><li class="list-group-item"><a href="article/{{article.id}}">{{article.title}}</a></li></h3>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+  </div>
+{% endblock %}

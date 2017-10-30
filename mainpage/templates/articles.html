@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  {% if session['username'] == 'admin' %}
+  <h2>文档列表</h2>
+  <ul class="list-group">
+    {% for article in articles %}
+      <h3><li class="list-group-item"><a href="article/{{article.id}}">{{article.title}}</a></li></h3>
+    {% endfor %}
+  </ul>
+  {% endif %}
+{% endblock %}

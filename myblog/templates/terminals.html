@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <h1>卫星小站列表</h1>
+  <p><a class="btn btn-danger" href="/login">以管理员身份编辑小站</a></p>
+  <ul class="list-group">
+    {% for terminal in terminals %}
+      <li class="list-group-item"><a href="terminal/{{terminal.id}}">{{terminal.name}}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}

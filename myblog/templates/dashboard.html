@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  {% if session['username'] == 'admin' %}
+  <a class="btn btn-success" href="/add_terminal">添加小站</a>
+  {% else %}
+  <a class="btn btn-danger" href="/login">以管理员身份添加小站</a>
+  {% endif %}
+  <hr>
+  <table class="table table-striped">
+    <tr>
+      <th class="text-center">编号</th>
+      <th class="text-center">用户名</th>
+      <th class="text-center">终端名</th>
+      <th class="text-center">小站地址</th>
+      <th class="text-center">终端类型</th>
+      <th class="text-center">管理地址</th>
+      <th class="text-center">通信卫星</th>
+      <th class="text-center">开通日期</th>
+      <th></th>
+      <th></th>
+    </tr>
+    {% for terminal in terminals %}
+      <tr>
+        <td align="center" valign="middle">{{terminal.id}}</td>
+        <td align="center" valign="middle">{{terminal.name}}</td>
+        <td align="center" valign="middle">{{terminal.client}}</td>
+        <td align="center" valign="middle">{{terminal.address}}</td>
+        <td align="center" valign="middle">{{terminal.modem}}</td>
+        <td align="center" valign="middle">{{terminal.ip}}</td>
+        <td align="center" valign="middle">{{terminal.satellite}}</td>
+        <td align="center" valign="middle">{{terminal.found_date}}</td>
+        {% if session['username'] == 'admin' %}
+        <td><a href="edit_terminal/{{terminal.id}}" class="btn btn-default pull-right">编辑</a></td>
+        <td>
+          <form action="{{url_for('delete_terminal', id=terminal.id)}}" method="post">
+            <input type="hidden" name="method" value="DELETE">
+            <input type="submit" name="" value="删除" class="btn btn-danger">
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "layout.html" %} {% block body %}
+<h1>留言</h1>
+<p>
+<a class="btn btn-success" href="/post_message">发布留言</a>
+<a class="btn btn-danger pull-right" href="/login">管理员删除留言</a>
+</p>
+<br>
+<ul class="list-group">
+    {% for message in messages %}
+    <li class="list-group-item">
+        用户：<b>{{message.author}}</b>&nbsp;&nbsp;&nbsp;发表于：<b>{{message.create_date}}</b>
+        <hr>
+        <div>
+            {{message.body | safe}}
+        </div>
+        <hr>
+        {% if session['username'] == 'admin' %}
+        <form action="{{url_for('delete_message', id=message.id)}}" method="post">
+            <input type="hidden" name="method" value="DELETE">
+            <input type="submit" name="" value="删除" class="btn btn-danger">
+        </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

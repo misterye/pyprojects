@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <div class="jumbotron text-left">
+      {% if session.logged_in == True and session.username == 'fjrmc' %}
+        <h2>您好，{{ session.name }}用户!</h2>
+        <ol>
+        <h3><li><a href="http://telegra.ph/%E7%A6%8F%E5%BB%BA%E6%97%A0%E5%A7%94%E6%8C%87%E6%8C%A5%E8%BD%A6%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-10-20">福建无委指挥车操作手册</a></li></h3>
+        <h3><li><a href="/docs">其他技术文档</a></li></h3>
+        </ol>
+      {% else %}
+        <h3><a href="/login" class="btn btn-success btn-lg">登录</a></h3>
+      {% endif %}
+  </div>
+{% endblock %}

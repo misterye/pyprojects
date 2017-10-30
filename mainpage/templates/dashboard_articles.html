@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+{% if session['username'] == 'admin' %}
+  <p>
+    <h2><a class="btn btn-success" href="/add_article">新建文档</a></h2>
+  </p>  
+  <table class="table table-striped">
+    <tr>
+      <th class="text-center">编号</th>
+      <th class="text-center">标题</th>
+      <th class="text-center">发布者</th>
+      <th class="text-center">所属者</th>
+      <th class="text-center">日期</th>
+      <th class="text-center"></th>
+      <th class="text-center"></th>
+    </tr>
+    {% for article in articles %}
+      <tr>
+        <td align="center" valign="middle">{{article.id}}</td>
+        <td align="center" valign="middle">{{article.title}}</td>
+        <td align="center" valign="middle">{{article.author}}</td>
+        <td align="center" valign="middle">{{article.owner}}</td>
+        <td align="center" valign="middle">{{article.create_date}}</td>
+        {% if session['username'] == 'admin' %}
+        <td><a href="edit_article/{{article.id}}" class="btn btn-default pull-right">编辑</a></td>
+        <td>
+          <form action="{{url_for('delete_article', id=article.id)}}" method="post">
+            <input type="hidden" name="method" value="DELETE">
+            <input type="submit" name="" value="删除" class="btn btn-danger">
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+{% endblock %}

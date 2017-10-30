@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <div class="jumbotron text-center">
+      {% if session.logged_in == NULL %}
+        <h2><a href="/login" class="btn btn-success btn-lg">登录</a></h2>
+      {% else %}
+        <h3><a href="/shfd">上海消防用户登录</a></h3>
+        <h3><a href="/shrmc">上海无委用户登录</a></h3>
+        <h3><a href="/shtw">上海自来水用户登录</a></h3>
+        <h3><a href="/hbrmc">湖北无委用户登录</a></h3>
+        <h3><a href="/fjrmc">福建无委用户登录</a></h3>
+        <h3><a href="/fzem">福州环监用户登录</a></h3>
+        <h3><a href="/public">公共技术文档</a></h3>
+        <h3><a href="/admin">内部技术文档</a></h3>
+      {% endif %}
+  </div>
+{% endblock %}

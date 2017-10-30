@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>用户列表</title>
+        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap-confirmation/1.0.5/bootstrap-confirmation.js"></script>
+        <!--[if lt IE 9]>
+        <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <style type="text/css">
+            #container {
+            padding-top:30px;
+            padding-left:30px;
+            padding-right:30px;
+            padding-bottom:30px;
+            border: 1px solid 000000;
+            } 
+        </style>
+    </head>
+    <body>
+        {% include 'includes/_navbar.html' %}
+        <div class="container">
+            {% include 'includes/_messages.html' %}
+            {% block body %}{% endblock %}
+        </div>
+        <script src="https://cdn.bootcss.com/ckeditor/4.7.2/ckeditor.js"></script>
+        <script type="text/javascript">
+          CKEDITOR.replace('editor')
+        </script>
+    </body>
+ 
+    <div id="container">
+    <!-- It's just a blank. -->    
+    </div>
+    <footer>
+      <div>
+        <center>
+          <a href="{{url_for('static',filename='satelc_big.jpg')}}" alt="satelc_big"><img src="{{url_for('static',filename='satelc.jpg')}}" width="120" height="120" alt="satelc" /></a>
+        </center>
+        </div>
+    </footer>
+</html>

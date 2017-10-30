@@ -1,0 +1,11 @@
+[Unit]
+Description=Ping VPN server every certain time.
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python /home/pi/script/pingtest.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

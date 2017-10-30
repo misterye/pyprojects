@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+{% block body %}
+<h3>{{terminal.name}}</h3>
+<h3 class="page-header"></h3>
+<dl class="row">
+  <h4><dt class="col-sm-3">小站地址</dt></h4>
+  <h4><dd class="col-sm-9">{{terminal.address}}</dd></h4>
+  <h4 class="page-header"></h4>
+
+  <h4><dt class="col-sm-3">终端类型</dt></h4>
+  <h4><dd class="col-sm-9">{{terminal.modem}}</dd></h4>
+  <h4 class="page-header"></h4>
+
+  <h4><dt class="col-sm-3">管理地址</dt></h4>
+  <h4><dd class="col-sm-9">{{terminal.ip}}</dd></h4>
+  <h4 class="page-header"></h4>
+
+  <h4><dt class="col-sm-3">通信卫星</dt></h4>
+  <h4><dd class="col-sm-9">{{terminal.satellite}}</dd></h4>
+  <h4 class="page-header"></h4>
+  
+  <h4><dt class="col-sm-3">开通日期</dt></h4>
+  <h4><dd class="col-sm-9">{{terminal.found_date}}</dd></h4>
+  <h4 class="page-header"></h4>
+  
+  <h4><dt class="col-sm-3">备注</dt></h4>
+  <h4><dd class="col-sm-9">{{terminal.remarks}}</dd></h4>
+  <h4 class="page-header"></h4>
+</dl>
+
+<!--
+  <div class="card">
+    <div class="card-block">
+      <h3 class="card-title">{{terminal.name}}</h3>
+      <br>
+      <p>
+      <ul class="list-group list-group-flush">
+      <p class="h4">小站地址<li class="list-group-item">{{terminal.address}}</li></p>
+      <p class="h4">终端类型<li class="list-group-item">{{terminal.modem}}</li></p>
+      <p class="h4">管理地址<li class="list-group-item">{{terminal.ip}}</li></p>
+      <p class="h4">通信卫星<li class="list-group-item">{{terminal.satellite}}</li></p>
+      <p class="h4">开通日期<li class="list-group-item">{{terminal.found_date}}</li></p>
+      </ul>
+      </p>
+    </div>
+  </div>
+-->
+
+<!--
+  <table class="table table-striped">
+    <tr>
+      <th class="text-center">小站地址</th>
+      <th class="text-center">终端类型</th>
+      <th class="text-center">管理地址</th>
+      <th class="text-center">通信卫星</th>
+      <th class="text-center">开通日期</th>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">{{terminal.address}}</td>
+      <td align="center" valign="middle">{{terminal.modem}}</td>
+      <td align="center" valign="middle">{{terminal.ip}}</td>
+      <td align="center" valign="middle">{{terminal.satellite}}</td>
+      <td align="center" valign="middle">{{terminal.found_date}}</td>
+    </tr>
+  </table>
+-->
+{% endblock%}

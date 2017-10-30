@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="utf-8">
+        <title>Message Board</title>
+        <link rel="stylesheet" href="/static/main.css" type="text/css">
+    </head>
+    <body>
+        <h1>Message Board</h1>
+        <form action="/post" method="post">
+            <p>Please leave a message:</p>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <td>
+                        <input type="text" size="20" name="name">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Message</th>
+                    <td>
+                        <textarea rows="5" cols="40" name="comment"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <p><button type="submit">Submit</button></p>
+        </form>
+        <div class="entries-area">
+            <h2>Message Record</h2>
+            {% for greeting in greeting_list %}
+            <h3>Message of {{ greeting.name }}({{ greeting.create_at|datetime_fmt }}):</h3>
+            <p>{{ greeting.comment|nl2br }}</p>
+            {% endfor %}
+        </div>
+    </body>
+</html>

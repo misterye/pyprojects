@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>卫星远端站综合管理</title>
+        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap-confirmation/1.0.5/bootstrap-confirmation.js"></script>
+    </head>
+    <body>
+        {% include 'includes/_navbar.html' %}
+        <div class="container">
+            {% include 'includes/_messages.html' %}
+            {% block body %}{% endblock %}
+        </div>
+
+        <!--<script src="//cdn.ckeditor.com/4.7.0/basic/ckeditor.js"></script>-->
+        <script src="https://cdn.bootcss.com/ckeditor/4.7.2/ckeditor.js"></script>
+        <script type="text/javascript">
+          CKEDITOR.replace('editor')
+        </script>
+    </body>
+</html>
