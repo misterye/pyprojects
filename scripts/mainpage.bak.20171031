@@ -1,0 +1,29 @@
+#!/bin/bash
+#/etc/init.d/mainpage
+
+### BEGIN INIT INFO
+# Provides:          mainpage
+# Required-Start:    $all
+# Required-Stop:     $local_fs $remote_fs $network $network $syslog $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: mainpage
+# Description:       start/stop mainpage service
+### END INIT INFO
+
+case "$1" in
+    start)
+        echo "Starting mainpage..."
+        /home/yebin/pyprojects/mainpage/.venv/bin/python /home/yebin/pyprojects/mainpage/app.py > /dev/null 2>&1 &
+        ;;
+    stop)
+        echo "Stopping mainpage..."
+        killall /home/yebin/pyprojects/mainpage/.venv/bin/python
+        ;;
+    *)
+        echo "Usage: /etc/init.d/mainpage{start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0
