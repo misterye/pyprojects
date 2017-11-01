@@ -12,10 +12,18 @@ from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
+
+# the following are for weixin mp
 import hashlib
+import web
+import lxml
+import time
+import os
+import urllib2,json
+from lxml import etree
 
 app = Flask(__name__)
-#app.debug = True
+app.debug = True
 
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
@@ -124,31 +132,6 @@ def register():
 def index():
     return render_template('home.html')
 
-# mp
-@app.route('/mp')
-def mp():
-    return redirect(url_for('static',filename='MP_verify_2yJF2WWPOOiHbCpo.txt'))
-
-# weixin
-@app.route('/wx',methods=['GET','POST'])
-def wx():
-    if request.method == 'GET':
-        my_signature = request.args.get('signature')
-        my_timestamp = request.args.get('timestamp')
-        my_nonce = request.args.get('nonce')
-        my_echostr = request.args.get('echostr')
-
-        token = 'yebin1982'
-
-        data = [token,my_timestamp,my_nonce]
-        data.sort()
-
-        temp = ''.join(data)
-
-        mysignature = hashlib.sha1(temp).hexdigest()
-
-        if my_signature == mysignature:
-            return my_echostr
 
 # public 
 @app.route('/public')
@@ -559,7 +542,49 @@ def delete_article(id):
 
     return redirect(url_for('dashboard_articles'))
 
+# the following codes are for weixin mp
 
+# mp
+@app.route('/mp')
+def mp():
+    return redirect(url_for('static',filename='MP_verify_2yJF2WWPOOiHbCpo.txt'))
+
+# weixin
+@app.route('/wx',methods=['GET','POST'])
+def wx():
+    if request.method == 'GET':
+        my_signature = request.args.get('signature')
+        my_timestamp = request.args.get('timestamp')
+        my_nonce = request.args.get('nonce')
+        my_echostr = request.args.get('echostr')
+
+        token = 'yebin1982'
+
+        data = [token,my_timestamp,my_nonce]
+        data.sort()
+
+        temp = ''.join(data)
+
+        mysignature = hashlib.sha1(temp).hexdigest()
+
+        if my_signature == mysignature:
+            return my_echostr
+
+'''
+def POST(self):
+    # 获取 post 来的数据
+    str_xml = web.data()
+    # 进行 xml 解析
+    xml = etree.fromstring(str_xml)
+    # 获得用户输入的内容
+    content = xml.find("Content").text
+    msgType = xml.find("MsgType").text
+    fromUser = xml.find("FromUserName").text
+    toUser = xml.find("ToUserName").text
+    return self.render.reply_text(fromUser,toUser,int(time.time()),u"功能还在开发中，您刚才说的是："+content)
+'''
+
+# run the server
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0f841fj0iggr9wrj'
     app.run('0.0.0.0', 443, ssl_context=('fullchain1.pem', 'privkey1.pem'))
