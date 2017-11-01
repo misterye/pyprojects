@@ -124,6 +124,11 @@ def register():
 def index():
     return render_template('home.html')
 
+# mp
+@app.route('/mp')
+def mp():
+    return redirect(url_for('static',filename='MP_verify_2yJF2WWPOOiHbCpo.txt'))
+
 # weixin
 @app.route('/wx',methods=['GET','POST'])
 def wx():
