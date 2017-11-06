@@ -14,15 +14,15 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 
 import hashlib
-import web
-import lxml
-import time
-import os
-import urllib2,json
-from lxml import etree
+#import web
+#import lxml
+#import time
+#import os
+#import urllib2,json
+#from lxml import etree
 
 app = Flask(__name__)
-app.debug = True
+#app.debug = True
 
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
