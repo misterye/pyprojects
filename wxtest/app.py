@@ -1,13 +1,79 @@
 #coding:utf-8
 from flask import Flask, g, request, make_response, url_for, redirect, render_template
-import time, hashlib, re
-import xml.etree.ElementTree as ET
+import time, hashlib, re, urllib2
+#import xml.etree.ElementTree as ET
 import sys
+
+from wechatpy import parse_message, WeChatClient
+from wechatpy.crypto import WeChatCrypto
+from wechatpy.exceptions import InvalidSignatureException, InvalidAppIdException
+from wechatpy.replies import TextReply
+from wechatpy.events import SubscribeEvent
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
 app = Flask(__name__)
+#app.config.from_object('config')
+
+client = WeChatClient('wxbb4a6657207eb833', '0faa958c65817027da5d099f1256e5fd')
+client.menu.create({
+    "button":[
+    {
+        "type":"view",
+        "name":"使用帮助",
+        "url":"http://www.satelc.com"
+    },
+    {
+        "type":"view",
+        "name":"自助服务",
+        "url":"https://satelc.com"
+    },
+    {
+        "name":"解决方案",
+        "sub_button":[
+        {
+            "type":"view",
+            "name":"链路备份",
+            "url":"http://www.satelc.com"
+        },
+        {
+            "type":"view",
+            "name":"远程监控",
+            "url":"http://www.satelc.com"
+        },
+        {
+            "type":"view",
+            "name":"应急通信",
+            "url":"http://www.satelc.com"
+        }
+        ]
+    }
+    ]
+    }
+    )
+
+menu = client.menu.get()
+print menu
+
+def replyMsg(data):
+    msg = parse_message(data)
+    if msg.type == 'event' and msg.event == 'subscribe':
+        reply = TextReply(message=msg)
+        reply.content = 'Welcome to follow.'
+        return reply.render()
+    elif msg.type == 'event' and msg.event == 'unsubscribe':
+        reply = TextReply(message=msg)
+        reply.content = 'Goodbye.'
+        return reply.render()
+    elif msg.type == 'text':
+        reply = TextReply(content='text reply', message=msg)
+        xml = reply.render()
+        return xml
+    else:
+        reply = TextReply(message=msg)
+        reply.content = 'Sorry, can not handle this for now.'
+        return reply.render()
 
 @app.route("/")
 @app.route("/index")
@@ -38,16 +104,9 @@ def wx():
             else:
                 return make_response('认证失败')
         else:
-            return '认证失败'
-    else:
-        xml_recv = ET.fromstring(request.data)
-        ToUserName = xml_recv.find("ToUserName").text
-        FromUserName = xml_recv.find("FromUserName").text
-        Content = xml_recv.find("Content").text
-        reply = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content><FuncFlag>0</FuncFlag></xml>"
-        response = make_response(reply % (FromUserName, ToUserName, str(int(time.time())), Content))
-        response.content_type = 'application/xml'
-        return response
+        	return '认证失败'
+    elif request.method == 'POST':
+    	return replyMsg(request.data)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',debug=True)
