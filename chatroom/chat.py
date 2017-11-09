@@ -90,24 +90,29 @@ def login():
 # Chat
 @app.route('/chat')
 def chat():
-    return redirect("http://139.224.114.83:8084")
+    #return redirect("http://139.224.114.83:8084")
+    return redirect("http://chat.satelc.com")
 
 # Main Page
 @app.route('/main')
 def main():
-    return redirect("http://139.224.114.83:8019")
+    #return redirect("http://139.224.114.83:8019")
+    return redirect("http://myblog.satelc.com")
 
 @app.route('/terminals')
 def terminals():
-    return redirect("http://139.224.114.83:8019/terminals")
+    #return redirect("http://139.224.114.83:8019/terminals")
+    return redirect("http://myblog.satelc.com/terminals")
 
 @app.route('/articles')
 def articles():
-    return redirect("http://139.224.114.83:8019/articles")
+    #return redirect("http://139.224.114.83:8019/articles")
+    return redirect("http://myblog.satelc.com/articles")
 
 @app.route('/monitor')
 def monitor():
-    return redirect("http://139.224.114.83:8086/")
+    #return redirect("http://139.224.114.83:8086/")
+    return redirect("http://monitor.satelc.com/")
 
 # Logout
 @app.route('/logout')

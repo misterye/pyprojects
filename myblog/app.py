@@ -80,17 +80,20 @@ def is_admin(f):
 # Chat
 @app.route('/chat')
 def chat():
-    return redirect("http://139.224.114.83:8084")
+    #return redirect("http://139.224.114.83:8084")
+    return redirect("http://chat.satelc.com")
 
 # RSSH
 @app.route('/rssh')
 def rssh():
-    return redirect("http://139.224.114.83:8085")
+    #return redirect("http://139.224.114.83:8085")
+    return redirect("http://rssh.satelc.com")
 
 # MONITOR
 @app.route('/monitor')
 def monitor():
-    return redirect("http://139.224.114.83:8086")
+    #return redirect("http://139.224.114.83:8086")
+    return redirect("http://monitor.satelc.com")
 
 # Articles
 @app.route('/articles')
