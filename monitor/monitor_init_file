@@ -1,0 +1,31 @@
+#!/bin/bash
+#/etc/init.d/monitor
+
+cd /home/yebin/pyprojects/monitor
+
+### BEGIN INIT INFO
+# Provides:          monitor
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: monitor
+# Description:       start monitor service
+### END INIT INFO
+
+case "$1" in
+    start)
+        echo "Starting monitor service..."
+        python start.py
+        ;;
+    stop)
+        echo "Stopping monitor service..."
+        kill $(ps aux | grep '/home/yebin/pyprojects/monitor/app.py' | awk '{print $2}')
+        ;;
+    *)
+        echo "Usage: /etc/init.d/monitor{start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

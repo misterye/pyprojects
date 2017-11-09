@@ -1,0 +1,31 @@
+#!/bin/bash
+#/etc/init.d/chat
+
+cd /home/yebin/pyprojects/chatroom
+
+### BEGIN INIT INFO
+# Provides:          chat
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: chat
+# Description:       start chat service
+### END INIT INFO
+
+case "$1" in
+    start)
+        echo "Starting chat service..."
+        python start.py
+        ;;
+    stop)
+        echo "Stopping chat service..."
+        kill $(ps aux | grep '/home/yebin/pyprojects/chatroom/chat.py' | awk '{print $2}')
+        ;;
+    *)
+        echo "Usage: /etc/init.d/chat{start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

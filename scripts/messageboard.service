@@ -1,0 +1,13 @@
+[Unit]
+Description=Gunicorn instance to serve messageboard
+After=network.target
+
+[Service]
+User=yebin
+Group=yebin
+WorkingDirectory=/home/yebin/pyprojects/messageboard
+Environment="PATH=/home/yebin/pyprojects/messageboard/.venv/bin"
+ExecStart=/home/yebin/pyprojects/messageboard/.venv/bin/gunicorn --workers 3 --bind unix:messageboard.sock --bind 0.0.0.0:8017 -m 007 wsgi:application
+
+[Install]
+WantedBy=multi-user.target

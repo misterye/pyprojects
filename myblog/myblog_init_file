@@ -1,0 +1,31 @@
+#!/bin/bash
+#/etc/init.d/myblog
+
+cd /home/yebin/pyprojects/myblog
+
+### BEGIN INIT INFO
+# Provides:          myblog
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: myblog
+# Description:       start myblog service
+### END INIT INFO
+
+case "$1" in
+    start)
+        echo "Starting myblog service..."
+        python start.py
+        ;;
+    stop)
+        echo "Stopping myblog service..."
+        kill $(ps aux | grep '/home/yebin/pyprojects/myblog/app.py' | awk '{print $2}')
+        ;;
+    *)
+        echo "Usage: /etc/init.d/myblog{start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

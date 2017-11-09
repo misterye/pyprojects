@@ -1,0 +1,31 @@
+#!/bin/bash
+#/etc/init.d/messageboard
+
+cd /home/yebin/pyprojects/messageboard
+
+### BEGIN INIT INFO
+# Provides:          messageboard
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: messageboard
+# Description:       start messageboard service
+### END INIT INFO
+
+case "$1" in
+    start)
+        echo "Starting messageboard service..."
+        python start.py
+        ;;
+    stop)
+        echo "Stopping messageboard service..."
+        kill $(ps aux | grep '/home/yebin/pyprojects/messageboard/messageboard.py' | awk '{print $2}')
+        ;;
+    *)
+        echo "Usage: /etc/init.d/messageboard{start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

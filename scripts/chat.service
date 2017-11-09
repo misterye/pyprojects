@@ -1,0 +1,13 @@
+[Unit]
+Description=Gunicorn instance to serve chat
+After=network.target
+
+[Service]
+User=yebin
+Group=root
+WorkingDirectory=/home/yebin/pyprojects/chatroom
+Environment="PATH=/home/yebin/pyprojects/chatroom/.venv/bin"
+ExecStart=/home/yebin/pyprojects/chatroom/.venv/bin/python /home/yebin/pyprojects/chatroom/chat.py > /dev/null 2>&1 &
+
+[Install]
+WantedBy=multi-user.target

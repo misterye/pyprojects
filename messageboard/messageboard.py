@@ -51,3 +51,4 @@ def datetime_fmt_filter(dt):
 
 if __name__ == '__main__':
     application.run('0.0.0.0', 8017, debug=True)
+    #application.run()
