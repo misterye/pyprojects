@@ -19,39 +19,24 @@ app = Flask(__name__)
 client = WeChatClient('wxbb4a6657207eb833', '0faa958c65817027da5d099f1256e5fd')
 client.menu.create({
     "button":[
-    {
-        "type":"view",
-        "name":"使用帮助",
-        "url":"http://www.satelc.com"
-    },
-    {
-        "type":"view",
-        "name":"自助服务",
-        "url":"https://satelc.com"
-    },
-    {
-        "name":"解决方案",
-        "sub_button":[
         {
             "type":"view",
-            "name":"链路备份",
+            "name":"使用帮助",
             "url":"http://www.satelc.com"
         },
         {
             "type":"view",
-            "name":"远程监控",
-            "url":"http://www.satelc.com"
+            "name":"文档查询",
+            "url":"https://satelc.com"
         },
         {
             "type":"view",
-            "name":"应急通信",
-            "url":"http://www.satelc.com"
+            "name":"小站监控",
+            "url":"http://monitor.satelc.com"
         }
         ]
     }
-    ]
-    }
-    )
+)
 
 menu = client.menu.get()
 print menu
@@ -76,8 +61,8 @@ def replyMsg(data):
         return reply.render()
 
 @app.route("/")
-@app.route("/index")
-def index():
+@app.route("/homepage")
+def homepage():
     return "<h1 style='color:blue'>Wechat MP test.</h1>"
 
 # mp
