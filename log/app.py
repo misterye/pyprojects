@@ -229,7 +229,7 @@ def logs():
     # Create cursor
     cur = mysql.connection.cursor()
     # Get logs
-    result = cur.execute("SELECT * FROM logs")
+    result = cur.execute("SELECT * FROM logs ORDER BY id DESC")
     logs = cur.fetchall()
     if result > 0:
         return render_template('logs.html', logs=logs)
@@ -260,7 +260,7 @@ def dashboard_logs():
     # Create cursor
     cur = mysql.connection.cursor()
     # Get logs
-    result = cur.execute("SELECT * FROM logs")
+    result = cur.execute("SELECT * FROM logs ORDER BY id DESC")
     logs = cur.fetchall()
     if result > 0:
         return render_template('dashboard_logs.html', logs=logs)

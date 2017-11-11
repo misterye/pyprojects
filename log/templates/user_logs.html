@@ -7,7 +7,10 @@
     <ul class="list-group">
       {% for log in logs %}
         {% if log.author == session['username'] %}
-        <h3><li class="list-group-item"><a href="log/{{log.id}}">{{log.create_date}}</a></li></h3>
+          <small><a href="log/{{log.id}}">{{log.create_date}}</a></small>
+        <div class="well">
+          {{log.body | safe}}
+        </div>
         {% endif %}
       {% endfor %}
     </ul>

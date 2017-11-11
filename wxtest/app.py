@@ -21,8 +21,8 @@ client.menu.create({
     "button":[
         {
             "type":"view",
-            "name":"使用帮助",
-            "url":"http://www.satelc.com"
+            "name":"工作日志",
+            "url":"http://log.satelc.com"
         },
         {
             "type":"view",

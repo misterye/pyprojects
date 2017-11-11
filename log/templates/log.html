@@ -4,6 +4,7 @@
   <p>
     <div class="row nav-row">
     <a href="/add_log" class="btn btn-success">新建日志</a>
+    <a href="/user_logs" class="btn btn-primary pull-right">返回</a>
     </div>
   </p>
   {% if session['username'] == log.author %}
@@ -30,6 +31,7 @@
     <div id="container">
     <!-- It's just a blank. -->    
     </div>
+<!--
     <p>
       {% if log.id < 2 %}  
       <div class="nav navbar-left hide">
@@ -50,4 +52,5 @@
       </div>
       {% endif %}
     </p>
+-->
 {% endblock%}
