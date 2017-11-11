@@ -1,0 +1,19 @@
+<nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">工作日志</a>
+    </div>
+    <div id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+        {% if session.logged_in %}
+          {% if session['username'] == 'admin' %}
+            <li><a href="/logs">日志列表</a></li>
+            <li><a href="/dashboard_logs">日志管理</a></li>
+            <li><a href="/register">用户注册</a></li>
+            <li><a href="/dashboard_users">用户管理</a></li>
+          {% endif %}
+        <li><a href="/logout">注销</a></li>
+        {% endif %}
+    </div>
+  </div>
+</nav>

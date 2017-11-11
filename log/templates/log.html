@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <p>
+    <div class="row nav-row">
+    <a href="/add_log" class="btn btn-success">新建日志</a>
+    </div>
+  </p>
+  {% if session['username'] == log.author %}
+  <small>发布者：{{log.author}}</small>
+  <br>
+  <small>发布日期：{{log.create_date}}</small>
+  <hr>
+  <div>
+    {{log.body | safe}}
+  </div>
+  {% endif %}
+    <div id="container">
+    <!-- It's just a blank. -->    
+    </div>
+    <p>
+      <div class="row nav-row">
+        <a href="{{url_for('edit_log',id=log.id)}}" class="btn btn-default pull-left">编辑</a>
+        <form id="del" action="{{url_for('delete_log', id=log.id)}}" method="post">
+          <input type="hidden" name="method" value="DELETE">
+          <input type="submit" name="submit" value="删除" class="btn btn-danger pull-right" onclick="return confirm('是否确认删除该日志？');return false;">
+        </form>
+      </div>
+    </p>
+    <div id="container">
+    <!-- It's just a blank. -->    
+    </div>
+    <p>
+      {% if log.id < 2 %}  
+      <div class="nav navbar-left hide">
+        <a href="{{url_for('log',id=log.id-1)}}" class="btn btn-primary">上一页</a>
+      </div>
+      {% else %}
+      <div class="nav navbar-left">
+        <a href="{{url_for('log',id=log.id-1)}}" class="btn btn-primary">上一页</a>
+      </div>
+      {% endif %}
+      {% if log.id > lastlog.id-1 %}
+      <div class="nav navbar-right hide">
+        <a href="{{url_for('log',id=log.id+1)}}" class="btn btn-primary">下一页</a>
+      </div>
+      {% else %}
+      <div class="nav navbar-right">
+        <a href="{{url_for('log',id=log.id+1)}}" class="btn btn-primary">下一页</a>
+      </div>
+      {% endif %}
+    </p>
+{% endblock%}

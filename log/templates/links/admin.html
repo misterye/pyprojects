@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  {% if session['username'] == 'admin' %}
+    <h2>您好，{{ session.name }}!</h2>
+    <h3>点击进入文档，复制文档链接到浏览器打开。</h3>
+    <ul class="list-group">
+      {% for article in articles %}
+        {% if article.owner == 'admin' %}
+        <h3><li class="list-group-item"><a href="article/{{article.id}}">{{article.title}}</a></li></h3>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% else %}
+  <center><h2><a class="btn btn-danger" href="/login">管理员登录</a></h2></center>
+  {% endif %}
+{% endblock %}
