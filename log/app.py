@@ -240,6 +240,21 @@ def logs():
     # Close connection
     cur.close()
 
+'''
+# log id list
+@app.route('/log_id_list')
+@is_logged_in
+def log_id_list():
+    # Create cursor
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM logs WHERE author = %s ORDER BY id DESC", [session['username']])
+    logs = cur.fetchall()
+    id_list = []
+    for log in logs:
+        id_list.append(id)
+    return id_list
+'''
+
 # Single log
 @app.route('/log/<string:id>/')
 @is_logged_in
@@ -249,9 +264,9 @@ def log(id):
     # Get log
     result = cur.execute("SELECT * FROM logs WHERE id = %s", [id])
     log = cur.fetchone()
-    result_lastlog = cur.execute("SELECT * FROM logs WHERE author = %s ORDER BY id DESC limit 1", [session['username']])
-    lastlog = cur.fetchone()
-    return render_template('log.html', log=log, lastlog=lastlog)
+    #log_list = log_id_list()
+    #return render_template('log.html', log=log, log_list=log_list)
+    return render_template('log.html', log=log)
 
 # Dashboard_Logs
 @app.route('/dashboard_logs')
