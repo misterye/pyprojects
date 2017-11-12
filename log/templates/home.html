@@ -5,7 +5,8 @@
       {% if session.logged_in == NULL %}
         <h2><a href="/login" class="btn btn-success btn-lg">登录</a></h2>
       {% else %}
-        <h3><a href="/user_logs">好记性不如烂笔头</a></h3>
+        <h3>Hello, {{session['username']}}!</h3>
+        <h3><a href="/user_logs">开始记录工作日志</a></h3>
       {% endif %}
   </div>
 {% endblock %}
