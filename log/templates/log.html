@@ -31,4 +31,26 @@
     <div id="container">
     <!-- It's just a blank. -->    
     </div>
+
+
+    <p>
+      {% if user_log_id_list.index(log.id) < 1 %}  
+      <div class="nav navbar-left hide">
+        <a href="{{url_for('log',id=user_log_id_list[user_log_id_list.index(log.id)-1])}}" class="btn btn-primary">上一页</a>
+      </div>
+      {% else %}
+      <div class="nav navbar-left">
+        <a href="{{url_for('log',id=user_log_id_list[user_log_id_list.index(log.id)-1])}}" class="btn btn-primary">上一页</a>
+      </div>
+      {% endif %}
+      {% if user_log_id_list.index(log.id) > list_len-2 %}
+      <div class="nav navbar-right hide">
+        <a href="{{url_for('log',id=user_log_id_list[user_log_id_list.index(log.id)+1])}}" class="btn btn-primary">下一页</a>
+      </div>
+      {% else %}
+      <div class="nav navbar-right">
+        <a href="{{url_for('log',id=user_log_id_list[user_log_id_list.index(log.id)+1])}}" class="btn btn-primary">下一页</a>
+      </div>
+      {% endif %}
+    </p>
 {% endblock%}
