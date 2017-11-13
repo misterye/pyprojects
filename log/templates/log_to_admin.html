@@ -1,25 +1,24 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-  <p>
-    <div class="row nav-row">
-    <a href="/add_log" class="btn btn-success">新建日志</a>
-    <a href="/user_logs" class="btn btn-primary pull-right">返回</a>
-    </div>
-  </p>
-  <small>发布者：{{log.author}}</small>
+  发布者：{{log.author}}
   <br>
-  <small>发布日期：{{log.create_date}}</small>
+  发布日期：{{log.create_date}}
   <hr>
   <div class="well">
     {{log.body | safe}}
   </div>
-    <div id="container">
+  <p>
+  <div class="container">
+    <a href="{{url_for('edit_log',id=log.id)}}" class="btn btn-default">编辑</a>
+  </div>
+  </p>
+  <div id="container">
     <!-- It's just a blank. -->    
     </div>
     <p>
-      <div class="row nav-row">
-        <a href="{{url_for('edit_log',id=log.id)}}" class="btn btn-default pull-left">编辑</a>
+      <div class="container">
+        <a href="/user_logs" class="btn btn-default pull-left">返回</a>
         <form id="del" action="{{url_for('delete_log', id=log.id)}}" method="post">
           <input type="hidden" name="method" value="DELETE">
           <input type="submit" name="submit" value="删除" class="btn btn-danger pull-right" onclick="return confirm('是否确认删除该日志？');return false;">
@@ -30,25 +29,29 @@
     <!-- It's just a blank. -->    
     </div>
 
-
+    <center>
     <p>
       {% if all_user_log_id_list.index(log.id) < 1 %}  
-      <div class="nav navbar-left hide">
-        <a href="{{url_for('log_to_admin',id=all_user_log_id_list[all_user_log_id_list.index(log.id)-1])}}" class="btn btn-primary">上一页</a>
+      <div class="center hide">
+        <a href="{{url_for('log_to_admin',id=all_user_log_id_list[all_user_log_id_list.index(log.id)-1])}}" class="btn btn-default">上一页</a>
       </div>
       {% else %}
-      <div class="nav navbar-left">
-        <a href="{{url_for('log_to_admin',id=all_user_log_id_list[all_user_log_id_list.index(log.id)-1])}}" class="btn btn-primary">上一页</a>
+      <div class="center">
+        <a href="{{url_for('log_to_admin',id=all_user_log_id_list[all_user_log_id_list.index(log.id)-1])}}" class="btn btn-default">上一页</a>
       </div>
       {% endif %}
+      <div class="center" style="visibility: hidden;">
+        <a href="#" class="btn btn-default"></a>
+      </div>
       {% if all_user_log_id_list.index(log.id) > list_all_len-2 %}
-      <div class="nav navbar-right hide">
-        <a href="{{url_for('log_to_admin',id=all_user_log_id_list[all_user_log_id_list.index(log.id)+1])}}" class="btn btn-primary">下一页</a>
+      <div class="center hide">
+        <a href="{{url_for('log_to_admin',id=all_user_log_id_list[all_user_log_id_list.index(log.id)+1])}}" class="btn btn-default">下一页</a>
       </div>
       {% else %}
-      <div class="nav navbar-right">
-        <a href="{{url_for('log_to_admin',id=all_user_log_id_list[all_user_log_id_list.index(log.id)+1])}}" class="btn btn-primary">下一页</a>
+      <div class="center">
+        <a href="{{url_for('log_to_admin',id=all_user_log_id_list[all_user_log_id_list.index(log.id)+1])}}" class="btn btn-default">下一页</a>
       </div>
       {% endif %}
     </p>
+    </center>
 {% endblock%}

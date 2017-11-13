@@ -5,7 +5,7 @@
   <h2>所有日志</h2>
   <ul class="list-group">
     {% for log in logs %}
-      <h3><li class="list-group-item"><a href="log/{{log.id}}">{{log.create_date}}</a></li></h3>
+      <h3><li class="list-group-item"><a href="log_to_admin/{{log.id}}">{{log.create_date}}</a></li></h3>
     {% endfor %}
   </ul>
   {% endif %}
