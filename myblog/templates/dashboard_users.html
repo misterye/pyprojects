@@ -29,7 +29,7 @@
         <td>
           <form action="{{url_for('delete_user', id=user.id)}}" method="post">
             <input type="hidden" name="method" value="DELETE">
-            <input type="submit" name="" value="删除" class="btn btn-danger">
+            <input type="submit" name="" value="删除" class="btn btn-danger" onclick="return confirm('是否确认删除该用户？');return false;">
           </form>
         </td>
         {% endif %}

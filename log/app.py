@@ -240,7 +240,7 @@ def logs():
     # Close connection
     cur.close()
 
-# log id list 
+# one user log id list 
 @app.route('/log_id_list')
 @is_logged_in
 def log_id_list():
@@ -252,6 +252,20 @@ def log_id_list():
         id_list.append(log['id'])
     cur.close()
     return id_list
+
+# all user log id list 
+@app.route('/all_log_id_list')
+#@is_logged_in
+@is_admin
+def all_log_id_list():
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM logs ORDER BY id DESC")
+    logs = cur.fetchall()
+    all_id_list = []
+    for log in logs:
+        all_id_list.append(log['id'])
+    cur.close()
+    return all_id_list
 
 # Single log
 @app.route('/log/<string:id>/')
@@ -265,6 +279,20 @@ def log(id):
     user_log_id_list = log_id_list()
     list_len = len(user_log_id_list)
     return render_template('log.html', log=log, user_log_id_list=user_log_id_list, id=id, list_len=list_len)
+
+# Single log to admin
+@app.route('/log_to_admin/<string:id>/')
+#@is_logged_in
+@is_admin
+def log_to_admin(id):
+    # Create cursor
+    cur = mysql.connection.cursor()
+    # Get log
+    result = cur.execute("SELECT * FROM logs WHERE id = %s", [id])
+    log = cur.fetchone()
+    all_user_log_id_list = all_log_id_list()
+    list_all_len = len(all_user_log_id_list)
+    return render_template('log_to_admin.html', log=log, all_user_log_id_list=all_user_log_id_list, id=id, list_all_len=list_all_len)
 
 # Dashboard_Logs
 @app.route('/dashboard_logs')
