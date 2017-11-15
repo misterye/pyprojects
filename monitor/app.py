@@ -55,7 +55,7 @@ def is_logged_in(f):
 @is_logged_in
 def main():
     getclients()
-    return render_template('main.html', names=names, clients=clients, modems=modems, satellites=satellites, ccount=ccount, display=display)
+    return render_template('main.html', names=names, ips=ips, clients=clients, modems=modems, satellites=satellites, ccount=ccount, display=display)
 
 # User login
 @app.route('/login', methods=['GET', 'POST'])
@@ -111,13 +111,18 @@ def getclients():
     # Create cursor
     cur = mysql.connection.cursor()
     # Get client
-    result = cur.execute("SELECT name, client, modem, satellite FROM terminals")
+    result = cur.execute("SELECT name, ip, client, modem, satellite FROM terminals")
     dbclients = cur.fetchall()
     global clients
     clients = []
     for dc in dbclients:
         clients.append(dc['client'])
         #print clients
+    global ips
+    ips = []
+    for di in dbclients:
+        ips.append(di['ip'])
+        #print ips
     global modems
     modems = []
     for dm in dbclients:
