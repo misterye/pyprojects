@@ -97,13 +97,13 @@ def register():
     return render_template('register.html', form=form)
 	
 # Index
-#@app.route('/')
-#@app.route('/index')
-#def index():
-#    return render_template('home.html')
+@app.route('/')
+@app.route('/index')
+def index():
+    return render_template('home.html')
 
 # User login
-@app.route('/', methods=['GET', 'POST'])
+#@app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
