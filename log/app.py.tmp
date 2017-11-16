@@ -11,7 +11,6 @@ from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
-from math import ceil
 import hashlib
 
 app = Flask(__name__)
@@ -137,26 +136,17 @@ def login():
     return render_template('login.html')
 
 # user logs 
-@app.route('/user_logs', defaults={'page':1})
-@app.route('/user_logs/<int:page>')
+@app.route('/user_logs')
 @is_logged_in
-def user_logs(page):
+def user_logs():
     cur = mysql.connection.cursor()
-    #result = cur.execute("SELECT * FROM logs")
-    result = cur.execute("SELECT * FROM logs WHERE author=%s ORDER BY id DESC", [session['username']])
-    data = cur.fetchall()
-    perpage = 3
-    pages = int(ceil(len(data) / float(perpage)))
-    startat = (page-1)*perpage
-    cur = mysql.connection.cursor()
-    #result = cur.execute("SELECT * FROM logs ORDER BY id DESC limit %s, %s", (startat, perpage))
-    result = cur.execute("SELECT * FROM logs WHERE author=%s ORDER BY id DESC limit %s, %s", ([session['username']], startat, perpage))
+    result = cur.execute("SELECT * FROM logs ORDER BY id DESC")
     logs = cur.fetchall()
     if result > 0:
-        return render_template('user_logs.html', logs=logs, page=page, pages=pages)
+        return render_template('user_logs.html', logs=logs)
     else:
         msg = 'No Logs Found'
-        return render_template('user_logs.html', msg=msg, page=page, pages=pages)
+        return render_template('user_logs.html', msg=msg)
     cur.close()
 
 # Logout
@@ -234,26 +224,19 @@ def delete_user(id):
     return redirect(url_for('dashboard_users'))
 
 # Logs
-@app.route('/logs', defaults={'page':1})
-@app.route('/logs/<int:page>')
+@app.route('/logs')
 @is_admin
-def logs(page):
+def logs():
     # Create cursor
     cur = mysql.connection.cursor()
     # Get logs
     result = cur.execute("SELECT * FROM logs ORDER BY id DESC")
-    data = cur.fetchall()
-    perpage = 3
-    pages = int(ceil(len(data) / float(perpage)))
-    startat = (page-1)*perpage
-    cur = mysql.connection.cursor()
-    result = cur.execute("SELECT * FROM logs ORDER BY id DESC limit %s, %s", (startat, perpage))
     logs = cur.fetchall()
     if result > 0:
-        return render_template('logs.html', logs=logs, page=page, pages=pages)
+        return render_template('logs.html', logs=logs)
     else:
         msg = 'No Logs Found'
-        return render_template('logs.html', msg=msg, page=page, pages=pages)
+        return render_template('logs.html', msg=msg)
     # Close connection
     cur.close()
 
@@ -312,26 +295,20 @@ def log_to_admin(id):
     return render_template('log_to_admin.html', log=log, all_user_log_id_list=all_user_log_id_list, id=id, list_all_len=list_all_len)
 
 # Dashboard_Logs
-@app.route('/dashboard_logs', defaults={'page':1})
-@app.route('/dashboard_logs/<int:page>')
+@app.route('/dashboard_logs')
 #@is_logged_in
 @is_admin
-def dashboard_logs(page):
+def dashboard_logs():
     # Create cursor
     cur = mysql.connection.cursor()
     # Get logs
     result = cur.execute("SELECT * FROM logs ORDER BY id DESC")
-    data = cur.fetchall()
-    perpage = 3
-    pages = int(ceil(len(data) / float(perpage)))
-    startat = (page-1)*perpage
-    result = cur.execute("SELECT * FROM logs ORDER BY id DESC limit %s, %s", (startat, perpage))
     logs = cur.fetchall()
     if result > 0:
-        return render_template('dashboard_logs.html', logs=logs, page=page, pages=pages)
+        return render_template('dashboard_logs.html', logs=logs)
     else:
         msg = 'No Logs Found'
-        return render_template('dashboard_logs.html', msg=msg, page=pages, pages=pages)
+        return render_template('dashboard_logs.html', msg=msg)
     # Close connection
     cur.close()
 
