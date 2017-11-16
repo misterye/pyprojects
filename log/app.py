@@ -167,20 +167,26 @@ def logout():
     return redirect(url_for('login'))
 	
 # Dashboard_Users
-@app.route('/dashboard_users')
+@app.route('/dashboard_users', defaults={'page':1})
+@app.route('/dashboard_users/<int:page>')
 #@is_logged_in
 @is_admin
-def dashboard_users():
+def dashboard_users(page):
     # Create cursor
     cur = mysql.connection.cursor()
     # Get users
     result = cur.execute("SELECT * FROM users ORDER BY id ASC")
+    data = cur.fetchall()
+    perpage = 3
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM users ORDER BY id ASC limit %s, %s", (startat, perpage))
     users = cur.fetchall()
     if result > 0:
-        return render_template('dashboard_users.html', users=users)
+        return render_template('dashboard_users.html', users=users, page=page, pages=pages)
     else:
         msg = 'No User Found'
-        return render_template('dashboard_users.html', msg=msg)
+        return render_template('dashboard_users.html', msg=msg, page=page, pages=pages)
     # Close connection
     cur.close()
 	
