@@ -12,6 +12,7 @@ from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
+from math import ceil
 
 '''
 import sys
@@ -96,21 +97,24 @@ def monitor():
     return redirect("http://monitor.satelc.com")
 
 # Articles
-@app.route('/articles')
-def articles():
+@app.route('/articles', defaults={'page':1})
+@app.route('/articles/<int:page>')
+def articles(page):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Get articles
     result = cur.execute("SELECT * FROM articles")
-
+    data = cur.fetchall()
+    perpage = 5
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM articles ORDER BY id DESC limit %s, %s", (startat, perpage))
     articles = cur.fetchall()
-
     if result > 0:
-        return render_template('articles.html', articles=articles)
+        return render_template('articles.html', articles=articles, page=page, pages=pages)
     else:
         msg = 'No Articles Found'
-        return render_template('articles.html', msg=msg)
+        return render_template('articles.html', msg=msg, page=page, pages=pages)
     # Close connection
     cur.close()
 
@@ -126,22 +130,25 @@ def article(id):
     article = cur.fetchone()
     return render_template('article.html', article=article)
 
-@app.route('/terminals')
+@app.route('/terminals', defaults={'page':1})
+@app.route('/terminals/<int:page>')
 @is_logged_in
-def terminals():
+def terminals(page):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Get terminals
     result = cur.execute("SELECT * FROM terminals ORDER BY id ASC")
-
+    data = cur.fetchall()
+    perpage = 5
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM terminals ORDER BY id ASC limit %s, %s", (startat, perpage))
     terminals = cur.fetchall()
-
     if result > 0:
-        return render_template('terminals.html', terminals=terminals)
+        return render_template('terminals.html', terminals=terminals, page=page, pages=pages)
     else:
         msg = 'No Terminal Found'
-        return render_template('terminals.html', msg=msg)
+        return render_template('terminals.html', msg=msg, page=page, pages=pages)
     # Close connection
     cur.close()
 
@@ -282,77 +289,80 @@ def logout():
     return redirect(url_for('login'))
 
 # Terminals Dashboard
-@app.route('/dashboard')
+@app.route('/dashboard', defaults={'page':1})
+@app.route('/dashboard<int:page>')
 #@is_logged_in
 @is_admin
-def dashboard():
+def dashboard(page):
     # Create cursor
     cur = mysql.connection.cursor()
-
-    # Get articles
-    #result = cur.execute("SELECT * FROM articles")
-
     # Get terminals
     result = cur.execute("SELECT * FROM terminals ORDER BY id ASC")
-
+    data = cur.fetchall()
+    perpage = 5
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM terminals ORDER BY id ASC limit %s, %s", (startat, perpage))
     #articles = cur.fetchall()
     terminals = cur.fetchall()
-
     if result > 0:
     #    return render_template('dashboard.html', articles=articles)
-        return render_template('dashboard.html', terminals=terminals)
+        return render_template('dashboard.html', terminals=terminals, page=page, pages=pages)
     else:
     #    msg = 'No Articles Found'
         msg = 'No Terminal Found'
-        return render_template('dashboard.html', msg=msg)
+        return render_template('dashboard.html', msg=msg, page=page, pages=pages)
     # Close connection
     cur.close()
 
 # Dashboard_Users
-@app.route('/dashboard_users')
+@app.route('/dashboard_users', defaults={'page':1})
+@app.route('/dashboard_users/<int:page>')
 #@is_logged_in
 @is_admin
-def dashboard_users():
+def dashboard_users(page):
     # Create cursor
     cur = mysql.connection.cursor()
-
-    # Get articles 
-    #result = cur.execute("SELECT * FROM articles")
-
     # Get users
     result = cur.execute("SELECT * FROM users ORDER BY id ASC")
-
+    data = cur.fetchall()
+    perpage = 5
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM users ORDER BY id ASC limit %s, %s", (startat, perpage))
     #articles = cur.fetchall()
     users = cur.fetchall()
-
     if result > 0:
     #    return render_template('dashboard.html', articles=articles)
-        return render_template('dashboard_users.html', users=users)
+        return render_template('dashboard_users.html', users=users, page=page, pages=pages)
     else:
     #    msg = 'No Articles Found'
         msg = 'No User Found'
-        return render_template('dashboard_users.html', msg=msg)
+        return render_template('dashboard_users.html', msg=msg, page=page, pages=pages)
     # Close connection
     cur.close()
 
 # Dashboard_Articles
-@app.route('/dashboard_articles')
+@app.route('/dashboard_articles', defaults={'page':1})
+@app.route('/dashboard_articles/<int:page>')
 #@is_logged_in
 @is_admin
-def dashboard_articles():
+def dashboard_articles(page):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Get articles
     result = cur.execute("SELECT * FROM articles")
-
+    data = cur.fetchall()
+    perpage = 5
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM articles ORDER BY id DESC limit %s, %s", (startat, perpage))
     articles = cur.fetchall()
-
     if result > 0:
-        return render_template('dashboard_articles.html', articles=articles)
+        return render_template('dashboard_articles.html', articles=articles, page=page, pages=pages)
     else:
         msg = 'No Articles Found'
-        return render_template('dashboard_articles.html', msg=msg)
+        return render_template('dashboard_articles.html', msg=msg, page=page, pages=pages)
     # Close connection
     cur.close()
 
