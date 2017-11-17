@@ -27,7 +27,7 @@ client.menu.create({
         {
             "type":"view",
             "name":"文档查询",
-            "url":"https://satelc.com"
+            "url":"http://doc.satelc.com"
         },
         {
             "type":"view",

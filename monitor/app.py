@@ -217,17 +217,17 @@ def ws_disconn():
 @app.route('/index')
 def index():
     #return redirect("http://139.224.114.83:8019/")
-    return redirect("http://myblog.satelc.com/")
+    return redirect("http://satelc.com/")
 
 @app.route('/terminals')
 def terminals():
     #return redirect("http://139.224.114.83:8019/terminals")
-    return redirect("http://myblog.satelc.com/terminals")
+    return redirect("http://satelc.com/terminals")
 
 @app.route('/articles')
 def articles():
     #return redirect("http://139.224.114.83:8019/articles")
-    return redirect("http://myblog.satelc.com/articles")
+    return redirect("http://satelc.com/articles")
 
 @app.route('/monitor')
 def monitor():
