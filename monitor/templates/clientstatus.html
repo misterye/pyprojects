@@ -31,8 +31,10 @@
             </tr>
         {% endfor %}
     </table>
-    <h3>当前在线：<span id="online-count"></span> 台</h3>
-    <h3>终端总数：<span>{{ccount}}</span> 台</h3>
+    <h3>本页在线总数：<span id="online-count"></span> 台</h3>
+    <h3>本页终端总数：<span>{{ccount}}</span> 台</h3>
+    <h3>全部在线总数：<span id="total-online-count"></span> 台</h3>
+    <h3>全部终端总数：<span>{{total_num}}</span> 台</h3>
     <script type="text/javascript">
         $(document).ready(function() {
             var url = "http://" + document.domain + ":" + location.port;
@@ -102,6 +104,44 @@
             });
         });
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var url = "http://" + document.domain + ":" + location.port;
+            var socket = io.connect(url);
+            socket.emit('newstatus');
+            socket.on('totalonline', function(newmsg) {
+                document.getElementById("total-online-count").innerHTML = newmsg.newallclientlen;
+            });
+        });
+    </script>
+    
 </div>
+
+    <center>
+    <p>
+      {% if page < 2 %}  
+      <div class="center hide">
+        <a href="{{url_for('clientstatus',page=page-1)}}" class="btn btn-default">上一页</a>
+      </div>
+      {% else %}
+      <div class="center">
+        <a href="{{url_for('clientstatus',page=page-1)}}" class="btn btn-default">上一页</a>
+      </div>
+      {% endif %}
+      <div class="center" style="visibility: hidden;">
+        <a href="#" class="btn btn-default"></a>
+      </div>
+      {% if page > pages-1 %}
+      <div class="center hide">
+        <a href="{{url_for('clientstatus',page=page+1)}}" class="btn btn-default">下一页</a>
+      </div>
+      {% else %}
+      <div class="center">
+        <a href="{{url_for('clientstatus',page=page+1)}}" class="btn btn-default">下一页</a>
+      </div>
+      {% endif %}
+    </p>
+    </center>
 {% endblock %}
 

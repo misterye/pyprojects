@@ -51,12 +51,67 @@ def is_logged_in(f):
             return redirect(url_for('login'))
     return wrap
 
+# home page
 @app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/clientstatus', defaults={'page':1})
+@app.route('/clientstatus/<int:page>')
 #@app.route('/monitor')
 @is_logged_in
-def main():
+def clientstatus(page):
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM terminals")
+    data = cur.fetchall()
+    global total_num
+    total_num = len(data)
+    perpage = 5
+    global pages
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage  
+
+    # Get client from table terminals in DB
+    global getclients
+    def getclients():
+        global display
+        display = "."
+        # Create cursor
+        cur = mysql.connection.cursor()
+        # Get client
+        #result = cur.execute("SELECT name, ip, client, modem, satellite FROM terminals")
+        result = cur.execute("SELECT name, ip, client, modem, satellite FROM terminals limit %s, %s", (startat, perpage))
+        dbclients = cur.fetchall()
+        global clients
+        clients = []
+        for dc in dbclients:
+            clients.append(dc['client'])
+            #print clients
+        global ips
+        ips = []
+        for di in dbclients:
+            ips.append(di['ip'])
+            #print ips
+        global modems
+        modems = []
+        for dm in dbclients:
+            modems.append(dm['modem'])
+            #print modems
+        global satellites
+        satellites = []
+        for ds in dbclients:
+            satellites.append(ds['satellite'])
+            #print satellites
+        global ccount
+        ccount = len(clients)
+        global names
+        names = []
+        for dn in dbclients:
+            names.append(dn['name'])
+            #print names
+        cur.close()
     getclients()
-    return render_template('main.html', names=names, ips=ips, clients=clients, modems=modems, satellites=satellites, ccount=ccount, display=display)
+    return render_template('clientstatus.html', total_num=total_num, names=names, ips=ips, clients=clients, modems=modems, satellites=satellites, ccount=ccount, display=display, page=page, pages=pages)
 
 # User login
 @app.route('/login', methods=['GET', 'POST'])
@@ -105,57 +160,6 @@ def logout():
     flash("已注销。", 'success')
     return redirect(url_for('login'))
 
-# Get client from table terminals in DB
-def getclients():
-    global display
-    display = "."
-    # Create cursor
-    cur = mysql.connection.cursor()
-    # Get client
-    result = cur.execute("SELECT name, ip, client, modem, satellite FROM terminals")
-    dbclients = cur.fetchall()
-    global clients
-    clients = []
-    for dc in dbclients:
-        clients.append(dc['client'])
-        #print clients
-    global ips
-    ips = []
-    for di in dbclients:
-        ips.append(di['ip'])
-        #print ips
-    global modems
-    modems = []
-    for dm in dbclients:
-        modems.append(dm['modem'])
-        #print modems
-    global satellites
-    satellites = []
-    for ds in dbclients:
-        satellites.append(ds['satellite'])
-        #print satellites
-    global ccount
-    ccount = len(clients)
-    global names
-    names = []
-    for dn in dbclients:
-        names.append(dn['name'])
-        #print names
-    cur.close()
-'''
-    global namesclients
-    namesclients = []
-    for nc in dbclients:
-        namesclients.append([nc['name'],nc['client']])
-        print namesclients
-'''
-
-'''
-# Later Replaced By DB
-clients = ['yebin', 'xubuntuoffice', 'windows10']
-ccount = len(clients)
-'''
-
 @socketio.on('status')
 def readvlog():
     getclients()
@@ -199,6 +203,36 @@ def readvlog():
             'nclientlen': l
         })
         sleep(10)
+
+
+@socketio.on('newstatus')
+def totalonline():
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM terminals")
+    data = cur.fetchall()
+    allclients = []
+    for d in data:
+        allclients.append(d['client'])
+    while True:
+        with open('/home/yebin/pyprojects/monitor/vlog.log') as newlogfile:
+            newstatus = parse_status(newlogfile.read())
+        newallclient = newstatus.client_list
+
+        newallclientList = []
+        newofflineList = []
+        for ac in allclients:
+            if ac in newallclient:
+                newallclientList.append(ac)
+            else:
+                newofflineList.append(ac)
+        #print newallclientList
+        newlength = len(newallclientList)
+        socketio.emit('totalonline', {
+            'newallclient': newallclientList,
+            'newallclientlen': newlength
+        })
+        sleep(10)
+
 
 @socketio.on('connect')
 def ws_conn():
