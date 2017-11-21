@@ -694,7 +694,7 @@ def delete_message(id):
 # Search
 # Search Terminal Form Class
 class SearchTerminalForm(Form):
-    keyword = StringField('小站查询', [validators.Length(min=1, max=30)])
+    keyword = StringField('按用户名称查询小站', [validators.Length(min=1, max=30)])
 
 # Search Terminal Form of Keyword
 @app.route('/search_keyword')
