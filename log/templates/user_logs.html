@@ -4,37 +4,36 @@
   <ul class="list-group">
     {% for log in logs %}
       {% if log.author == session['username'] %}
-        <h3><a href="log/{{log.id}}">{{log.create_date}}</a></h3>
+        <h3><a href="log/{{log.id}}">{{log.create_date}} | {{log.author}}</a></h3>
       <div class="well">
         <h3>{{log.body | safe}}</h3>
       </div>
       {% endif %}
     {% endfor %}
   </ul>
-
-    <center>
-    <p>
-      {% if page < 2 %}  
-      <div class="center hide">
-        <a href="{{url_for('user_logs',page=page-1)}}" class="btn btn-default">上一页</a>
-      </div>
-      {% else %}
-      <div class="center">
-        <a href="{{url_for('user_logs',page=page-1)}}" class="btn btn-default">上一页</a>
-      </div>
-      {% endif %}
-      <div class="center" style="visibility: hidden;">
-        <a href="#" class="btn btn-default"></a>
-      </div>
-      {% if page > pages-1 %}
-      <div class="center hide">
-        <a href="{{url_for('user_logs',page=page+1)}}" class="btn btn-default">下一页</a>
-      </div>
-      {% else %}
-      <div class="center">
-        <a href="{{url_for('user_logs',page=page+1)}}" class="btn btn-default">下一页</a>
-      </div>
-      {% endif %}
-    </p>
-    </center>
+  <center>
+  <p>
+    {% if page < 2 %}  
+    <div class="center hide">
+      <a href="{{url_for('user_logs',page=page-1)}}" class="btn btn-default">上一页</a>
+    </div>
+    {% else %}
+    <div class="center">
+      <a href="{{url_for('user_logs',page=page-1)}}" class="btn btn-default">上一页</a>
+    </div>
+    {% endif %}
+    <div class="center" style="visibility: hidden;">
+      <a href="#" class="btn btn-default"></a>
+    </div>
+    {% if page > pages-1 %}
+    <div class="center hide">
+      <a href="{{url_for('user_logs',page=page+1)}}" class="btn btn-default">下一页</a>
+    </div>
+    {% else %}
+    <div class="center">
+      <a href="{{url_for('user_logs',page=page+1)}}" class="btn btn-default">下一页</a>
+    </div>
+    {% endif %}
+  </p>
+  </center>
 {% endblock %}

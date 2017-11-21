@@ -15,14 +15,20 @@ from math import ceil
 import hashlib
 
 app = Flask(__name__)
-app.debug = True
+app.config.from_object('config.DevelopmentConfig')
+global perpage
+perpage = 5
+keyword = ''
 
+#app.debug = True
+'''
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = '840821'
 app.config['MYSQL_DB'] = 'log'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+'''
 # init MYSQL
 mysql = MySQL(app)
 
@@ -58,7 +64,7 @@ class RegisterForm(Form):
         validators.EqualTo('confirm', message='两次输入不匹配')
     ])
     confirm = PasswordField('确认密码')
-	
+
 # User Form Class
 class UserForm(Form):
     name = StringField('姓名', [validators.Length(min=1, max=50)])
@@ -73,6 +79,10 @@ class UserForm(Form):
 # Log Form Class
 class LogForm(Form):
     body = TextAreaField("内容", [validators.Length(min=1)])
+
+# Search Form Class
+class SearchForm(Form):
+    keyword = StringField("日志查询", [validators.Length(min=1, max=50)])
 
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
@@ -95,7 +105,7 @@ def register():
         flash("注册成功，请登录。", 'success')
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
-	
+
 # Index
 @app.route('/')
 @app.route('/index')
@@ -145,7 +155,7 @@ def user_logs(page):
     #result = cur.execute("SELECT * FROM logs")
     result = cur.execute("SELECT * FROM logs WHERE author=%s ORDER BY id DESC", [session['username']])
     data = cur.fetchall()
-    perpage = 3
+    #perpage = 3
     pages = int(ceil(len(data) / float(perpage)))
     startat = (page-1)*perpage
     cur = mysql.connection.cursor()
@@ -158,6 +168,7 @@ def user_logs(page):
         msg = 'No Logs Found'
         return render_template('user_logs.html', msg=msg, page=page, pages=pages)
     cur.close()
+
 
 # Logout
 @app.route('/logout')
@@ -177,7 +188,7 @@ def dashboard_users(page):
     # Get users
     result = cur.execute("SELECT * FROM users ORDER BY id ASC")
     data = cur.fetchall()
-    perpage = 3
+    #perpage = 3
     pages = int(ceil(len(data) / float(perpage)))
     startat = (page-1)*perpage
     result = cur.execute("SELECT * FROM users ORDER BY id ASC limit %s, %s", (startat, perpage))
@@ -249,7 +260,7 @@ def logs(page):
     # Get logs
     result = cur.execute("SELECT * FROM logs ORDER BY id DESC")
     data = cur.fetchall()
-    perpage = 3
+    #perpage = 3
     pages = int(ceil(len(data) / float(perpage)))
     startat = (page-1)*perpage
     cur = mysql.connection.cursor()
@@ -328,7 +339,7 @@ def dashboard_logs(page):
     # Get logs
     result = cur.execute("SELECT * FROM logs ORDER BY id DESC")
     data = cur.fetchall()
-    perpage = 3
+    #perpage = 3
     pages = int(ceil(len(data) / float(perpage)))
     startat = (page-1)*perpage
     result = cur.execute("SELECT * FROM logs ORDER BY id DESC limit %s, %s", (startat, perpage))
@@ -404,6 +415,67 @@ def delete_log(id):
     cur.close()
     flash("日志删除完成。", 'success')
     return redirect(url_for('user_logs'))
+
+# Search Form of Keyword
+@app.route('/search_keyword')
+@is_logged_in
+def search_keyword():
+    form = SearchForm(request.form)
+    return render_template('search_form.html', form=form)
+
+# Search Log
+@app.route('/search_log', defaults={'page':1}, methods=['GET','POST'])
+@app.route('/search_log/<int:page>', methods=['GET','POST'])
+@is_logged_in
+def search_log(page):
+    global keyword
+    form = SearchForm(request.form)
+    if request.method == 'POST' and form.validate():
+        keyword = form.keyword.data
+        keyword = '%' + keyword + '%'
+    cur = mysql.connection.cursor()
+    result_data = cur.execute("SELECT * FROM logs WHERE author=%s AND body LIKE (%s) ORDER BY id DESC", ([session['username']], [keyword]))
+    results = cur.fetchall()
+    pages = int(ceil(len(results) / float(perpage)))
+    startat = (page-1)*perpage
+    if result_data > 0:
+        cur = mysql.connection.cursor()
+        result_data = cur.execute("SELECT * FROM logs WHERE author=%s AND body LIKE (%s) ORDER BY id DESC limit %s, %s", ([session['username']], [keyword], startat, perpage))
+        results = cur.fetchall()
+        return render_template('search_result.html', results=results, page=page, pages=pages)
+    else:
+        msg = 'No Logs Found'
+        return render_template('search_result.html', msg=msg, results=results, page=page, pages=pages)
+    cur.close()
+    return render_template('search_result.html', results=results, page=page, pages=pages)
+
+
+# Search All Logs
+@app.route('/search_all_logs', defaults={'page':1}, methods=['GET','POST'])
+@app.route('/search_all_logs/<int:page>', methods=['GET','POST'])
+@is_logged_in
+def search_all_logs(page):
+    global keyword
+    form = SearchForm(request.form)
+    if request.method == 'POST' and form.validate():
+        keyword = form.keyword.data
+        keyword = '%' + keyword + '%'
+    cur = mysql.connection.cursor()
+    result_data = cur.execute("SELECT * FROM logs WHERE body LIKE (%s) ORDER BY id DESC", [keyword])
+    results = cur.fetchall()
+    pages = int(ceil(len(results) / float(perpage)))
+    startat = (page-1)*perpage
+    if result_data > 0:
+        cur = mysql.connection.cursor()
+        result_data = cur.execute("SELECT * FROM logs WHERE body LIKE (%s) ORDER BY id DESC limit %s, %s", ([keyword], startat, perpage))
+        results = cur.fetchall()
+        return render_template('search_all_result.html', results=results, page=page, pages=pages)
+    else:
+        msg = 'No Logs Found'
+        return render_template('search_all_result.html', msg=msg, results=results, page=page, pages=pages)
+    cur.close()
+    return render_template('search_all_result.html', results=results, page=page, pages=pages)
+
 
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0dijfe41fj0iggr9wrj'

@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <table class="table table-striped">
+    <tr>
+      <th class="text-center">编号</th>
+      <th class="text-center">姓名</th>
+      <th class="text-center">地址</th>
+      <th class="text-center">电话</th>
+      <th class="text-center">电子邮箱</th>
+      <th class="text-center">注册日期</th>
+    </tr>
+    {% for testuser in testusers %}
+      <tr>
+        <td align="center" valign="middle">{{testuser.id}}</td>
+        <td align="center" valign="middle">{{testuser.name}}</td>
+        <td align="center" valign="middle">{{testuser.address}}</td>
+        <td align="center" valign="middle">{{testuser.telephone}}</td>
+        <td align="center" valign="middle">{{testuser.email}}</td>
+        <td align="center" valign="middle">{{testuser.create_time}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

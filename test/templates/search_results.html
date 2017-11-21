@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <table class="table table-striped">
+    <tr>
+      <th class="text-center">编号</th>
+      <th class="text-center">姓名</th>
+      <th class="text-center">地址</th>
+      <th class="text-center">电话</th>
+      <th class="text-center">电子邮箱</th>
+      <th class="text-center">注册日期</th>
+    </tr>
+    {% for result in resultss %}
+      <tr>
+        <td align="center" valign="middle">{{results.id}}</td>
+        <td align="center" valign="middle">{{results.name}}</td>
+        <td align="center" valign="middle">{{results.address}}</td>
+        <td align="center" valign="middle">{{results.telephone}}</td>
+        <td align="center" valign="middle">{{results.email}}</td>
+        <td align="center" valign="middle">{{results.create_time}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

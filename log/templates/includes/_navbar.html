@@ -1,8 +1,15 @@
- <nav class="navbar navbar-inverse">
-  <div class="container-fluid">
+ <nav class="navbar navbar-default">
+  <div class="container">
     <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
       <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-book"></span> 工作日志</a>
     </div>
+    <div id="navbar" class="collapse navbar-collapse">
     {% if session.logged_in %}
       {% if session['username'] == 'admin' %}
       <ul class="nav navbar-nav">
@@ -14,8 +21,10 @@
       {% endif %}
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/add_log"><span class="glyphicon glyphicon-new-window"></span> 新建</a></li>
+        <li><a href="/search_keyword"><span class="glyphicon glyphicon-search"></span> 查询</a></li>
         <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> 注销</a></li>
       </ul>
     {% endif %}
+    </div>
   </div>
 </nav> 
