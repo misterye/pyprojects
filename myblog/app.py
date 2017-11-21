@@ -690,7 +690,45 @@ def delete_message(id):
     flash("留言已删除。", 'success')
 
     return redirect(url_for('messages'))
+###############################################
+# Search
+# Search Terminal Form Class
+class SearchTerminalForm(Form):
+    keyword = StringField('小站查询', [validators.Length(min=1, max=30)])
 
+# Search Terminal Form of Keyword
+@app.route('/search_keyword')
+@is_logged_in
+def search_keyword():
+    form = SearchTerminalForm(request.form)
+    return render_template('search_terminal_form.html', form=form)
+
+# Search Terminal
+@app.route('/search_terminal_name', defaults={'page':1}, methods=['GET','POST'])
+@app.route('/search_terminal_name/<int:page>', methods=['GET','POST'])
+def search_terminal_name(page):
+    global keyword
+    form = SearchTerminalForm(request.form)
+    if request.method == 'POST' and form.validate():
+        keyword = form.keyword.data
+        keyword = '%' + keyword + '%'
+    cur = mysql.connection.cursor()
+    result_data = cur.execute("SELECT * FROM terminals WHERE name LIKE (%s) ORDER BY id ASC", [keyword])
+    results = cur.fetchall()
+    perpage = 5
+    pages = int(ceil(len(results) / float(perpage)))
+    startat = (page-1)*perpage
+    if result_data > 0:
+        cur = mysql.connection.cursor()
+        result_data = cur.execute("SELECT * FROM terminals WHERE name LIKE (%s) ORDER BY id ASC limit %s, %s", ([keyword], startat, perpage))
+        results = cur.fetchall()
+        return render_template('search_result.html', results=results, page=page, pages=pages)
+    else:
+        msg = 'No Terminal Found'
+        return render_template('search_result.html', msg=msg, page=page, pages=pages)
+    cur.close()
+    return render_template('search_result.html', results=results, page=page, pages=pages)
+###########################################
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0f841fj0iggr9wrj'
     app.run('0.0.0.0', 8019)

@@ -18,7 +18,6 @@ app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig')
 global perpage
 perpage = 5
-keyword = ''
 
 #app.debug = True
 '''
