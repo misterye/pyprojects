@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Change Form Action Based on selection - Demo Preview</title>
+	<meta name="robots" content="noindex, nofollow">
+	
+	<!-- include Jquery library and file here-->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script type="text/javascript" src="js/script.js"></script> 
+	
+	<!-- include css file here-->
+    <link rel="stylesheet" href="css/drop_down.css"/>
+	
+  </head>
+  <body>
+   <div id="main">
+	<div id="first">
+	    <h1>Change Form Action Based On Selection</h1><hr/></br></br>
+	
+		<form id="myform" method="post">
+         <label>Search Keyword</label> </br>
+		 <input class="form-control" type="text" name="keyword" placeholder="输入用户名称" style="width:240px;"></br>
+		 
+		 <label>Terminals :</label> </br>
+		 <select id="modules">
+		 	<optgroup label="terminals">
+			  <option>--- Choose Field Here ---</option>
+			  <option>Name</option>
+			  <option>Client</option>
+			  <option>Address</option>
+			  <option>Modem</option>
+			  <option>Satellite</option>
+			  <option>IP</option>
+			  <option>Found Date</option>
+			  <option>Remarks</option>
+			</optgroup>
+			<optgroup label="articles">
+			  <option>--- Choose Field Here ---</option>
+			  <option>Author</option>
+			  <option>Title</option>
+			  <option>Body</option>
+			  <option>Date</option>
+			</optgroup>
+		 </select>
+		
+		 <input id="submit" type="submit" class="submit" value="Submit" />
+		
+		</form>
+	</div>
+	
+	<!-- second div for our Fugo from FomGet.com-->
+		<div id="second">
+			  <a href="http://www.formget.com/app/"><img src="images/formGetadv-1.jpg" /></a>
+		 </div>
+   </div>
+  </body>
+</html>

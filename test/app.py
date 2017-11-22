@@ -4,20 +4,21 @@ reload(sys);
 exec("sys.setdefaultencoding('utf-8')");
 assert sys.getdefaultencoding().lower() == "utf-8";
 from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
-from flask_mysqldb import MySQL
+#from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 import hashlib
-from flask_sqlalchemy import SQLAlchemy
-import flask_whooshalchemy
-import flask.ext.sqlalchemy as flask_sqlalchemy
-from flask_whooshee import Whooshee
+#from flask_sqlalchemy import SQLAlchemy
+#import flask_whooshalchemy
+#import flask.ext.sqlalchemy as flask_sqlalchemy
+#from flask_whooshee import Whooshee
 #import models
 
 app = Flask(__name__)
-whooshee = Whooshee(app)
+#whooshee = Whooshee(app)
 app.config.from_object('config.DevelopmentConfig')
-db = SQLAlchemy(app)
+#db = SQLAlchemy(app)
 
+'''
 @whooshee.register_model('address')
 class Test1(db.Model):
     __tablename__ = 'test1'
@@ -29,6 +30,7 @@ class Test1(db.Model):
 #    email = db.Column(db.String(255), nullable=False)
 #    telephone = db.Column(db.String(255), nullable=False)
 #    create_time = db.Column(db.DateTime(), nullable=False)
+'''
 
 # Index
 @app.route('/')
@@ -39,9 +41,9 @@ def index():
 # Test_Users
 @app.route('/test_users')
 def test_users():
-    testusers = Test1.query.order_by(Test1.id).all()
-    return render_template('test_users.html', testusers=testusers)
-
+#    testusers = Test1.query.order_by(Test1.id).all()
+    return render_template('select_action.html')
+'''
 # Search
 @app.route("/search_results")
 def search_results():
@@ -51,6 +53,7 @@ def search_results():
     print results
     return ''
     #return render_template('search_results.html', results=results)
+'''
 
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0dijfe41fj0iggr9wrj'

@@ -5,18 +5,103 @@
   <div class="jumbotron vertical-center">
     <div class="container" align="center">
     {% if session.logged_in == True %}
-      {% from "includes/_formhelpers.html" import render_field %}
-      <form method="POST" action="{{ url_for('search_terminal_name') }}">
-        <div class="form-group">
-          <h3>{{render_field(form.keyword, class_="form-control", placeholder="输入用户名称", style="width:240px;")}}</h3>
-        </div>
-        <p>
-          <input type="submit" class="btn btn-primary" value="查询">
-          <h1></h1>
-          <a href="{{url_for('terminals')}}" class="btn btn-primary">返回</a>
-        </p>
-      </form>
+    <form method="POST" id="search">
+      <h3><label>站内查询</label></h3>
+      <h1></h1>
+      <label>选择查询范围</label> </br>
+      <select id="field">
+        <optgroup label="小站" id="terminals">
+            <option>--- 选择 ---</option>
+            <option>用户名</option>
+            <option>终端名</option>
+            <option>小站地址</option>
+            <option>终端类型</option>
+            <option>通信卫星</option>
+            <option>管理地址</option>
+            <option>开通日期</option>
+            <option>备注</option>
+        </optgroup>
+        <optgroup label="公告" id="articles">
+            <option>--- 选择 ---</option>
+            <option>作者</option>
+            <option>标题</option>
+            <option>内容</option>
+            <option>日期</option>
+        </optgroup>
+      </select>
+      <h1></h1>
+      <input class="form-control" type="text" name="keyword" placeholder="输入查询关键字" style="width:240px;"></br>
+      <p>
+        <input id="submit" type="submit" class="btn btn-primary" value="查询">
+        <h1></h1>
+        <a href="{{url_for('terminals')}}" class="btn btn-primary">返回</a>
+      </p>   
+    </form>
     {% endif %}
+    <script type="text/javascript">
+      $(document).ready(function(){
+          $("#field").change(function(){
+          var selected = $(this).find('option:selected').text();
+          switch(selected){
+            case "用户名":
+            $("#search").attr("action","{{url_for('search_terminal_name')}}");
+            alert("通过用户名查找小站，如“湖北无委地面站”，确认请点击“查询”按钮。");
+            break;
+            case "终端名":
+            $("#search").attr("action","{{url_for('search_terminal_client')}}");
+            alert("通过终端名查找小站，如“hbwwdmz”，确认请点击“查询”按钮。");
+            break;
+            case "小站地址":
+            $("#search").attr("action","{{url_for('search_terminal_address')}}");
+            alert("通过小站地址查找小站，如“黄石”，确认请点击“查询”按钮。");
+            break;
+            case "终端类型":
+            $("#search").attr("action","{{url_for('search_terminal_modem')}}");
+            alert("通过终端类型查找小站，如“CMD-570L”，确认请点击“查询”按钮。");
+            break;
+            case "通信卫星":
+            $("#search").attr("action","{{url_for('search_terminal_satellite')}}");
+            alert("通过通信卫星查找小站，如“亚四”，确认请点击“查询”按钮。");
+            break;
+            case "管理地址":
+            $("#search").attr("action","{{url_for('search_terminal_ip')}}");
+            alert("通过管理地址查找小站，如“10.8.0.15”，确认请点击“查询”按钮。");
+            break;
+            case "开通日期":
+            $("#search").attr("action","{{url_for('search_terminal_found_date')}}");
+            alert("通过开通日期查找小站，如“2015”，确认请点击“查询”按钮。");
+            break;
+            case "备注":
+            $("#search").attr("action","{{url_for('search_terminal_remarks')}}");
+            alert("通过备注查找小站，确认请点击“查询”按钮。");
+            break;
+            case "作者":
+            $("#search").attr("action","{{url_for('search_article_author')}}");
+            alert("通过作者查找公告，确认请点击“查询”按钮。");
+            break;
+            case "标题":
+            $("#search").attr("action","{{url_for('search_article_title')}}");
+            alert("通过标题查找公告，确认请点击“查询”按钮。");
+            break;
+            case "内容":
+            $("#search").attr("action","{{url_for('search_article_body')}}");
+            alert("通过内容查找公告，确认请点击“查询”按钮。");
+            break;
+            case "日期":
+            $("#search").attr("action","{{url_for('search_article_create_date')}}");
+            alert("通过日期查找公告，确认请点击“查询”按钮。");
+            break;
+            default:
+            $("#search").attr('action','#'); 
+            }
+          });
+          //Function For Back Button
+          $(".back").click(function(){
+           parent.history.back();
+           return false;
+           });
+          });
+    </script>
   </div>
 </div>
 </center>

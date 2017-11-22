@@ -1,0 +1,106 @@
+/* below line is used for online google font */
+@import url(http://fonts.googleapis.com/css?family=Arvo);
+
+h1{
+	text-align: center;
+	
+	}
+h2{
+	
+	text-align: center;
+	font-family: 'Arvo', serif;
+	}
+hr {  
+    border: 0; 
+	border-top: 1px solid #ccc;
+	margin-bottom: -10px;
+}
+
+div#main{
+	width: 868px;
+	height: 654px;
+	margin: 20px auto; 
+	font-family: 'Arvo', serif;
+}
+	
+div#first {
+    width: 350px;
+	height:515px;
+	padding: 0px 45px 20px 45px;
+	box-shadow: 0 0 10px;
+	float:left;
+	margin-top: 55px;
+}
+
+input{
+	width: 340px;
+	height: 35px;
+	border:1px solid gray;
+	padding-left: 10px;
+	margin-top: 8px;
+	border-radius: 5px;
+}
+
+select  {
+	background-image: url('../images/arrow.png');
+	background-repeat: no-repeat;
+	background-position: 300px;
+	width: 353px;
+	padding: 12px;
+	margin-top: 8px;
+	font-family: Cursive;
+    line-height: 1;
+	border-radius: 5px;
+	background-color: #A2AB58;
+	color: yellow;
+	font-size: 20px; 
+	-webkit-appearance: none; 
+	box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.6);
+	outline: none;
+}
+
+select:hover{
+	color: springgreen;
+}
+
+.submit{ 
+	width: 353px;
+	height: 45px;
+	color: white;
+	margin-top: 50px;
+	background-color: rgb(16, 103, 162);
+	font-size: 20px;
+	font-weight: bold;
+}
+
+button{ 
+	width: 353px;
+	height: 45px;
+	color: white;
+	margin-top: 120px;
+	background-color: rgb(16, 103, 162);
+	font-size: 20px;
+	font-weight: bold;
+	border-radius: 5px;
+}
+.page{
+	width:720px;
+	height:260px;
+	padding:70px 0;
+	margin:140px auto;
+	border:3px dashed gray;
+	text-align:center;
+}
+/* -------------------------------------
+    CSS for sidebar (optional) 
+---------------------------------------- */
+div#second{
+	width: 424px;
+	height:653px;
+	float:left;
+}
+
+img{
+	margin-top: 22px;
+	margin-left: 180px;
+}
