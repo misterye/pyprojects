@@ -55,6 +55,24 @@ def search_results():
     #return render_template('search_results.html', results=results)
 '''
 
+# Get Pi Temperature
+#@app.route('/gettemp', methods=['GET', 'POST'])
+@app.route('/gettemp', methods=['POST'])
+def gettemp():
+#	if request.method == 'POST':
+#		temp = request.form.get('temp')
+#		return '''<h1>The temp value is: {}'''.format(temp)
+
+    temp = request.json
+    print temp
+
+    return '''<h1>The temperature is: {}</h1>'''.format(temp)
+
+#	return '''<form method="POST">
+#	Temperature: <input type="text" name="temp"><br>
+#    <input type="submit" value="Submit"><br>
+#    </form><br>'''
+
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0dijfe41fj0iggr9wrj'
     app.run('0.0.0.0', 8022)
