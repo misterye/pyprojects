@@ -170,8 +170,9 @@ def logout():
 
 @socketio.on('status')
 def readvlog():
-    getclients()
+    #getclients()
     while True:
+    	getclients()
         with open('/home/yebin/pyprojects/monitor/vlog.log') as logfile:
         #with open('/home/yebin/pyprojects/monitor/openvpn-status.log') as logfile:
             status = parse_status(logfile.read())
@@ -208,7 +209,8 @@ def readvlog():
         #print("There are %s clients online." % l)
         socketio.emit('online', {
             'nclient': newclientList,
-            'nclientlen': l
+            'nclientlen': l,
+            'tempdisplay': display
         })
         sleep(10)
 

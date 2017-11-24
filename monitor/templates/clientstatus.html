@@ -27,7 +27,7 @@
                 <td align="center" valign="middle">{{satellites[t]}}</td>
                 <td align="center" valign="middle">{{modems[t]}}</td>
                 <td align="center" valign="middle"><a href="http://rssh.satelc.com" target="_blank">登录</a></td>
-                <td align="center" valign="middle">{{display}}</td>
+                <td align="center" valign="middle" id="temp"></td>
             </tr>
         {% endfor %}
     </table>
@@ -72,6 +72,7 @@
                 }
                 */
                 document.getElementById("online-count").innerHTML = msg.nclientlen;
+                document.getElementById("temp").innerHTML = msg.tempdisplay;
                 if (msg.nclientlen == 0) {
                     for (var k = 0; k < {{ ccount }}; k++) {
                         document.getElementsByTagName("table")[0].rows[k+1].cells[0].style.backgroundColor = "#ffffff";
