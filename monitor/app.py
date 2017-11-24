@@ -11,7 +11,7 @@ from gevent import monkey
 monkey.patch_all()
 
 import redis
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
+from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, jsonify
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
@@ -56,6 +56,14 @@ def is_logged_in(f):
 def home():
     return render_template('home.html')
 
+@app.route('/getTemp', methods=['POST'])
+def getTemp():
+	global temp
+	temp_data = request.json
+	print('temp_data: %s' % temp_data)
+	temp = temp_data['pi_temp']
+	return temp
+
 @app.route('/clientstatus', defaults={'page':1})
 @app.route('/clientstatus/<int:page>')
 #@app.route('/monitor')
@@ -74,8 +82,8 @@ def clientstatus(page):
     # Get client from table terminals in DB
     global getclients
     def getclients():
-        global display
-        display = "."
+        global display, temp
+        display = temp
         # Create cursor
         cur = mysql.connection.cursor()
         # Get client

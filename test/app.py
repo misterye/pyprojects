@@ -3,7 +3,7 @@ import sys;
 reload(sys);
 exec("sys.setdefaultencoding('utf-8')");
 assert sys.getdefaultencoding().lower() == "utf-8";
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
+from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, jsonify
 #from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 import hashlib
@@ -57,21 +57,14 @@ def search_results():
 
 # Get Pi Temperature
 #@app.route('/gettemp', methods=['GET', 'POST'])
-@app.route('/gettemp', methods=['POST'])
-def gettemp():
-#	if request.method == 'POST':
-#		temp = request.form.get('temp')
-#		return '''<h1>The temp value is: {}'''.format(temp)
-
-    temp = request.json
+@app.route('/pi', methods=['POST'])
+def pi():
+    pi_data = request.json
+    temp = pi_data['temp']
     print temp
+    print jsonify(pi_data)
+    return jsonify(pi_data)
 
-    return '''<h1>The temperature is: {}</h1>'''.format(temp)
-
-#	return '''<form method="POST">
-#	Temperature: <input type="text" name="temp"><br>
-#    <input type="submit" value="Submit"><br>
-#    </form><br>'''
 
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0dijfe41fj0iggr9wrj'

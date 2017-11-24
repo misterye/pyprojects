@@ -1,3 +1,4 @@
+import requests
 import os
 import MySQLdb
 
@@ -20,6 +21,15 @@ try:
 except:
     db.rollback()
     print "Writing temperature to database failed."
+
+# post temperature json to server
+data_from_pi = {'pi_temp':newtemp}
+print data_from_pi
+response = requests.post('http://139.224.114.83:8086/getTemp', json=data_from_pi)
+if response.ok:
+	print 'ok'
+else:
+	print 'Request post to server failed.'
 
 cur.close()
 db.close()
