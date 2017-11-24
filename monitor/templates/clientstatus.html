@@ -72,7 +72,7 @@
                 }
                 */
                 document.getElementById("online-count").innerHTML = msg.nclientlen;
-                document.getElementById("temp").innerHTML = msg.tempdisplay;
+                //document.getElementById("temp").innerHTML = msg.tempdisplay;
                 if (msg.nclientlen == 0) {
                     for (var k = 0; k < {{ ccount }}; k++) {
                         document.getElementsByTagName("table")[0].rows[k+1].cells[0].style.backgroundColor = "#ffffff";
@@ -96,6 +96,11 @@
 								if (msg.nclient[j] == x) {
 									document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "lightgreen";
 									flag = i;
+                                    if (x == msg.pname) {
+                                        document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = msg.tempdisplay;
+                                        } else {
+                                            document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = 'NULL';
+                                            }
 								} else if (msg.nclient[j] != x && flag != i){
 									document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#ffffff";
 									}

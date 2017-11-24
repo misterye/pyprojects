@@ -58,11 +58,16 @@ def home():
 
 @app.route('/getTemp', methods=['POST'])
 def getTemp():
-	global temp
-	temp_data = request.json
-	print('temp_data: %s' % temp_data)
-	temp = temp_data['pi_temp']
-	return temp
+    global pidata
+    temp_data = request.json
+    print('temp_data: %s' % temp_data)
+    temp = temp_data['pi_temp']
+    print('temp is: %s' % temp)
+    piname = temp_data['pi_name']
+    print('piname is: %s' % piname)
+    pidata = piname+temp
+    print('pidata is: %s' % pidata)
+    return pidata
 
 @app.route('/clientstatus', defaults={'page':1})
 @app.route('/clientstatus/<int:page>')
@@ -82,8 +87,9 @@ def clientstatus(page):
     # Get client from table terminals in DB
     global getclients
     def getclients():
-        global display, temp
-        display = temp
+        global display, pidata, pname
+        pname = pidata[:-4]
+        display = pidata[-4:]
         # Create cursor
         cur = mysql.connection.cursor()
         # Get client
@@ -210,7 +216,8 @@ def readvlog():
         socketio.emit('online', {
             'nclient': newclientList,
             'nclientlen': l,
-            'tempdisplay': display
+            'tempdisplay': display,
+            'pname': pname
         })
         sleep(10)
 
