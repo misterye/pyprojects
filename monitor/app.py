@@ -21,6 +21,7 @@ from openvpn_status import parse_status
 from time import sleep
 from math import ceil
 import os
+import requests
 
 from flask_mysqldb import MySQL
 
@@ -74,6 +75,20 @@ def getTemp():
 #@app.route('/monitor')
 @is_logged_in
 def clientstatus(page):
+    with open('/home/yebin/pyprojects/monitor/vlog.log') as log:
+        stat = parse_status(log.read())
+    clist = stat.client_list
+    print("clist is: %s" % clist)
+
+    nclist = []
+    for cli in clist:
+        nclist.append(cli)
+    print nclist
+
+    if len(nclist) == 0:
+        initRequest_data = {'pi_temp':'35.7', 'pi_name':'test'}
+        requests.post('http://139.224.114.83:8086/getTemp', json=initRequest_data)
+        
     cur = mysql.connection.cursor()
     result = cur.execute("SELECT * FROM terminals")
     data = cur.fetchall()

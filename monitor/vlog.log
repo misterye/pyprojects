@@ -1,12 +1,10 @@
 OpenVPN CLIENT LIST
-Updated,Sat Nov 25 01:29:59 2017
+Updated,Sun Nov 26 00:03:24 2017
 Common Name,Real Address,Bytes Received,Bytes Sent,Connected Since
-iphone,101.224.176.235:58771,1334000,4311087,Sat Nov 25 01:01:34 2017
-hbwwdmz,117.185.37.94:2473,13871404,177370012,Wed Nov 22 22:22:03 2017
+hbwwdmz,117.185.37.94:2473,14664420,178172450,Wed Nov 22 22:22:03 2017
 ROUTING TABLE
 Virtual Address,Common Name,Real Address,Last Ref
-10.8.0.8,iphone,101.224.176.235:58771,Sat Nov 25 01:28:19 2017
-10.8.0.5,hbwwdmz,117.185.37.94:2473,Sat Nov 25 01:28:51 2017
+10.8.0.5,hbwwdmz,117.185.37.94:2473,Sat Nov 25 23:51:24 2017
 GLOBAL STATS
 Max bcast/mcast queue length,1
 END

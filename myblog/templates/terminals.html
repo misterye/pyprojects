@@ -5,7 +5,7 @@
   <p><a class="btn btn-danger" href="/login">以管理员身份编辑小站</a></p>
   <ul class="list-group">
     {% for terminal in terminals %}
-      <li class="list-group-item"><a href="terminal/{{terminal.id}}">{{terminal.name}}</a></li>
+      <li class="list-group-item"><a href="{{url_for('terminal',id=terminal.id)}}">{{terminal.name}}</a></li>
     {% endfor %}
   </ul>
 
