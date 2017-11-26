@@ -252,11 +252,17 @@ def totalonline():
 
         newallclientList = []
         newofflineList = []
+        on = 'on'
+        off = 'off'
         for ac in allclients:
             if ac in newallclient:
                 newallclientList.append(ac)
+                cur.execute("INSERT INTO status (client, connect) VALUES (%s, %s)", (ac, on))
+                mysql.connection.commit()
             else:
                 newofflineList.append(ac)
+                cur.execute("INSERT INTO status (client, connect) VALUES (%s, %s)", (ac, off))
+                mysql.connection.commit()
         #print newallclientList
         newlength = len(newallclientList)
         socketio.emit('totalonline', {
