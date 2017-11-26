@@ -61,13 +61,17 @@ def home():
 def getTemp():
     global pidata
     temp_data = request.json
-    print('temp_data: %s' % temp_data)
+    #print('temp_data: %s' % temp_data)
     temp = temp_data['pi_temp']
-    print('temp is: %s' % temp)
+    #print('temp is: %s' % temp)
     piname = temp_data['pi_name']
-    print('piname is: %s' % piname)
+    #print('piname is: %s' % piname)
     pidata = piname+temp
-    print('pidata is: %s' % pidata)
+    #print('pidata is: %s' % pidata)
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO temperature (tempdata, client) VALUES (%s, %s)", (temp, piname))
+    mysql.connection.commit()
+    cur.close()
     return pidata
 
 @app.route('/clientstatus', defaults={'page':1})

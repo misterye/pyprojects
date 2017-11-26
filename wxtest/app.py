@@ -69,21 +69,53 @@ def replyMsg(data):
         for cn in client_name:
             client_list.append(cn['client'])
         if msg.content in client_list:
-            result = cur.execute("SELECT connect FROM status WHERE client = %s ORDER BY id DESC  LIMIT 1", [msg.content])
+            status_result = cur.execute("SELECT connect, create_time FROM status WHERE client = %s ORDER BY id DESC  LIMIT 1", [msg.content])
             current_status = cur.fetchone()
             msg_status = current_status['connect']
+            msg_status_time = current_status['create_time']
             if msg_status == 'on':
-                reply = TextReply(content='小站在线', message=msg)
-                xml = reply.render()
+                replystat = "小站状态：在线\n设备温度："
+                temp_from_server_db = cur.execute("SELECT client FROM temperature")
+                temp_client_server_db = cur.fetchall()
+                temp_client_server_db_list = []
+                for tl in temp_client_server_db:
+                    temp_client_server_db_list.append(tl['client'])
+                if msg.content in temp_client_server_db_list:
+                    temp_result = cur.execute("SELECT tempdata, create_time FROM temperature WHERE client = %s ORDER BY id DESC LIMIT 1", [msg.content])
+                    current_temp = cur.fetchone()
+                    msg_temp = current_temp['tempdata']
+                    msg_temp_time = current_temp['create_time']
+                    #reply = TextReply(content='小站在线', message=msg)
+                    replytemp = msg_temp
+                    replytimemsg = "\n获取时间："
+                    replytime = str(msg_temp_time)
+                    replycontent = replystat+replytemp+replytimemsg+replytime
+                    reply = TextReply(content=replycontent, message=msg)
+                    xml = reply.render()
+                else:
+                    replytemp = "无"
+                    replytimemsg = "\n获取时间："
+                    replytime = str(msg_status_time)
+                    replycontent = replystat+replytemp+replytimemsg+replytime
+                    reply = TextReply(content=replycontent, message=msg)
+                    xml = reply.render()
+
             elif msg_status == 'off':
-                reply = TextReply(content='小站断线', message=msg)
+                #reply = TextReply(content='小站断线', message=msg)
+                replystat = "小站状态：断线"
+                replytimemsg = "\n断线时间："
+                replytime = str(msg_status_time)
+                replycontent = replystat+replytimemsg+replytime
+                reply = TextReply(content=replycontent, message=msg)
                 xml = reply.render()
             return xml
+            cur.close()
         else:
             reply = TextReply(content='请输入用户终端名：', message=msg)
             xml = reply.render()
             return xml
-        cur.close()
+            cur.close()
+        #cur.close()
     else:
         reply = TextReply(message=msg)
         reply.content = 'Sorry, can not handle this for now.'
