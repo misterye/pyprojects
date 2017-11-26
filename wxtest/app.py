@@ -9,12 +9,22 @@ from wechatpy.crypto import WeChatCrypto
 from wechatpy.exceptions import InvalidSignatureException, InvalidAppIdException
 from wechatpy.replies import TextReply
 from wechatpy.events import SubscribeEvent
+from flask_mysqldb import MySQL
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
 app = Flask(__name__)
 #app.config.from_object('config')
+
+# Config MySQL
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = '840821'
+app.config['MYSQL_DB'] = 'myblog'
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+# init MYSQL
+mysql = MySQL(app)
 
 client = WeChatClient('wxbb4a6657207eb833', '0faa958c65817027da5d099f1256e5fd')
 client.menu.create({
@@ -52,9 +62,28 @@ def replyMsg(data):
         reply.content = 'Goodbye.'
         return reply.render()
     elif msg.type == 'text':
-        reply = TextReply(content='text reply', message=msg)
-        xml = reply.render()
-        return xml
+        cur = mysql.connection.cursor()
+        data = cur.execute("SELECT client FROM terminals")
+        client_name = cur.fetchall()
+        client_list = []
+        for cn in client_name:
+            client_list.append(cn['client'])
+        if msg.content in client_list:
+            result = cur.execute("SELECT connect FROM status WHERE client = %s ORDER BY id DESC  LIMIT 1", [msg.content])
+            current_status = cur.fetchone()
+            msg_status = current_status['connect']
+            if msg_status == 'on':
+                reply = TextReply(content='小站在线', message=msg)
+                xml = reply.render()
+            elif msg_status == 'off':
+                reply = TextReply(content='小站断线', message=msg)
+                xml = reply.render()
+            return xml
+        else:
+            reply = TextReply(content='请输入用户终端名：', message=msg)
+            xml = reply.render()
+            return xml
+        cur.close()
     else:
         reply = TextReply(message=msg)
         reply.content = 'Sorry, can not handle this for now.'
