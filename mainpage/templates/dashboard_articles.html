@@ -23,7 +23,7 @@
         <td align="center" valign="middle">{{article.owner}}</td>
         <td align="center" valign="middle">{{article.create_date}}</td>
         {% if session['username'] == 'admin' %}
-        <td><a href="edit_article/{{article.id}}" class="btn btn-default pull-right">编辑</a></td>
+        <td><a href="{{url_for('edit_article',id=article.id)}}" class="btn btn-default pull-right">编辑</a></td>
         <td>
           <form action="{{url_for('delete_article', id=article.id)}}" method="post">
             <input type="hidden" name="method" value="DELETE">
@@ -35,4 +35,29 @@
     {% endfor %}
   </table>
 {% endif %}
+  <center>
+  <p>
+    {% if page < 2 %}  
+    <div class="center hide">
+      <a href="{{url_for('dashboard_articles',page=page-1)}}" class="btn btn-default">上一页</a>
+    </div>
+    {% else %}
+    <div class="center">
+      <a href="{{url_for('dashboard_articles',page=page-1)}}" class="btn btn-default">上一页</a>
+    </div>
+    {% endif %}
+    <div class="center" style="visibility: hidden;">
+      <a href="#" class="btn btn-default"></a>
+    </div>
+    {% if page > pages-1 %}
+    <div class="center hide">
+      <a href="{{url_for('dashboard_articles',page=page+1)}}" class="btn btn-default">下一页</a>
+    </div>
+    {% else %}
+    <div class="center">
+      <a href="{{url_for('dashboard_articles',page=page+1)}}" class="btn btn-default">下一页</a>
+    </div>
+    {% endif %}
+  </p>
+  </center>
 {% endblock %}

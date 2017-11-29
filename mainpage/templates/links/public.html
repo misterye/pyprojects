@@ -8,11 +8,34 @@
         <h2>您好，卫星通信微信公众号用户!</h2>
         <ul class="list-group">
           {% for article in articles %}
-            {% if article.owner == 'public' %}
-            <h3><li class="list-group-item"><a href="article/{{article.id}}">{{article.title}}</a></li></h3>
-            {% endif %}
+            <h3><li class="list-group-item"><a href="{{url_for('article',id=article.id)}}">{{article.title}}</a></li></h3>
           {% endfor %}
         </ul>
       {% endif %}
   </div>
+    <center>
+    <p>
+      {% if page < 2 %}  
+      <div class="center hide">
+        <a href="{{url_for('public',page=page-1)}}" class="btn btn-default">上一页</a>
+      </div>
+      {% else %}
+      <div class="center">
+        <a href="{{url_for('public',page=page-1)}}" class="btn btn-default">上一页</a>
+      </div>
+      {% endif %}
+      <div class="center" style="visibility: hidden;">
+        <a href="#" class="btn btn-default"></a>
+      </div>
+      {% if page > pages-1 %}
+      <div class="center hide">
+        <a href="{{url_for('public',page=page+1)}}" class="btn btn-default">下一页</a>
+      </div>
+      {% else %}
+      <div class="center">
+        <a href="{{url_for('public',page=page+1)}}" class="btn btn-default">下一页</a>
+      </div>
+      {% endif %}
+    </p>
+    </center>
 {% endblock %}

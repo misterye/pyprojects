@@ -4,7 +4,7 @@
   {% if session['username'] == 'admin' %}
   <ul class="list-group">
     {% for result in results %}
-      <h3><a href="log/{{result.id}}">{{result.create_date}} | {{result.author}}</a></h3>
+      <h3><a href="{{url_for('log',id=result.id)}}">{{result.create_date}} | {{result.author}}</a></h3>
       <div class="well">
         <h3>{{result.body | safe}}</h3>
       </div>

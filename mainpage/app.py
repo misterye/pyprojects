@@ -12,7 +12,7 @@ from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
-
+from math import ceil
 import hashlib
 #import web
 #import lxml
@@ -23,6 +23,9 @@ import hashlib
 
 app = Flask(__name__)
 #app.debug = True
+
+global perpage
+perpage = 5
 
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
@@ -105,19 +108,14 @@ def register():
         username = form.username.data
         email = form.email.data
         password = sha256_crypt.encrypt(str(form.password.data))
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Execute query
         cur.execute("INSERT INTO users(name, username, email, password) VALUES(%s, %s, %s, %s)", (name, username, email, password))
-
         # Commit to DB
         mysql.connection.commit()
-
         # Close connection
         cur.close()
-
         #flash('You are now registered and can log in.', 'success')
         flash("注册成功，请登录。", 'success')
 
@@ -158,19 +156,26 @@ def wx():
             return my_echostr
 
 # public 
-@app.route('/public')
+@app.route('/public', defaults={'page':1})
+@app.route('/public/<int:page>')
 @is_logged_in
-def public():
+def public(page):
     cur = mysql.connection.cursor()
-    result = cur.execute("SELECT * FROM articles")
+    public_owner = 'public'
+    result = cur.execute("SELECT * FROM articles WHERE owner=%s ORDER BY id DESC", [public_owner])
+    data = cur.fetchall()
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM articles WHERE owner=%s ORDER BY id DESC limit %s, %s", ([public_owner], startat, perpage))
     articles = cur.fetchall()
     if result > 0:
-        return render_template('links/public.html', articles=articles)
+        return render_template('links/public.html', articles=articles, page=page, pages=pages)
     else:
         msg = 'No Articles Found'
-        return render_template('links/public.html', msg=msg)
+        return render_template('links/public.html', msg=msg, page=page, pages=pages)
     cur.close()
 
+'''
 # shanghaixiaofang 
 @app.route('/shfd')
 @is_logged_in
@@ -254,6 +259,7 @@ def fzem():
         msg = 'No Articles Found'
         return render_template('links/fzem.html', msg=msg)
     cur.close()
+'''
 
 # admin documents 
 @app.route('/admin')
@@ -276,13 +282,10 @@ def login():
         # Get Form Fields
         username = request.form['username']
         password_candidate = request.form['password']
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Get user by username
         result = cur.execute("SELECT * FROM users WHERE username = %s", [username])
-
         if result > 0:
             # Get stored hash
             data = cur.fetchone()
@@ -295,7 +298,13 @@ def login():
                 session['logged_in'] = True
                 session['username'] = username
                 session['name'] = name
+                if session['username'] == 'wxtx':
+                    return redirect(url_for('index'))
+                else:
+                    return redirect(url_for('user_articles'))
+                flash("登录成功。", 'success')
 
+                '''
             #    flash("登录成功。", 'success')
                 if session['username'] == 'shfd':
                     return redirect(url_for('shfd'))
@@ -313,6 +322,7 @@ def login():
                     return redirect(url_for('admin'))
                 else:
                     return redirect(url_for('index'))
+                '''
             else:
                 error = "登录失败。"
                 return render_template('login.html', error=error)
@@ -321,7 +331,6 @@ def login():
         else:
             error = "用户名不存在。"
             return render_template('login.html', error=error)
-
     return render_template('login.html')
 
 
@@ -335,26 +344,28 @@ def logout():
     return redirect(url_for('login'))
 	
 # Dashboard_Users
-@app.route('/dashboard_users')
+@app.route('/dashboard_users', defaults={'page':1})
+@app.route('/dashboard_users/<int:page>')
 #@is_logged_in
 @is_admin
-def dashboard_users():
+def dashboard_users(page):
     # Create cursor
     cur = mysql.connection.cursor()
 
     # Get users
     result = cur.execute("SELECT * FROM users ORDER BY id ASC")
-
-    #articles = cur.fetchall()
+    data = cur.fetchall()
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM users ORDER BY id ASC limit %s, %s", (startat, perpage))
     users = cur.fetchall()
-
     if result > 0:
     #    return render_template('dashboard.html', articles=articles)
-        return render_template('dashboard_users.html', users=users)
+        return render_template('dashboard_users.html', users=users, page=page, pages=pages)
     else:
     #    msg = 'No Articles Found'
         msg = 'No User Found'
-        return render_template('dashboard_users.html', msg=msg)
+        return render_template('dashboard_users.html', msg=msg, page=page, pages=pages)
     # Close connection
     cur.close()
 	
@@ -398,36 +409,59 @@ def edit_user(id):
 def delete_user(id):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Execute
     cur.execute("DELETE FROM users WHERE id = %s", [id])
-
     # Commit to DB
     mysql.connection.commit()
-
     # Close connection
     cur.close()
-
     flash("用户删除成功。", 'success')
-
     return redirect(url_for('dashboard_users'))
 
 # Articles
-@app.route('/articles')
-def articles():
+@app.route('/articles', defaults={'page':1})
+@app.route('/articles/<int:page>')
+@is_admin
+def articles(page):
     # Create cursor
     cur = mysql.connection.cursor()
 
     # Get articles
     result = cur.execute("SELECT * FROM articles")
 
+    data = cur.fetchall()
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM articles ORDER BY id DESC limit %s, %s", (startat, perpage))
     articles = cur.fetchall()
-
     if result > 0:
-        return render_template('articles.html', articles=articles)
+        return render_template('articles.html', articles=articles, page=page, pages=pages)
     else:
         msg = 'No Articles Found'
-        return render_template('articles.html', msg=msg)
+        return render_template('articles.html', msg=msg, page=page, pages=pages)
+    # Close connection
+    cur.close()
+
+# User Articles
+@app.route('/user_articles', defaults={'page':1})
+@app.route('/user_articles/<int:page>')
+#@is_admin
+def user_articles(page):
+    # Create cursor
+    cur = mysql.connection.cursor()
+
+    # Get articles
+    result = cur.execute("SELECT * FROM articles WHERE owner=%s ORDER BY id DESC", [session['username']])
+    data = cur.fetchall()
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM articles WHERE owner=%s ORDER BY id DESC limit %s, %s", ([session['username']], startat, perpage))
+    articles = cur.fetchall()
+    if result > 0:
+        return render_template('user_articles.html', articles=articles, page=page, pages=pages)
+    else:
+        msg = 'No Articles Found'
+        return render_template('user_articles.html', msg=msg, page=page, pages=pages)
     # Close connection
     cur.close()
 
@@ -444,23 +478,26 @@ def article(id):
     return render_template('article.html', article=article)
 
 # Dashboard_Articles
-@app.route('/dashboard_articles')
+@app.route('/dashboard_articles',defaults={'page':1})
+@app.route('/dashboard_articles/<int:page>')
 #@is_logged_in
 @is_admin
-def dashboard_articles():
+def dashboard_articles(page):
     # Create cursor
     cur = mysql.connection.cursor()
 
     # Get articles
     result = cur.execute("SELECT * FROM articles")
-
+    data = cur.fetchall()
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM articles ORDER BY id DESC limit %s, %s", (startat, perpage))
     articles = cur.fetchall()
-
     if result > 0:
-        return render_template('dashboard_articles.html', articles=articles)
+        return render_template('dashboard_articles.html', articles=articles, page=page, pages=pages)
     else:
         msg = 'No Articles Found'
-        return render_template('dashboard_articles.html', msg=msg)
+        return render_template('dashboard_articles.html', msg=msg, page=page, pages=pages)
     # Close connection
     cur.close()
 
@@ -482,23 +519,16 @@ def add_article():
         author = user_name(session['username'])
         body = form.body.data
         owner = form.owner.data
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Execute
         cur.execute("INSERT INTO articles(title, author, body, owner) VALUES(%s, %s, %s, %s)",(title, author, body, owner))
-
         # Commit to DB
         mysql.connection.commit()
-
         # Close connection
         cur.close()
-
         flash("新建文档完成。", 'success')
-
         return redirect(url_for('dashboard_articles'))
-
     return render_template('add_article.html', form=form)
 
 # Edit Article
@@ -508,41 +538,29 @@ def add_article():
 def edit_article(id):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Get article by id
     result = cur.execute("SELECT * FROM articles WHERE id = %s", [id])
-
     article = cur.fetchone()
-
     # Get form
     form = ArticleForm(request.form)
-
     # Populate article form fields
     form.title.data = article['title']
     form.owner.data = article['owner']
     form.body.data = article['body']
-
     if request.method == 'POST' and form.validate():
         title = request.form['title']
         owner = request.form['owner']
         body = request.form['body']
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Execute
         cur.execute("UPDATE articles SET title=%s, owner=%s, body=%s WHERE id = %s", (title, owner, body, id))
-
         # Commit to DB
         mysql.connection.commit()
-
         # Close connection
         cur.close()
-
         flash("文档更新完成。", 'success')
-
         return redirect(url_for('dashboard_articles'))
-
     return render_template('edit_article.html', form=form)
 
 # Delete Article
@@ -552,18 +570,13 @@ def edit_article(id):
 def delete_article(id):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Execute
     cur.execute("DELETE FROM articles WHERE id = %s", [id])
-
     # Commit to DB
     mysql.connection.commit()
-
     # Close connection
     cur.close()
-
     flash("文档删除完成。", 'success')
-
     return redirect(url_for('dashboard_articles'))
 
 if __name__ == '__main__':
