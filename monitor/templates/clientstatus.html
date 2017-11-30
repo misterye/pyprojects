@@ -99,9 +99,10 @@
                                     flag = i;
                                     if (x == msg.pname) {
                                         document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = msg.tempdisplay;
-                                        } else {
-                                            document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = 'NULL';
-                                            }
+                                        } 
+                                        //else {
+                                            //document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = 'NULL';
+                                          //  }
                                 } else if (msg.nclient[j] != x && flag != i){
                                     document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#ffffff";
                                     document.getElementsByTagName("table")[0].rows[i+1].cells[4].innerHTML = '';
