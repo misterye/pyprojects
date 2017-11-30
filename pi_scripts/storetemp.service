@@ -1,0 +1,13 @@
+[Unit]
+Description=store temperature service
+After=network.target
+
+[Service]
+User=pi
+Group=root
+ExecStart=/usr/bin/python /home/pi/Scripts/store_temp.py > /dev/null 2>&1 &
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
