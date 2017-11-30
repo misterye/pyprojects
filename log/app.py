@@ -13,6 +13,7 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 from math import ceil
 import hashlib
+import cgi
 
 app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig')
@@ -432,6 +433,7 @@ def search_log(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM logs WHERE author=%s AND body LIKE (%s) ORDER BY id DESC", ([session['username']], [keyword]))
     results = cur.fetchall()
@@ -459,6 +461,7 @@ def search_all_logs(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM logs WHERE body LIKE (%s) ORDER BY id DESC", [keyword])
     results = cur.fetchall()

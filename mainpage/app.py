@@ -14,6 +14,7 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 from math import ceil
 import hashlib
+import cgi
 #import web
 #import lxml
 #import time
@@ -605,6 +606,7 @@ def search_article_title(page):
         if request.method == 'POST' and form.validate():
             keyword = form.keyword.data
             keyword = '%' + keyword + '%'
+            keyword = cgi.escape(keyword)
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM articles WHERE title LIKE (%s) ORDER BY id DESC", [keyword])
         results = cur.fetchall()
@@ -627,6 +629,7 @@ def search_article_title(page):
         if request.method == 'POST' and form.validate():
             keyword = form.keyword.data
             keyword = '%' + keyword + '%'
+            keyword = cgi.escape(keyword)
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM articles WHERE owner=%s AND title LIKE (%s) ORDER BY id DESC", ([session['username']], [keyword]))
         results = cur.fetchall()
@@ -656,6 +659,7 @@ def search_article_body(page):
         if request.method == 'POST' and form.validate():
             keyword = form.keyword.data
             keyword = '%' + keyword + '%'
+            keyword = cgi.escape(keyword)
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM articles WHERE body LIKE (%s) ORDER BY id DESC", [keyword])
         results = cur.fetchall()
@@ -678,6 +682,7 @@ def search_article_body(page):
         if request.method == 'POST' and form.validate():
             keyword = form.keyword.data
             keyword = '%' + keyword + '%'
+            keyword = cgi.escape(keyword)
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM articles WHERE owner=%s AND body LIKE (%s) ORDER BY id DESC", ([session['username']], [keyword]))
         results = cur.fetchall()

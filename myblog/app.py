@@ -14,6 +14,9 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 from math import ceil
 
+# escape from sql attack
+import cgi
+
 global perpage
 perpage = 3
 
@@ -716,6 +719,8 @@ def search_terminal_name(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM terminals WHERE name LIKE (%s) ORDER BY id ASC", [keyword])
     results = cur.fetchall()
@@ -743,6 +748,8 @@ def search_terminal_client(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM terminals WHERE client LIKE (%s) ORDER BY id ASC", [keyword])
     results = cur.fetchall()
@@ -770,6 +777,8 @@ def search_terminal_address(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM terminals WHERE address LIKE (%s) ORDER BY id ASC", [keyword])
     results = cur.fetchall()
@@ -797,6 +806,8 @@ def search_terminal_modem(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM terminals WHERE modem LIKE (%s) ORDER BY id ASC", [keyword])
     results = cur.fetchall()
@@ -824,6 +835,8 @@ def search_terminal_satellite(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM terminals WHERE satellite LIKE (%s) ORDER BY id ASC", [keyword])
     results = cur.fetchall()
@@ -851,6 +864,8 @@ def search_terminal_ip(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM terminals WHERE ip LIKE (%s) ORDER BY id ASC", [keyword])
     results = cur.fetchall()
@@ -878,6 +893,8 @@ def search_terminal_found_date(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM terminals WHERE found_date LIKE (%s) ORDER BY id ASC", [keyword])
     results = cur.fetchall()
@@ -905,6 +922,8 @@ def search_terminal_remarks(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM terminals WHERE remarks LIKE (%s) ORDER BY id ASC", [keyword])
     results = cur.fetchall()
@@ -932,6 +951,8 @@ def search_article_author(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM articles WHERE author LIKE (%s) ORDER BY id DESC", [keyword])
     results = cur.fetchall()
@@ -959,6 +980,8 @@ def search_article_title(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM articles WHERE title LIKE (%s) ORDER BY id DESC", [keyword])
     results = cur.fetchall()
@@ -986,6 +1009,8 @@ def search_article_body(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM articles WHERE body LIKE (%s) ORDER BY id DESC", [keyword])
     results = cur.fetchall()
@@ -1013,6 +1038,8 @@ def search_article_create_date(page):
     if request.method == 'POST' and form.validate():
         keyword = form.keyword.data
         keyword = '%' + keyword + '%'
+        # escape from sql attack
+        keyword = cgi.escape(keyword)
     cur = mysql.connection.cursor()
     result_data = cur.execute("SELECT * FROM articles WHERE create_date LIKE (%s) ORDER BY id DESC", [keyword])
     results = cur.fetchall()
@@ -1030,6 +1057,7 @@ def search_article_create_date(page):
     cur.close()
     return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 ###########################################
+
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0f841fj0iggr9wrj'
     app.run('0.0.0.0', 8019)
