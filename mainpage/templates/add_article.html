@@ -16,5 +16,7 @@
     </div>
     <p><input class="btn btn-primary" type="submit" value="提交"></p>
   </form>
+  {% else %}
+    <h2><a href="/login" class="btn btn-success btn-lg">管理员登录</a></h2>
   {% endif %}
 {% endblock %}

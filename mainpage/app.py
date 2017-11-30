@@ -98,6 +98,10 @@ class ArticleForm(Form):
     owner = StringField("所属者", [validators.Length(min=1, max=100)])
     body = TextAreaField("内容", [validators.Length(min=1)])
 
+# Search Form Class
+class SearchForm(Form):
+    keyword = StringField("文档搜索", [validators.Length(min=1, max=50)])
+
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
 @is_admin
@@ -578,6 +582,117 @@ def delete_article(id):
     cur.close()
     flash("文档删除完成。", 'success')
     return redirect(url_for('dashboard_articles'))
+
+###########################################################
+# Search
+# Search Form of Keyword
+@app.route('/search_keyword')
+@is_logged_in
+def search_keyword():
+    form = SearchForm(request.form)
+    return render_template('search_form.html', form=form)
+
+# Search Log By Title
+@app.route('/search_article_title', defaults={'page':1}, methods=['GET','POST'])
+@app.route('/search_article_title/<int:page>', methods=['GET','POST'])
+@is_logged_in
+def search_article_title(page):
+    global keyword
+    if session['username'] == 'admin':
+        urlstr = 'search_article_title'
+        #global keyword
+        form = SearchForm(request.form)
+        if request.method == 'POST' and form.validate():
+            keyword = form.keyword.data
+            keyword = '%' + keyword + '%'
+        cur = mysql.connection.cursor()
+        result_data = cur.execute("SELECT * FROM articles WHERE title LIKE (%s) ORDER BY id DESC", [keyword])
+        results = cur.fetchall()
+        pages = int(ceil(len(results) / float(perpage)))
+        startat = (page-1)*perpage
+        if result_data > 0:
+            cur = mysql.connection.cursor()
+            result_data = cur.execute("SELECT * FROM articles WHERE title LIKE (%s) ORDER BY id DESC limit %s, %s", ([keyword], startat, perpage))
+            results = cur.fetchall()
+            return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        else:
+            msg = 'No Logs Found'
+            return render_template('search_result.html', msg=msg, results=results, page=page, pages=pages, urlstr=urlstr)
+        cur.close()
+        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    else:	
+        urlstr = 'search_article_title'
+        #global keyword
+        form = SearchForm(request.form)
+        if request.method == 'POST' and form.validate():
+            keyword = form.keyword.data
+            keyword = '%' + keyword + '%'
+        cur = mysql.connection.cursor()
+        result_data = cur.execute("SELECT * FROM articles WHERE owner=%s AND title LIKE (%s) ORDER BY id DESC", ([session['username']], [keyword]))
+        results = cur.fetchall()
+        pages = int(ceil(len(results) / float(perpage)))
+        startat = (page-1)*perpage
+        if result_data > 0:
+            cur = mysql.connection.cursor()
+            result_data = cur.execute("SELECT * FROM articles WHERE owner=%s AND title LIKE (%s) ORDER BY id DESC limit %s, %s", ([session['username']], [keyword], startat, perpage))
+            results = cur.fetchall()
+            return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        else:
+            msg = 'No Logs Found'
+            return render_template('search_result.html', msg=msg, results=results, page=page, pages=pages, urlstr=urlstr)
+        cur.close()
+        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+
+# Search Log By Body(Content)
+@app.route('/search_article_body', defaults={'page':1}, methods=['GET','POST'])
+@app.route('/search_article_body/<int:page>', methods=['GET','POST'])
+@is_logged_in
+def search_article_body(page):
+    global keyword
+    if session['username'] == 'admin':
+        urlstr = 'search_article_body'
+        #global keyword
+        form = SearchForm(request.form)
+        if request.method == 'POST' and form.validate():
+            keyword = form.keyword.data
+            keyword = '%' + keyword + '%'
+        cur = mysql.connection.cursor()
+        result_data = cur.execute("SELECT * FROM articles WHERE body LIKE (%s) ORDER BY id DESC", [keyword])
+        results = cur.fetchall()
+        pages = int(ceil(len(results) / float(perpage)))
+        startat = (page-1)*perpage
+        if result_data > 0:
+            cur = mysql.connection.cursor()
+            result_data = cur.execute("SELECT * FROM articles WHERE body LIKE (%s) ORDER BY id DESC limit %s, %s", ([keyword], startat, perpage))
+            results = cur.fetchall()
+            return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        else:
+            msg = 'No Logs Found'
+            return render_template('search_result.html', msg=msg, results=results, page=page, pages=pages, urlstr=urlstr)
+        cur.close()
+        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    else:	
+        urlstr = 'search_article_body'
+        #global keyword
+        form = SearchForm(request.form)
+        if request.method == 'POST' and form.validate():
+            keyword = form.keyword.data
+            keyword = '%' + keyword + '%'
+        cur = mysql.connection.cursor()
+        result_data = cur.execute("SELECT * FROM articles WHERE owner=%s AND body LIKE (%s) ORDER BY id DESC", ([session['username']], [keyword]))
+        results = cur.fetchall()
+        pages = int(ceil(len(results) / float(perpage)))
+        startat = (page-1)*perpage
+        if result_data > 0:
+            cur = mysql.connection.cursor()
+            result_data = cur.execute("SELECT * FROM articles WHERE owner=%s AND body LIKE (%s) ORDER BY id DESC limit %s, %s", ([session['username']], [keyword], startat, perpage))
+            results = cur.fetchall()
+            return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        else:
+            msg = 'No Logs Found'
+            return render_template('search_result.html', msg=msg, results=results, page=page, pages=pages, urlstr=urlstr)
+        cur.close()
+        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0f841fj0iggr9wrj'
