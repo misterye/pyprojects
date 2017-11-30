@@ -731,12 +731,12 @@ def search_terminal_name(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM terminals WHERE name LIKE (%s) ORDER BY id ASC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Terminal By Client
 @app.route('/search_terminal_client', defaults={'page':1}, methods=['GET','POST'])
@@ -760,12 +760,12 @@ def search_terminal_client(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM terminals WHERE client LIKE (%s) ORDER BY id ASC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Terminal By Address
 @app.route('/search_terminal_address', defaults={'page':1}, methods=['GET','POST'])
@@ -789,12 +789,12 @@ def search_terminal_address(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM terminals WHERE address LIKE (%s) ORDER BY id ASC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Terminal By Modem
 @app.route('/search_terminal_modem', defaults={'page':1}, methods=['GET','POST'])
@@ -818,12 +818,12 @@ def search_terminal_modem(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM terminals WHERE modem LIKE (%s) ORDER BY id ASC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Terminal By Satellite
 @app.route('/search_terminal_satellite', defaults={'page':1}, methods=['GET','POST'])
@@ -847,12 +847,12 @@ def search_terminal_satellite(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM terminals WHERE satellite LIKE (%s) ORDER BY id ASC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Terminal By IP
 @app.route('/search_terminal_ip', defaults={'page':1}, methods=['GET','POST'])
@@ -876,12 +876,12 @@ def search_terminal_ip(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM terminals WHERE ip LIKE (%s) ORDER BY id ASC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Terminal By Found_Date
 @app.route('/search_terminal_found_date', defaults={'page':1}, methods=['GET','POST'])
@@ -905,12 +905,12 @@ def search_terminal_found_date(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM terminals WHERE found_date LIKE (%s) ORDER BY id ASC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Terminal By Remarks
 @app.route('/search_terminal_remarks', defaults={'page':1}, methods=['GET','POST'])
@@ -934,12 +934,12 @@ def search_terminal_remarks(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM terminals WHERE remarks LIKE (%s) ORDER BY id ASC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_terminal_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_terminal_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Article By Author
 @app.route('/search_article_author', defaults={'page':1}, methods=['GET','POST'])
@@ -963,12 +963,12 @@ def search_article_author(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM articles WHERE author LIKE (%s) ORDER BY id DESC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_article_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_article_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_article_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Article By Title
 @app.route('/search_article_title', defaults={'page':1}, methods=['GET','POST'])
@@ -992,12 +992,12 @@ def search_article_title(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM articles WHERE title LIKE (%s) ORDER BY id DESC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_article_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_article_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_article_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Article By Body
 @app.route('/search_article_body', defaults={'page':1}, methods=['GET','POST'])
@@ -1021,12 +1021,12 @@ def search_article_body(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM articles WHERE body LIKE (%s) ORDER BY id DESC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_article_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_article_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_article_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 # Search Article By Create Date
 @app.route('/search_article_create_date', defaults={'page':1}, methods=['GET','POST'])
@@ -1050,12 +1050,12 @@ def search_article_create_date(page):
         cur = mysql.connection.cursor()
         result_data = cur.execute("SELECT * FROM articles WHERE create_date LIKE (%s) ORDER BY id DESC limit %s, %s", ([keyword], startat, perpage))
         results = cur.fetchall()
-        return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_article_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
     else:
         msg = 'No Terminal Found'
-        return render_template('search_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
+        return render_template('search_article_result.html', msg=msg, page=page, pages=pages, urlstr=urlstr)
     cur.close()
-    return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
+    return render_template('search_article_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 ###########################################
 
 if __name__ == '__main__':
