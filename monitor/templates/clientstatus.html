@@ -97,16 +97,19 @@
                                     document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "lightgreen";
                                     document.getElementsByTagName("table")[0].rows[i+1].cells[4].innerHTML = '<a href="http://rssh.satelc.com" target="_blank">登录</a>';
                                     flag = i;
-                                    if (x == msg.pname) {
+                                    if (msg.nclient[j] == msg.pname) {
                                         document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = msg.tempdisplay;
                                         } 
-                                        //else {
-                                            //document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = 'NULL';
-                                          //  }
+                                        /*
+                                        else {
+                                            //document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = '';
+                                            document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = '';
+                                            }
+                                            */
                                 } else if (msg.nclient[j] != x && flag != i){
                                     document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#ffffff";
                                     document.getElementsByTagName("table")[0].rows[i+1].cells[4].innerHTML = '';
-                                    document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = '';
+                                    //document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = '';
                                     }
                             }
 						}
