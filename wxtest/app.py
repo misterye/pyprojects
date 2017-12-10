@@ -103,7 +103,7 @@ def replyMsg(data):
             elif msg_status == 'off':
                 #reply = TextReply(content='小站断线', message=msg)
                 replystat = "小站状态：断线"
-                replytimemsg = "\n断线时间："
+                replytimemsg = "\n获取时间："
                 replytime = str(msg_status_time)
                 replycontent = replystat+replytimemsg+replytime
                 reply = TextReply(content=replycontent, message=msg)
