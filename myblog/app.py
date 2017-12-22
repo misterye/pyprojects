@@ -18,7 +18,7 @@ from math import ceil
 import cgi
 
 global perpage
-perpage = 3
+perpage = 10
 
 '''
 import sys
