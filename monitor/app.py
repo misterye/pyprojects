@@ -98,7 +98,7 @@ def clientstatus(page):
     data = cur.fetchall()
     global total_num
     total_num = len(data)
-    perpage = 10
+    perpage = 20
     global pages
     pages = int(ceil(len(data) / float(perpage)))
     startat = (page-1)*perpage  
