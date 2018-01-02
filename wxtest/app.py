@@ -1,5 +1,5 @@
 #coding:utf-8
-from flask import Flask, g, request, make_response, url_for, redirect, render_template
+from flask import Flask, g, request, make_response, url_for, redirect, render_template, jsonify
 import time, hashlib, re, urllib2
 #import xml.etree.ElementTree as ET
 import sys
@@ -10,6 +10,9 @@ from wechatpy.exceptions import InvalidSignatureException, InvalidAppIdException
 from wechatpy.replies import TextReply
 from wechatpy.events import SubscribeEvent
 from flask_mysqldb import MySQL
+import json
+from collections import OrderedDict
+#import ast
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -121,6 +124,13 @@ def replyMsg(data):
         reply.content = 'Sorry, can not handle this for now.'
         return reply.render()
 
+def ordered_dict_to_xml(dict_data):
+    xml_str = '<xml>'
+    for key, value in dict_data.items():
+        xml_str += '<%s><![CDATA[%s]]></%s>' % (key, value, key)
+    xml_str += '</xml>'
+    return xml_str
+
 @app.route("/")
 @app.route("/homepage")
 def homepage():
@@ -152,7 +162,32 @@ def wx():
         else:
         	return '认证失败'
     elif request.method == 'POST':
+        print("The request data is: %s" % request.data)
     	return replyMsg(request.data)
+
+@app.route('/getStatus', methods=['POST'])
+def getStatus():
+    olddict = request.json
+    print olddict
+    print type(olddict)
+
+    dictdata = OrderedDict()
+    dictdata["ToUserName"] = olddict["ToUserName"]
+    dictdata["FromUserName"] = olddict["FromUserName"]
+    dictdata["CreateTime"] = olddict["CreateTime"]
+    dictdata["MsgType"] = olddict["MsgType"]
+    dictdata["Content"] = olddict["Content"]
+    dictdata["MsgId"] = olddict["MsgId"]
+
+    print dictdata
+    print type(dictdata)
+
+    xml_data = ordered_dict_to_xml(dictdata)
+    print xml_data
+    print type(xml_data)
+
+    #return xml_data
+    return replyMsg(xml_data)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',debug=True)

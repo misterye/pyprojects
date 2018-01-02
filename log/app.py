@@ -6,7 +6,7 @@ reload(sys);
 # using exec to set the excoding, to avoid error in IDE
 exec("sys.setdefaultencoding('utf-8')");
 assert sys.getdefaultencoding().lower() == "utf-8";
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
+from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, jsonify
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
@@ -14,6 +14,9 @@ from functools import wraps
 from math import ceil
 import hashlib
 import cgi
+import json
+from collections import OrderedDict
+#import ast
 
 app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig')
@@ -478,6 +481,40 @@ def search_all_logs(page):
     cur.close()
     return render_template('search_all_result.html', results=results, page=page, pages=pages)
 
+# The following is a test of json post request.
+'''
+def ordered_dict_to_xml(dict_data):
+    xml_str = '<xml>'
+    for key, value in dict_data.items():
+        xml_str += '<%s><![CDATA[%s]]></%s>' % (key, value, key)
+    xml_str += '</xml>'
+    return xml_str
+
+@app.route('/getStatus', methods=['POST'])
+def getStatus():
+    olddict = request.json
+    print olddict
+    print type(olddict)
+
+    dictdata = OrderedDict()
+    dictdata["ToUserName"] = olddict["ToUserName"]
+    dictdata["FromUserName"] = olddict["FromUserName"]
+    dictdata["CreateTime"] = olddict["CreateTime"]
+    dictdata["MsgType"] = olddict["MsgType"]
+    dictdata["Content"] = olddict["Content"]
+    dictdata["MsgId"] = olddict["MsgId"]
+
+    print dictdata
+    print type(dictdata)
+
+    #for key, value in dictdata.items():
+    #    print key, value
+    xml_data = ordered_dict_to_xml(dictdata)
+    print xml_data
+    print type(xml_data)
+    return xml_data
+    #return "ok"
+'''
 
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0dijfe41fj0iggr9wrj'
