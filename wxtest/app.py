@@ -30,6 +30,7 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
 client = WeChatClient('wxbb4a6657207eb833', '0faa958c65817027da5d099f1256e5fd')
+'''
 client.menu.create({
     "button":[
         {
@@ -53,7 +54,7 @@ client.menu.create({
 
 menu = client.menu.get()
 print menu
-
+'''
 def replyMsg(data):
     msg = parse_message(data)
     if msg.type == 'event' and msg.event == 'subscribe':
@@ -124,12 +125,14 @@ def replyMsg(data):
         reply.content = 'Sorry, can not handle this for now.'
         return reply.render()
 
+'''
 def ordered_dict_to_xml(dict_data):
     xml_str = '<xml>'
     for key, value in dict_data.items():
         xml_str += '<%s><![CDATA[%s]]></%s>' % (key, value, key)
     xml_str += '</xml>'
     return xml_str
+'''
 
 @app.route("/")
 @app.route("/homepage")
@@ -165,6 +168,7 @@ def wx():
         print("The request data is: %s" % request.data)
     	return replyMsg(request.data)
 
+'''
 @app.route('/getStatus', methods=['POST'])
 def getStatus():
     olddict = request.json
@@ -188,6 +192,7 @@ def getStatus():
 
     #return xml_data
     return replyMsg(xml_data)
+'''
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',debug=True)
