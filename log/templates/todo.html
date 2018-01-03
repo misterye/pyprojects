@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  {% if session['logged_in'] == True %}
+    {% from "includes/_formhelpers.html" import render_field %}
+    <div> 
+        <form action="{{ url_for('add') }}" method="POST">
+            <div class="form-group">
+                {{render_field(form.content, class_="form-control")}}
+            </div>
+            <p><input type="submit" class="btn btn-primary" value="添加"></p>
+        </form>
+    </div>
+    <p><h1>待办列表</h1></p>
+    <p><h3><a href="{{ url_for('done') }}">查看已完成事项</a></li></h3></p>
+    <div>
+        <ul>
+            {% for todo in incomplete %}
+            <li style="font-size: 20pt">{{ todo.content }} | <a href="{{ url_for('complete', id=todo.id) }}">完成</a></li>
+            {% endfor %}    
+        </ul>
+    </div>
+  {% endif %}
+  <center>
+  <p>
+    {% if page < 2 %}  
+    <div class="center hide">
+      <a href="{{url_for('todo',page=page-1)}}" class="btn btn-default">上一页</a>
+    </div>
+    {% else %}
+    <div class="center">
+      <a href="{{url_for('todo',page=page-1)}}" class="btn btn-default">上一页</a>
+    </div>
+    {% endif %}
+    <div class="center" style="visibility: hidden;">
+      <a href="#" class="btn btn-default"></a>
+    </div>
+    {% if page > pages-1 %}
+    <div class="center hide">
+      <a href="{{url_for('todo',page=page+1)}}" class="btn btn-default">下一页</a>
+    </div>
+    {% else %}
+    <div class="center">
+      <a href="{{url_for('todo',page=page+1)}}" class="btn btn-default">下一页</a>
+    </div>
+    {% endif %}
+  </p>
+  </center>
+{% endblock %}

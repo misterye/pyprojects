@@ -21,7 +21,7 @@ from collections import OrderedDict
 app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig')
 global perpage
-perpage = 5
+perpage = 10
 
 #app.debug = True
 '''
@@ -86,6 +86,9 @@ class LogForm(Form):
 # Search Form Class
 class SearchForm(Form):
     keyword = StringField("日志查询", [validators.Length(min=1, max=50)])
+
+class AddForm(Form):
+    content = StringField('待办事项', [validators.Length(min=1, max=255)])
 
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
@@ -515,6 +518,77 @@ def getStatus():
     return xml_data
     #return "ok"
 '''
+
+@app.route('/todo', defaults={'page':1})
+@app.route('/todo/<int:page>')
+@is_logged_in
+def todo(page):
+    form = AddForm(request.form)
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM todo WHERE user=%s AND complete IS FALSE ORDER BY id DESC", [session['username']])
+    data = cur.fetchall()
+    perpage = 20
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM todo WHERE user=%s AND complete IS FALSE ORDER BY id DESC limit %s, %s", ([session['username']], startat, perpage))
+    incomplete = cur.fetchall()
+    if result > 0:
+        return render_template('todo.html', incomplete=incomplete, form=form, page=page, pages=pages)
+    else:
+        msg = "无未完成待办事项。"
+        return render_template('todo.html', incomplete=incomplete, form=form, page=page, pages=pages)
+    cur.close()
+
+@app.route('/done', defaults={'page':1})
+@app.route('/done/<int:page>')
+@is_logged_in
+def done(page):
+    form = AddForm(request.form)
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM todo WHERE user=%s AND complete IS TRUE ORDER BY id DESC", [session['username']])
+    data = cur.fetchall()
+    perpage = 20
+    pages = int(ceil(len(data) / float(perpage)))
+    startat = (page-1)*perpage
+    result = cur.execute("SELECT * FROM todo WHERE user=%s AND complete IS TRUE ORDER BY id DESC limit %s, %s", ([session['username']], startat, perpage))
+    complete = cur.fetchall()
+    if result > 0:
+        return render_template('done.html', complete=complete, form=form, page=page, pages=pages)
+    else:
+        msg = "无已完成待办事项。"
+        return render_template('done.html', complete=complete, form=form, page=page, pages=pages)
+    cur.close()
+
+
+@app.route('/add', methods=['POST'])
+@is_logged_in
+def add():
+    form = AddForm(request.form)
+    if request.method == 'POST' and form.validate():
+        content = form.content.data
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO todo(content, user) VALUES(%s, %s)", (content, [session['username']]))
+        mysql.connection.commit()
+        cur.close()
+    return redirect(url_for('todo'))
+
+@app.route('/complete/<id>')
+@is_logged_in
+def complete(id):
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE todo SET complete=TRUE WHERE id=%s", [id])
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for('todo'))
+
+@app.route('/incomplete/<id>')
+@is_logged_in
+def incomplete(id):
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE todo SET complete=FALSE WHERE id=%s", [id])
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for('done'))
 
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0dijfe41fj0iggr9wrj'

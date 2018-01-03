@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>待办事项</title>
+</head>
+<body>
+    <h1>待办列表</h1>
+    <div>添加待办事项: 
+        <form action="{{ url_for('add') }}" method="POST">
+            <input type="text" name="content">
+            <input type="submit" value="添加">
+        </form>
+    </div>
+    <div>
+        <h2>未完成事项：</h2>
+        <ul>
+            {% for todo in incomplete %}
+            <li style="font-size: 20pt">{{ todo.content }} <a href="{{ url_for('complete', id=todo.id) }}">完成</a></li>
+            {% endfor %}    
+        </ul>
+        <h2>已完成事项：</h2>
+        <ul>
+            {% for todo in complete %}
+            <li style="font-size: 20pt">{{ todo.content }} <a href="{{ url_for('incomplete', id=todo.id) }}">未完成</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
