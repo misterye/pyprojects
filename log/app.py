@@ -88,7 +88,7 @@ class SearchForm(Form):
     keyword = StringField("日志查询", [validators.Length(min=1, max=50)])
 
 class AddForm(Form):
-    content = StringField('待办事项', [validators.Length(min=1, max=255)])
+    content = StringField('', [validators.Length(min=1, max=255)])
 
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
