@@ -19,14 +19,14 @@
             <tr>
                 <th class="text-center">内容</th>
                 <th class="text-center">时间</th>
-                <th class="text-center">确认</th>
+                <th class="text-center">操作</th>
             </tr>
             </thead>
             {% for todo in incomplete %}
                 <tr>
                     <td align="center" valign="middle">{{ todo.content }}</td>
                     <td align="center" valign="middle">{{ todo.create_time }}</td>
-                    <td align="center" valign="middle"><a href="{{ url_for('complete', id=todo.id) }}">DONE</a></td>
+                    <td align="center" valign="middle"><a href="{{ url_for('complete', id=todo.id) }}">点击完成</a></td>
                 </tr>
             {% endfor %}
         </table>
