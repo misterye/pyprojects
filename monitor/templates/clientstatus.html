@@ -31,8 +31,6 @@
             </tr>
         {% endfor %}
     </table>
-    <a href="{{url_for('start_sending')}}" class="btn btn-default">开始发送邮件</a>
-    <a href="{{url_for('stop_sending')}}" class="btn btn-default">停止发送邮件</a>
     <h3>本页在线总数：<span id="online-count"></span> 台</h3>
     <h3>本页终端总数：<span>{{ccount}}</span> 台</h3>
     <h3>全部在线总数：<span id="total-online-count"></span> 台</h3>

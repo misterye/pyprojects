@@ -25,6 +25,7 @@ import requests
 from flask_mail import Mail
 from flask_mail import Message
 from threading import Thread
+import json
 
 app = Flask(__name__)
 
@@ -68,6 +69,10 @@ def is_logged_in(f):
 def home():
     return render_template('home.html')
 
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
 @app.route('/getTemp', methods=['POST'])
 def getTemp():
     global pidata
@@ -82,6 +87,26 @@ def getTemp():
     cur = mysql.connection.cursor()
     cur.execute("INSERT INTO temperature (tempdata, client) VALUES (%s, %s)", (temp, piname))
     mysql.connection.commit()
+    # Send email when temperature is greater than 26. 
+    result = cur.execute("SELECT * FROM terminals WHERE client=%s", [piname])
+    if result > 0:
+        data = cur.fetchone()
+        user_name = data['name']
+        # Send message to slack satellite-terminals channel.
+        slack_msg = user_name + "：" + temp + " 摄氏度"
+        payload = {"text": slack_msg}
+        response = requests.post('https://hooks.slack.com/services/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', data=json.dumps(payload), headers={'Content-Type': 'application/json'})
+        if response.ok:
+            print 'ok'
+        else:
+            print 'Sending messages to slack failed.'
+        if float(temp) > 26:
+            msg = Message(subject=user_name, sender='service@satelc.com', recipients=['alert@satelc.com'])
+            msg.html = user_name + '：' + temp
+            thr = Thread(target=send_async_email, args=[app, msg])
+            thr.start()
+    else:
+        flash("无此站", 'danger')
     cur.close()
     return pidata
 
@@ -320,70 +345,6 @@ def articles():
 def monitor():
     #return redirect("http://139.224.114.83:8086/")
     return redirect("http://monitor.satelc.com/")
-
-#@app.route('/login')
-#def login():
-#    return redirect("http://139.224.114.83:8019/login")
-
-# The following is sending email functions
-def send_async_email(app, msg):
-    with app.app_context():
-        mail.send(msg)
-
-def send_email(subject, sender, recipients):
-    cur = mysql.connection.cursor()
-    result = cur.execute("SELECT * FROM temperature ORDER BY id DESC limit 1")
-    if result > 0:
-        data = cur.fetchone()
-    else:
-        flash("无记录", 'danger')
-    client_name = data['client']
-    client_temperature = data['tempdata']
-    result = cur.execute("SELECT * FROM terminals WHERE client=%s", [client_name])
-    if result > 0:
-        data = cur.fetchone()
-    else:
-        flash("无此站", 'danger')
-    cur.close()
-    user_name = data['name']
-    msg = Message(subject=user_name, sender=sender, recipients=recipients)
-    msg.html = user_name + '：' + client_temperature
-    thr = Thread(target=send_async_email, args=[app, msg])
-    thr.start()
-
-@app.route('/send', methods=['POST'])
-def send(): 
-    request_data = request.json
-    #print("The request_data is: %s" % request_data)
-    flag = request_data['flag']
-    #print("Flag is: %s" % flag)
-    while True:
-        if flag == '1':
-            send_email('Terminal Temperature', 'service@satelc.com', ['alert@satelc.com'])
-        else:
-            break
-        sleep(1800)
-    return redirect(url_for('clientstatus'))
-
-@app.route('/start_sending')
-def start_sending():
-    postdata = {'flag':'1'}
-    response = requests.post('http://139.224.114.83:8086/send', json=postdata)
-    if response.ok:
-        return redirect(url_for('clientstatus'))
-    else:
-        flash("邮件发送失败", 'danger')
-        return redirect(url_for('clientstatus'))
-
-@app.route('/stop_sending')
-def stop_sending():
-    postdata = {'flag':'0'}
-    response = requests.post('http://139.224.114.83:8086/send', json=postdata)
-    if response.ok:
-        return redirect(url_for('clientstatus'))
-    else:
-        flash("停止发送失败", 'danger')
-        return redirect(url_for('clientstatus'))
 
 if __name__ == '__main__':
     socketio.run(app, '0.0.0.0', debug=True, port=8086)
