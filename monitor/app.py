@@ -22,14 +22,24 @@ from time import sleep
 from math import ceil
 import os
 import requests
-
-from flask_mysqldb import MySQL
+from flask_mail import Mail
+from flask_mail import Message
+from threading import Thread
 
 app = Flask(__name__)
 
 db = redis.StrictRedis('localhost', 6379, 0)
 app.config['SECRET_KEY'] = 'fiaeg7afe9adfhaofhd4rdgha0r'
 socketio = SocketIO(app)
+
+app.config.update(
+    #EMAIL SETTINGS
+    MAIL_SERVER='smtp.exmail.qq.com',
+    MAIL_PORT=465,
+    MAIL_USE_SSL=True,
+    MAIL_USERNAME = 'service@satelc.com',
+    MAIL_PASSWORD = 'Bin*ping2252266'
+    )
 
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
@@ -39,6 +49,7 @@ app.config['MYSQL_DB'] = 'myblog'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
+mail = Mail(app)
 
 # Check if user logged in
 def is_logged_in(f):
@@ -313,6 +324,66 @@ def monitor():
 #@app.route('/login')
 #def login():
 #    return redirect("http://139.224.114.83:8019/login")
+
+# The following is sending email functions
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+def send_email(subject, sender, recipients):
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM temperature ORDER BY id DESC limit 1")
+    if result > 0:
+        data = cur.fetchone()
+    else:
+        flash("无记录", 'danger')
+    client_name = data['client']
+    client_temperature = data['tempdata']
+    result = cur.execute("SELECT * FROM terminals WHERE client=%s", [client_name])
+    if result > 0:
+        data = cur.fetchone()
+    else:
+        flash("无此站", 'danger')
+    cur.close()
+    user_name = data['name']
+    msg = Message(subject=user_name, sender=sender, recipients=recipients)
+    msg.html = user_name + '：' + client_temperature
+    thr = Thread(target=send_async_email, args=[app, msg])
+    thr.start()
+
+@app.route('/send', methods=['POST'])
+def send(): 
+    request_data = request.json
+    #print("The request_data is: %s" % request_data)
+    flag = request_data['flag']
+    #print("Flag is: %s" % flag)
+    while True:
+        if flag == '1':
+            send_email('Terminal Temperature', 'service@satelc.com', ['alert@satelc.com'])
+        else:
+            break
+        sleep(1800)
+    return redirect(url_for('clientstatus'))
+
+@app.route('/start_sending')
+def start_sending():
+    postdata = {'flag':'1'}
+    response = requests.post('http://139.224.114.83:8086/send', json=postdata)
+    if response.ok:
+        return redirect(url_for('clientstatus'))
+    else:
+        flash("邮件发送失败", 'danger')
+        return redirect(url_for('clientstatus'))
+
+@app.route('/stop_sending')
+def stop_sending():
+    postdata = {'flag':'0'}
+    response = requests.post('http://139.224.114.83:8086/send', json=postdata)
+    if response.ok:
+        return redirect(url_for('clientstatus'))
+    else:
+        flash("停止发送失败", 'danger')
+        return redirect(url_for('clientstatus'))
 
 if __name__ == '__main__':
     socketio.run(app, '0.0.0.0', debug=True, port=8086)
