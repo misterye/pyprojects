@@ -12,6 +12,7 @@ from wechatpy.events import SubscribeEvent
 from flask_mysqldb import MySQL
 import json
 from collections import OrderedDict
+import requests
 #import ast
 
 reload(sys)
@@ -55,6 +56,7 @@ client.menu.create({
 menu = client.menu.get()
 print menu
 '''
+
 def replyMsg(data):
     msg = parse_message(data)
     if msg.type == 'event' and msg.event == 'subscribe':
@@ -103,7 +105,6 @@ def replyMsg(data):
                     replycontent = replystat+replytemp+replytimemsg+replytime
                     reply = TextReply(content=replycontent, message=msg)
                     xml = reply.render()
-
             elif msg_status == 'off':
                 #reply = TextReply(content='小站断线', message=msg)
                 replystat = "小站状态：断线"
@@ -119,7 +120,6 @@ def replyMsg(data):
             xml = reply.render()
             return xml
             cur.close()
-        #cur.close()
     else:
         reply = TextReply(message=msg)
         reply.content = 'Sorry, can not handle this for now.'
@@ -195,4 +195,4 @@ def getStatus():
 '''
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',debug=False)
+    app.run(host='0.0.0.0',debug=True)
