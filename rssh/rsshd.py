@@ -118,7 +118,8 @@ if __name__ == '__main__':
 
     print '{0} running on {1}:{2}'.format(agent, args.host, args.port)
 
-    app.debug = True
+    #app.debug = True
+    app.debug = False
     http_server = WSGIServer((args.host, args.port), app,
         log=None,
         handler_class=WebSocketHandler)

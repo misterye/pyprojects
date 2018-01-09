@@ -92,15 +92,21 @@ def getTemp():
     if result > 0:
         data = cur.fetchone()
         user_name = data['name']
-        # Send message to slack satellite-terminals channel.
-        slack_msg = user_name + "：" + temp + " 摄氏度"
-        payload = {"text": slack_msg}
-        response = requests.post('https://hooks.slack.com/services/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', data=json.dumps(payload), headers={'Content-Type': 'application/json'})
-        if response.ok:
-            print 'ok'
-        else:
-            print 'Sending messages to slack failed.'
-        if float(temp) > 26:
+        
+        if float(temp) > 25:
+            alert_msg = user_name + "：" + temp + " 摄氏度"
+            slack_payload = {"text": alert_msg}
+            #dingding_payload = { 'msgtype': 'text', 'text': { 'content': alert_msg }, 'at': { 'atMobiles': ['13916838729'], 'isAtAll': 0 }}
+            dingding_payload = { "msgtype": "text", "text": { "content": alert_msg } }
+            try:
+                # Send messages to slack satellite-terminals channel.
+                slack_response = requests.post('https://hooks.slack.com/services/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', data=json.dumps(slack_payload), headers={'Content-Type': 'application/json'})
+                # Send messages to dingding robot.
+                dingding_response = requests.post('https://oapi.dingtalk.com/robot/send?access_token=14954f5339c168f1f0089b295104dd36bb38796bcedb2b46761d74230cef5228', data=json.dumps(dingding_payload), headers={'Content-Type': 'application/json'})
+            except requests.RequestException as e:
+                print(e.message)
+        # Send emails to alert@satelc.com
+        if float(temp) > 27:
             msg = Message(subject=user_name, sender='service@satelc.com', recipients=['alert@satelc.com'])
             msg.html = user_name + '：' + temp
             thr = Thread(target=send_async_email, args=[app, msg])
@@ -347,4 +353,4 @@ def monitor():
     return redirect("http://monitor.satelc.com/")
 
 if __name__ == '__main__':
-    socketio.run(app, '0.0.0.0', debug=True, port=8086)
+    socketio.run(app, '0.0.0.0', debug=False, port=8086)

@@ -131,4 +131,4 @@ def handleMyevent(json):
     socketio.emit('my_response', json, callback=messageReceived)
 
 if __name__ == '__main__':
-    socketio.run(app, '0.0.0.0', debug=True, port=8084)
+    socketio.run(app, '0.0.0.0', debug=False, port=8084)

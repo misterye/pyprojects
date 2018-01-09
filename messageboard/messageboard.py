@@ -50,5 +50,5 @@ def datetime_fmt_filter(dt):
     return dt.strftime('%m/%d/%Y %H:%M:%S')
 
 if __name__ == '__main__':
-    application.run('0.0.0.0', 8017, debug=True)
+    application.run('0.0.0.0', 8017, debug=False)
     #application.run()
