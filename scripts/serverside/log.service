@@ -1,0 +1,13 @@
+[Unit]
+Description=working log sevice 
+After=network.target
+
+[Service]
+User=yebin
+Group=root
+WorkingDirectory=/home/yebin/pyprojects/log
+Environment="PATH=/home/yebin/pyprojects/log/.venv/bin"
+ExecStart=/home/yebin/pyprojects/log/.venv/bin/python /home/yebin/pyprojects/log/app.py > /dev/null 2>&1 &
+
+[Install]
+WantedBy=multi-user.target
