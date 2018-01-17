@@ -6,7 +6,7 @@ reload(sys);
 # using exec to set the excoding, to avoid error in IDE
 exec("sys.setdefaultencoding('utf-8')");
 assert sys.getdefaultencoding().lower() == "utf-8";
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, jsonify
+from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, jsonify, send_from_directory
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
@@ -16,6 +16,7 @@ import hashlib
 import cgi
 import json
 from collections import OrderedDict
+
 #import ast
 
 app = Flask(__name__)

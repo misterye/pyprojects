@@ -23,4 +23,4 @@ mysqldump --user=$user --password=$password --host=$host $db_name_log > $backup_
 mysqldump --user=$user --password=$password --host=$host $db_name_myblog > $backup_path/$db_name_myblog-$date.sql
 
 # Delete files older than 30 days
-find $backup_path/* -mtime +30 -exec rm {} \;
+find $backup_path/* -mtime +10 -exec rm {} \;

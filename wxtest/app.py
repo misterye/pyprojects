@@ -144,6 +144,11 @@ def homepage():
 def mp():
     return redirect(url_for('static',filename='MP_verify_2yJF2WWPOOiHbCpo.txt'))
 
+# client_status
+@app.route('/client_status')
+def client_status():
+    return redirect(url_for('static', filename='client_status.html'))
+
 # weixin
 @app.route('/wx',methods=['GET','POST'])
 def wx():
