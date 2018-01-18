@@ -13,6 +13,8 @@ from flask_mysqldb import MySQL
 import json
 from collections import OrderedDict
 import requests
+import os
+import glob
 #import ast
 
 reload(sys)
@@ -147,7 +149,20 @@ def mp():
 # client_status
 @app.route('/client_status')
 def client_status():
-    return redirect(url_for('static', filename='client_status.html'))
+    oldpath = os.getcwd()
+    newpath = os.getcwd()+'/static'
+    #print("The path is: %s" % newpath)
+    #print("The type of newpath is: %s" % type(newpath))
+    #print newpath
+    os.chdir(newpath)
+    #print("List files are: %s" % os.listdir(newpath))
+    files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)
+    #print("The new list of files are: %s" % files)
+    #print files
+    latest = files[-1]
+    os.chdir(oldpath)
+    #print("The current path is: %s" % os.getcwd())
+    return redirect(url_for('static', filename=latest))
 
 # weixin
 @app.route('/wx',methods=['GET','POST'])
@@ -200,4 +215,4 @@ def getStatus():
 '''
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',debug=False)
+    app.run(host='0.0.0.0',debug=True)

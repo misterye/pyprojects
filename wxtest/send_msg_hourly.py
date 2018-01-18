@@ -6,6 +6,7 @@ import requests
 import json
 import MySQLdb
 import sys
+import urllib2
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -18,7 +19,12 @@ def send_slack_msg(msg):
         print(e.message)
 
 def send_slack_link():
-    payload = {"text": "<http://satelc.com:5000/client_status|点击> 查看所有终端当前状态"}
+    link = "http://satelc.com:5000/client_status"
+    data = requests.request("GET", link)
+    newurl = data.url
+    payload_url = "<%s|点击> 查看所有终端当前状态" % newurl
+    #payload = {"text": "<http://satelc.com:5000/client_status|点击> 查看所有终端当前状态"}
+    payload = {"text": payload_url}
     try:
         slack_response = requests.post('https://hooks.slack.com/services/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', data=json.dumps(payload), headers={'Content-Type': 'application/json'})
     except requests.RequestException as e:
@@ -32,7 +38,11 @@ def send_dingding_msg(msg):
         print(e.message)
 
 def send_dingding_link():
-    payload = { "msgtype": "link", "link": { "text":"点击查看详情！", "title":"所有终端当前状态", "messageUrl": "http://satelc.com:5000/client_status" } }
+    link = "http://satelc.com:5000/client_status"
+    data = requests.request("GET", link)
+    newurl = data.url
+    #payload = { "msgtype": "link", "link": { "text":"点击查看详情！", "title":"所有终端当前状态", "messageUrl": "http://satelc.com:5000/client_status" } }
+    payload = { "msgtype": "link", "link": { "text":"点击查看详情！", "title":"所有终端当前状态", "messageUrl": newurl } }
     try:
         dingding_response = requests.post('https://oapi.dingtalk.com/robot/send?access_token=14954f5339c168f1f0089b295104dd36bb38796bcedb2b46761d74230cef5228', data=json.dumps(payload), headers={'Content-Type': 'application/json'})
     except requests.RequestException as e:
@@ -85,7 +95,8 @@ while True:
             replytime = str(msg_status_time)
             replycontent = replyname+replystat+replytimemsg+replytime
         str_cn += replycontent+"<br><br>"
-    status_file = open("static/client_status.html", "w")
+    filename = "static/"+"client_status"+replytime+".html"
+    status_file = open(filename, "w")
     status_file.write(str_cn)
     status_file.close()
 #        send_slack_msg(replycontent)
