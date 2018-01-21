@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-  <h1>所有终端状态</h1>
+  <h3>所有终端状态</h3>
   <ul class="list-group">
     {% for cs in all_clients_status %}
-      <li class="list-group-item"><a href="{{url_for('client_status', id=cs.id)}}">{{cs.title}}</a></li>
+      <li style="font-size: 20px" class="list-group-item"><a href="{{url_for('client_status', id=cs.id)}}">{{cs.title}}</a></li>
     {% endfor %}
   </ul>
 
