@@ -133,7 +133,7 @@ while True:
         str_cn += replycontent+"<br><br>"
 
     # Store status of all clients into the database.
-    content_title = "Status of all clients generated at "+replytime
+    content_title = "Status of All Clients @ "+replytime
     #print content_title
     try:
         #print "Storing status of clients in the database..."
