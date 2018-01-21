@@ -1058,6 +1058,39 @@ def search_article_create_date(page):
     return render_template('search_article_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 ###########################################
 
+# Fetch the status of all the clients.
+    # All Clients Status
+@app.route('/all_clients_status', defaults={'page':1})
+@app.route('/all_clients_status/<int:page>')
+def all_clients_status(page):
+    # Create cursor
+    cur = mysql.connection.cursor()
+    # Get all clients status
+    result = cur.execute("SELECT * FROM client_status")
+    data = cur.fetchall()
+    newperpage = 50
+    pages = int(ceil(len(data) / float(newperpage)))
+    startat = (page-1)*newperpage
+    result = cur.execute("SELECT * FROM client_status ORDER BY id DESC limit %s, %s", (startat, newperpage))
+    all_clients_status = cur.fetchall()
+    if result > 0:
+        return render_template('all_clients_status.html', all_clients_status=all_clients_status, page=page, pages=pages)
+    else:
+        msg = 'No clients status found.'
+        return render_template('all_clients_status.html', msg=msg, page=page, pages=pages)
+    # Close connection
+    cur.close()
+################################################
+    # Single Client Status
+@app.route('/client_status/<string:id>/')
+def client_status(id):
+    # Create cursor
+    cur = mysql.connection.cursor()
+    # Get single client status
+    result = cur.execute("SELECT * FROM client_status WHERE id = %s", [id])
+    client_status = cur.fetchone()
+    return render_template('client_status.html', client_status=client_status)
+
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0f841fj0iggr9wrj'
     app.run('0.0.0.0', 8019)

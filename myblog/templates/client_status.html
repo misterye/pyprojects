@@ -1,0 +1,8 @@
+{% extends 'layout.html' %}
+{% block body %}
+  <h3>{{client_status.title}}</h3>
+  <br>
+  <div>
+    {{client_status.body | safe}}
+  </div>
+{% endblock%}

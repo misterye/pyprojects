@@ -21,6 +21,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 app = Flask(__name__)
+#app = Flask(__name__, static_url_path='/home/yebin/wxtest_static')
 #app.config.from_object('config')
 
 # Config MySQL
