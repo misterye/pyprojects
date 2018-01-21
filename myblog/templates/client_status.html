@@ -5,4 +5,8 @@
   <div>
     {{client_status.body | safe}}
   </div>
+  <br>
+  <div>
+    <a href="{{url_for('all_clients_status')}}">查看历史记录</a>
+  </div>
 {% endblock%}
