@@ -7,13 +7,25 @@ reload(sys);
 exec("sys.setdefaultencoding('utf-8')");
 assert sys.getdefaultencoding().lower() == "utf-8";
 
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
+from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, jsonify
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
 from math import ceil
+from flask_socketio import SocketIO, emit
 
+#import redis
+from gevent import monkey
+monkey.patch_all()
+from openvpn_status import parse_status
+from time import sleep
+import os
+import requests
+import json
+from flask_mail import Mail
+from flask_mail import Message
+from threading import Thread
 # escape from sql attack
 import cgi
 
@@ -38,6 +50,18 @@ app.config['MYSQL_DB'] = 'myblog'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
+#db = redis.StrictRedis('localhost', 6379, 0)
+socketio = SocketIO(app)
+
+app.config.update(
+    #EMAIL SETTINGS
+    MAIL_SERVER='smtp.exmail.qq.com',
+    MAIL_PORT=465,
+    MAIL_USE_SSL=True,
+    MAIL_USERNAME = 'service@satelc.com',
+    MAIL_PASSWORD = 'Bin*ping2252266'
+    )
+mail = Mail(app)
 
 # Index
 @app.route('/')
@@ -85,10 +109,25 @@ def is_admin(f):
     return wrap
 
 # Chat
+'''
 @app.route('/chat')
 def chat():
     #return redirect("http://139.224.114.83:8084")
     return redirect("http://chat.satelc.com")
+'''
+@app.route('/chat', methods=['GET', 'POST'])
+@is_logged_in
+def chat():
+    chatname = session['name']
+    return render_template('chatup.html', chatname = chatname)
+
+def messageReceived():
+    print('Message Received!')
+
+@socketio.on('my_event')
+def handleMyevent(json):
+    print('Received my event: ' + str(json))
+    socketio.emit('my_response', json, callback=messageReceived)
 
 # RSSH
 @app.route('/rssh')
@@ -97,10 +136,234 @@ def rssh():
     return redirect("http://satelc.com:8085/")
 
 # MONITOR
+'''
 @app.route('/monitor')
 def monitor():
     #return redirect("http://139.224.114.83:8086")
     return redirect("http://monitor.satelc.com")
+'''
+##############################################
+#@app.route('/monitor')
+#def monitor():
+#    return render_template('monitor.html')
+    
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+@app.route('/getTemp', methods=['POST'])
+def getTemp():
+    global pidata
+    temp_data = request.json
+    #print('temp_data: %s' % temp_data)
+    temp = temp_data['pi_temp']
+    #print('temp is: %s' % temp)
+    piname = temp_data['pi_name']
+    #print('piname is: %s' % piname)
+    pidata = piname+temp
+    #print('pidata is: %s' % pidata)
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO temperature (tempdata, client) VALUES (%s, %s)", (temp, piname))
+    mysql.connection.commit()
+    # Send email when temperature is greater than 26. 
+    result = cur.execute("SELECT * FROM terminals WHERE client=%s", [piname])
+    if result > 0:
+        data = cur.fetchone()
+        user_name = data['name']
+        
+        if float(temp) > 28:
+            alert_msg = user_name + "：" + temp + " 摄氏度"
+            slack_payload = {"text": alert_msg}
+            #dingding_payload = { 'msgtype': 'text', 'text': { 'content': alert_msg }, 'at': { 'atMobiles': ['13916838729'], 'isAtAll': 0 }}
+            dingding_payload = { "msgtype": "text", "text": { "content": alert_msg } }
+            try:
+                # Send messages to slack satellite-terminals channel.
+                slack_response = requests.post('https://hooks.slack.com/services/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', data=json.dumps(slack_payload), headers={'Content-Type': 'application/json'})
+                # Send messages to dingding robot.
+                dingding_response = requests.post('https://oapi.dingtalk.com/robot/send?access_token=14954f5339c168f1f0089b295104dd36bb38796bcedb2b46761d74230cef5228', data=json.dumps(dingding_payload), headers={'Content-Type': 'application/json'})
+            except requests.RequestException as e:
+                print(e.message)
+        # Send emails to alert@satelc.com
+        if float(temp) > 30:
+            msg = Message(subject=user_name, sender='service@satelc.com', recipients=['alert@satelc.com'])
+            msg.html = user_name + '：' + temp
+            thr = Thread(target=send_async_email, args=[app, msg])
+            thr.start()
+    else:
+        flash("无此站", 'danger')
+    cur.close()
+    return pidata
+
+@socketio.on('my event')
+def handle_my_custom_event(json):
+    print('received json: ' + str(json))
+
+@app.route('/clientstatus', defaults={'page':1})
+@app.route('/clientstatus/<int:page>')
+#@app.route('/monitor')
+@is_logged_in
+def clientstatus(page):
+    with open('/home/yebin/pyprojects/monitor/vlog.log') as log:
+        stat = parse_status(log.read())
+    clist = stat.client_list
+    print("clist is: %s" % clist)
+
+    nclist = []
+    for cli in clist:
+        nclist.append(cli)
+    print nclist
+
+    if len(nclist) == 0:
+        initRequest_data = {'pi_temp':'35.7', 'pi_name':'test'}
+        requests.post('http://139.224.114.83:8086/getTemp', json=initRequest_data)
+        
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM terminals")
+    data = cur.fetchall()
+    global total_num
+    total_num = len(data)
+    monitor_perpage = 20
+    global monitor_pages
+    monitor_pages = int(ceil(len(data) / float(monitor_perpage)))
+    startat = (page-1)*monitor_perpage  
+
+    # Get client from table terminals in DB
+    global getclients
+    def getclients():
+        global display, pidata, pname
+        pname = pidata[:-4]
+        display = pidata[-4:]
+        # Create cursor
+        cur = mysql.connection.cursor()
+        # Get client
+        #result = cur.execute("SELECT name, ip, client, modem, satellite FROM terminals")
+        result = cur.execute("SELECT name, ip, client, modem, satellite FROM terminals limit %s, %s", (startat, monitor_perpage))
+        dbclients = cur.fetchall()
+        global clients
+        clients = []
+        for dc in dbclients:
+            clients.append(dc['client'])
+            #print clients
+        global ips
+        ips = []
+        for di in dbclients:
+            ips.append(di['ip'])
+            #print ips
+        global modems
+        modems = []
+        for dm in dbclients:
+            modems.append(dm['modem'])
+            #print modems
+        global satellites
+        satellites = []
+        for ds in dbclients:
+            satellites.append(ds['satellite'])
+            #print satellites
+        global ccount
+        ccount = len(clients)
+        global names
+        names = []
+        for dn in dbclients:
+            names.append(dn['name'])
+            #print names
+        cur.close()
+    getclients()
+    return render_template('clientstatus.html', total_num=total_num, names=names, ips=ips, clients=clients, modems=modems, satellites=satellites, ccount=ccount, display=display, page=page, monitor_pages=monitor_pages)
+
+@socketio.on('status')
+def readvlog():
+    #getclients()
+    while True:
+        getclients()
+        with open('/home/yebin/pyprojects/monitor/vlog.log') as logfile:
+        #with open('/home/yebin/pyprojects/monitor/openvpn-status.log') as logfile:
+            status = parse_status(logfile.read())
+        newclient = status.client_list
+        #print newclient
+        
+        '''
+        for cl in clients:
+            if cl in newclient:
+                flag = 1
+                socketio.emit('online', {
+                    'nclient': cl,
+                    'flag': flag
+                })
+                print("%s online now." % cl)
+            else:
+                flag = 0
+                socketio.emit('online', {
+                    'nclient': cl,
+                    'flag': flag
+                })
+                print("%s not online." % cl)
+        '''
+        # Change Dict to List
+        newclientList = []
+        offlineList = []
+        for cl in clients:
+            if cl in newclient:
+                newclientList.append(cl)
+            else:
+                offlineList.append(cl)
+        print newclientList
+        l = len(newclientList)
+        #print("There are %s clients online." % l)
+        socketio.emit('online', {
+            'nclient': newclientList,
+            'nclientlen': l,
+            'tempdisplay': display,
+            'pname': pname
+        })
+        sleep(10)
+
+
+@socketio.on('newstatus')
+def totalonline():
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM terminals")
+    data = cur.fetchall()
+    allclients = []
+    for d in data:
+        allclients.append(d['client'])
+    while True:
+        with open('/home/yebin/pyprojects/monitor/vlog.log') as newlogfile:
+            newstatus = parse_status(newlogfile.read())
+        newallclient = newstatus.client_list
+
+        newallclientList = []
+        newofflineList = []
+        on = 'on'
+        off = 'off'
+        for ac in allclients:
+            if ac in newallclient:
+                newallclientList.append(ac)
+                cur.execute("INSERT INTO status (client, connect) VALUES (%s, %s)", (ac, on))
+                mysql.connection.commit()
+            else:
+                newofflineList.append(ac)
+                cur.execute("INSERT INTO status (client, connect) VALUES (%s, %s)", (ac, off))
+                mysql.connection.commit()
+        #print newallclientList
+        newlength = len(newallclientList)
+        socketio.emit('totalonline', {
+            'newallclient': newallclientList,
+            'newallclientlen': newlength
+        })
+        sleep(10)
+
+'''
+@socketio.on('connect')
+def ws_conn():
+    c = db.incr('connected')
+    socketio.emit('msg', {'count':c})
+
+@socketio.on('disconnect')
+def ws_disconn():
+    c = db.decr('connected')
+    socketio.emit('msg', {'count':c})
+'''
+##############################################
 
 # Articles
 @app.route('/articles', defaults={'page':1})
@@ -116,13 +379,13 @@ def articles(page):
     startat = (page-1)*perpage
     result = cur.execute("SELECT * FROM articles ORDER BY id DESC limit %s, %s", (startat, perpage))
     articles = cur.fetchall()
+    # Close connection
+    cur.close()
     if result > 0:
         return render_template('articles.html', articles=articles, page=page, pages=pages)
     else:
         msg = 'No Articles Found'
         return render_template('articles.html', msg=msg, page=page, pages=pages)
-    # Close connection
-    cur.close()
 
 # Single Article
 @app.route('/article/<string:id>/')
@@ -150,13 +413,13 @@ def terminals(page):
     startat = (page-1)*perpage
     result = cur.execute("SELECT * FROM terminals ORDER BY id ASC limit %s, %s", (startat, perpage))
     terminals = cur.fetchall()
+    # Close connection
+    cur.close()
     if result > 0:
         return render_template('terminals.html', terminals=terminals, page=page, pages=pages)
     else:
         msg = 'No Terminal Found'
         return render_template('terminals.html', msg=msg, page=page, pages=pages)
-    # Close connection
-    cur.close()
 
 # Single Terminal - Modified
 @app.route('/terminal/<string:id>/')
@@ -164,10 +427,8 @@ def terminals(page):
 def terminal(id):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Get article
     result = cur.execute("SELECT * FROM terminals WHERE id = %s", [id])
-
     terminal = cur.fetchone()
     return render_template('terminal.html', terminal=terminal)
 
@@ -224,22 +485,16 @@ def register():
         username = form.username.data
         email = form.email.data
         password = sha256_crypt.encrypt(str(form.password.data))
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Execute query
         cur.execute("INSERT INTO users(name, username, email, password) VALUES(%s, %s, %s, %s)", (name, username, email, password))
-
         # Commit to DB
         mysql.connection.commit()
-
         # Close connection
         cur.close()
-
         #flash('You are now registered and can log in.', 'success')
         flash("注册成功，请登录。", 'success')
-
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
@@ -250,26 +505,21 @@ def login():
         # Get Form Fields
         username = request.form['username']
         password_candidate = request.form['password']
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Get user by username
         result = cur.execute("SELECT * FROM users WHERE username = %s", [username])
-
         if result > 0:
             # Get stored hash
             data = cur.fetchone()
             password = data['password']
             name = data['name']
-
             # Compare Passwords
             if sha256_crypt.verify(password_candidate, password):
                 # Passed
                 session['logged_in'] = True
                 session['username'] = username
                 session['name'] = name
-
                 #flash('You are now logged in.', 'success')
                 flash("登录成功。", 'success')
                 return redirect(url_for('index'))
@@ -281,7 +531,6 @@ def login():
         else:
             error = 'Username not found.'
             return render_template('login.html', error=error)
-
     return render_template('login.html')
 
 
@@ -311,6 +560,8 @@ def dashboard(page):
     result = cur.execute("SELECT * FROM terminals ORDER BY id ASC limit %s, %s", (startat, perpage))
     #articles = cur.fetchall()
     terminals = cur.fetchall()
+    # Close connection
+    cur.close()
     if result > 0:
     #    return render_template('dashboard.html', articles=articles)
         return render_template('dashboard.html', terminals=terminals, page=page, pages=pages)
@@ -318,8 +569,6 @@ def dashboard(page):
     #    msg = 'No Articles Found'
         msg = 'No Terminal Found'
         return render_template('dashboard.html', msg=msg, page=page, pages=pages)
-    # Close connection
-    cur.close()
 
 # Dashboard_Users
 @app.route('/dashboard_users', defaults={'page':1})
@@ -338,6 +587,8 @@ def dashboard_users(page):
     result = cur.execute("SELECT * FROM users ORDER BY id ASC limit %s, %s", (startat, perpage))
     #articles = cur.fetchall()
     users = cur.fetchall()
+    # Close connection
+    cur.close()
     if result > 0:
     #    return render_template('dashboard.html', articles=articles)
         return render_template('dashboard_users.html', users=users, page=page, pages=pages)
@@ -345,8 +596,6 @@ def dashboard_users(page):
     #    msg = 'No Articles Found'
         msg = 'No User Found'
         return render_template('dashboard_users.html', msg=msg, page=page, pages=pages)
-    # Close connection
-    cur.close()
 
 # Dashboard_Articles
 @app.route('/dashboard_articles', defaults={'page':1})
@@ -364,13 +613,13 @@ def dashboard_articles(page):
     startat = (page-1)*perpage
     result = cur.execute("SELECT * FROM articles ORDER BY id DESC limit %s, %s", (startat, perpage))
     articles = cur.fetchall()
+    # Close connection
+    cur.close()
     if result > 0:
         return render_template('dashboard_articles.html', articles=articles, page=page, pages=pages)
     else:
         msg = 'No Articles Found'
         return render_template('dashboard_articles.html', msg=msg, page=page, pages=pages)
-    # Close connection
-    cur.close()
 
 # Article Form Class
 class ArticleForm(Form):
@@ -401,23 +650,16 @@ def add_article():
     if request.method == 'POST' and form.validate():
         title = form.title.data
         body = form.body.data
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Execute
         cur.execute("INSERT INTO articles(title, body, author) VALUES(%s, %s, %s)",(title, body, session['username']))
-
         # Commit to DB
         mysql.connection.commit()
-
         # Close connection
         cur.close()
-
         flash("公告发布成功。", 'success')
-
         return redirect(url_for('dashboard_articles'))
-
     return render_template('add_article.html', form=form)
 
 # Edit Article
@@ -427,39 +669,27 @@ def add_article():
 def edit_article(id):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Get article by id
     result = cur.execute("SELECT * FROM articles WHERE id = %s", [id])
-
     article = cur.fetchone()
-
     # Get form
     form = ArticleForm(request.form)
-
     # Populate article form fields
     form.title.data = article['title']
     form.body.data = article['body']
-
     if request.method == 'POST' and form.validate():
         title = request.form['title']
         body = request.form['body']
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Execute
         cur.execute("UPDATE articles SET title=%s, body=%s WHERE id = %s", (title, body, id))
-
         # Commit to DB
         mysql.connection.commit()
-
         # Close connection
         cur.close()
-
         flash("公告更新成功。", 'success')
-
         return redirect(url_for('dashboard_articles'))
-
     return render_template('edit_article.html', form=form)
 
 # Delete Article
@@ -469,18 +699,13 @@ def edit_article(id):
 def delete_article(id):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Execute
     cur.execute("DELETE FROM articles WHERE id = %s", [id])
-
     # Commit to DB
     mysql.connection.commit()
-
     # Close connection
     cur.close()
-
     flash("公告删除成功。", 'success')
-
     return redirect(url_for('dashboard_articles'))
 
 # Add Terminal - Modified
@@ -498,23 +723,16 @@ def add_terminal():
         satellite = form.satellite.data
         found_date = form.found_date.data
         remarks = form.remarks.data
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Execute
         cur.execute("INSERT INTO terminals(name, client, address, modem, ip, satellite, found_date, remarks) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)",(name, client, address, modem, ip, satellite, found_date, remarks))
-
         # Commit to DB
         mysql.connection.commit()
-
         # Close connection
         cur.close()
-
         flash("小站添加成功。", 'success')
-
         return redirect(url_for('dashboard'))
-
     return render_template('add_terminal.html', form=form)
 
 # Edit Terminal - Modified
@@ -524,15 +742,11 @@ def add_terminal():
 def edit_terminal(id):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Get terminal by id
     result = cur.execute("SELECT * FROM terminals WHERE id = %s", [id])
-
     terminal = cur.fetchone()
-
     # Get form
     form = TerminalForm(request.form)
-
     # Populate terminal form fields
     form.name.data = terminal['name']
     form.client.data = terminal['client']
@@ -542,7 +756,6 @@ def edit_terminal(id):
     form.satellite.data = terminal['satellite']
     form.found_date.data = terminal['found_date']
     form.remarks.data = terminal['remarks']
-
     if request.method == 'POST' and form.validate():
         name = request.form['name']
         client = request.form['client']
@@ -552,23 +765,16 @@ def edit_terminal(id):
         satellite = request.form['satellite']
         found_date = request.form['found_date']
         remarks = request.form['remarks']
-
         # Create cursor
         cur = mysql.connection.cursor()
-
         # Execute
         cur.execute("UPDATE terminals SET name=%s, client=%s, address=%s, modem=%s, ip=%s, satellite=%s,found_date=%s, remarks=%s WHERE id = %s", (name, client, address, modem, ip, satellite, found_date,remarks, id))
-
         # Commit to DB
         mysql.connection.commit()
-
         # Close connection
         cur.close()
-
         flash("小站更新成功。", 'success')
-
         return redirect(url_for('dashboard'))
-
     return render_template('edit_terminal.html', form=form)
 
 # Delete Terminal - Modified 
@@ -578,18 +784,13 @@ def edit_terminal(id):
 def delete_terminal(id):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Execute
     cur.execute("DELETE FROM terminals WHERE id = %s", [id])
-
     # Commit to DB
     mysql.connection.commit()
-
     # Close connection
     cur.close()
-
     flash("小站删除成功。", 'success')
-
     return redirect(url_for('dashboard'))
 
 # Edit User
@@ -632,18 +833,13 @@ def edit_user(id):
 def delete_user(id):
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Execute
     cur.execute("DELETE FROM users WHERE id = %s", [id])
-
     # Commit to DB
     mysql.connection.commit()
-
     # Close connection
     cur.close()
-
     flash("用户删除成功。", 'success')
-
     return redirect(url_for('dashboard_users'))
 
 # Messages
@@ -653,7 +849,6 @@ def delete_user(id):
 def messages():
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Get messages
     result = cur.execute("SELECT * FROM messages ORDER BY create_date DESC")
     messages = cur.fetchall()
@@ -662,7 +857,6 @@ def messages():
     else:
         msg = 'no messages found'
         return render_template('messages.html', msg=msg)
-
     # Close connection
     cur.close()
 
@@ -673,12 +867,10 @@ def post_message():
     form = MessageForm(request.form)
     if request.method == 'POST' and form.validate():
         body = form.body.data
-
         cur = mysql.connection.cursor()
         cur.execute("INSERT INTO messages(body, author) VALUES(%s, %s)", (body, session['username']))
         mysql.connection.commit()
         cur.close()
-
         flash("留言已发布。", 'success')
         return redirect(url_for('messages'))
     return render_template('post_message.html', form=form)
@@ -692,11 +884,10 @@ def delete_message(id):
     cur.execute("DELETE FROM messages WHERE id=%s", [id])
     mysql.connection.commit()
     cur.close()
-
     flash("留言已删除。", 'success')
-
     return redirect(url_for('messages'))
 ###############################################
+
 # Search
 # Search Terminal Form Class
 class SearchTerminalForm(Form):
@@ -1073,13 +1264,14 @@ def all_clients_status(page):
     startat = (page-1)*newperpage
     result = cur.execute("SELECT * FROM client_status ORDER BY id DESC limit %s, %s", (startat, newperpage))
     all_clients_status = cur.fetchall()
+    # Close connection
+    cur.close()
     if result > 0:
         return render_template('all_clients_status.html', all_clients_status=all_clients_status, page=page, pages=pages)
     else:
         msg = 'No clients status found.'
         return render_template('all_clients_status.html', msg=msg, page=page, pages=pages)
-    # Close connection
-    cur.close()
+
 ################################################
     # Single Client Status
 @app.route('/client_status/<string:id>/')
@@ -1093,4 +1285,5 @@ def client_status(id):
 
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0f841fj0iggr9wrj'
-    app.run('0.0.0.0', 8019)
+    #app.run('0.0.0.0', 8019)
+    socketio.run(app, '0.0.0.0', debug=False, port=8019)
