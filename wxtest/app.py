@@ -50,7 +50,7 @@ client.menu.create({
         {
             "type":"view",
             "name":"小站监控",
-            "url":"http://monitor.satelc.com"
+            "url":"http://satelc.com/clientstatus"
         }
         ]
     }
@@ -59,7 +59,6 @@ client.menu.create({
 menu = client.menu.get()
 print menu
 '''
-
 def replyMsg(data):
     msg = parse_message(data)
     if msg.type == 'event' and msg.event == 'subscribe':

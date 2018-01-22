@@ -203,7 +203,7 @@ def handle_my_custom_event(json):
 #@app.route('/monitor')
 @is_logged_in
 def clientstatus(page):
-    with open('/home/yebin/pyprojects/monitor/vlog.log') as log:
+    with open('/home/yebin/pyprojects/myblog/vlog.log') as log:
         stat = parse_status(log.read())
     clist = stat.client_list
     print("clist is: %s" % clist)
@@ -275,7 +275,7 @@ def readvlog():
     #getclients()
     while True:
         getclients()
-        with open('/home/yebin/pyprojects/monitor/vlog.log') as logfile:
+        with open('/home/yebin/pyprojects/myblog/vlog.log') as logfile:
         #with open('/home/yebin/pyprojects/monitor/openvpn-status.log') as logfile:
             status = parse_status(logfile.read())
         newclient = status.client_list
@@ -327,7 +327,7 @@ def totalonline():
     for d in data:
         allclients.append(d['client'])
     while True:
-        with open('/home/yebin/pyprojects/monitor/vlog.log') as newlogfile:
+        with open('/home/yebin/pyprojects/myblog/vlog.log') as newlogfile:
             newstatus = parse_status(newlogfile.read())
         newallclient = newstatus.client_list
 
