@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div class="container">
+    <h3>
+      全部终端状态<br />
+      <small>{{client_status.create_time}}</small><br />
+    </h3>
+</div>
+<div class="container panel panel-success" style="font-size: 20px">
+    <div class="panel-body">
+      {{client_status.body | safe}}
+    </div>
+</div>
+<div class="container" style="font-size: 20px">
+  <a href="{{url_for('all_clients_status')}}">查看历史记录</a><br/>
+  <small>Meta: {{client_status.title}}</small>
+</div>
+{% endblock%}

@@ -23,7 +23,8 @@ sys.setdefaultencoding('utf8')
 app = Flask(__name__)
 #app = Flask(__name__, static_url_path='/home/yebin/wxtest_static')
 #app.config.from_object('config')
-
+app.config['SECRET_KEY'] = '\xd0J\xcd\x05\x9az\xfd\xd9\xc4\xcd_\x192\xc1c?\xa6\xe7<*\xb0\x91\xe7J'
+app.config['DEBUG'] = True
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -215,4 +216,4 @@ def getStatus():
 '''
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',debug=True)
+    app.run('0.0.0.0', 8020)

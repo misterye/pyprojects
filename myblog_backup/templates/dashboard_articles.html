@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <!-- <h1>Dashboard <small>Welcome {{session.username}}</small></h1> -->
+  {% if session['username'] == 'admin' %}
+  <a class="btn btn-success" href="/add_article">发布公告</a>
+  {% else %}
+  <a class="btn btn-danger" href="/login">以管理员身份发布公告</a>
+  {% endif %}
+  <hr>
+  <table class="table table-striped">
+    <tr>
+      <th class="text-center">编号</th>
+      <th class="text-center">标题</th>
+      <th class="text-center">发布者</th>
+      <th class="text-center">日期</th>
+      <th class="text-center"></th>
+      <th class="text-center"></th>
+    </tr>
+    {% for article in articles %}
+      <tr>
+        <td align="center" valign="middle">{{article.id}}</td>
+        <td align="center" valign="middle">{{article.title}}</td>
+        <td align="center" valign="middle">{{article.author}}</td>
+        <td align="center" valign="middle">{{article.create_date}}</td>
+        {% if session['username'] == 'admin' %}
+        <td><a href="{{url_for('edit_article',id=article.id)}}" class="btn btn-default pull-right">编辑</a></td>
+        <td>
+          <form action="{{url_for('delete_article', id=article.id)}}" method="post">
+            <input type="hidden" name="method" value="DELETE">
+            <input type="submit" name="" value="删除" class="btn btn-danger" onclick="return confirm('是否确认删除该公告？');return false;">
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+
+    <center>
+    <p>
+      {% if page < 2 %}  
+      <div class="center hide">
+        <a href="{{url_for('dashboard_articles',page=page-1)}}" class="btn btn-default">上一页</a>
+      </div>
+      {% else %}
+      <div class="center">
+        <a href="{{url_for('dashboard_articles',page=page-1)}}" class="btn btn-default">上一页</a>
+      </div>
+      {% endif %}
+      <div class="center" style="visibility: hidden;">
+        <a href="#" class="btn btn-default"></a>
+      </div>
+      {% if page > pages-1 %}
+      <div class="center hide">
+        <a href="{{url_for('dashboard_articles',page=page+1)}}" class="btn btn-default">下一页</a>
+      </div>
+      {% else %}
+      <div class="center">
+        <a href="{{url_for('dashboard_articles',page=page+1)}}" class="btn btn-default">下一页</a>
+      </div>
+      {% endif %}
+    </p>
+    </center>
+{% endblock %}

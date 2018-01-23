@@ -27,7 +27,7 @@ app = Flask(__name__)
 
 global perpage
 perpage = 5
-
+app.config['SECRET_KEY'] = "\xd5\x1e]\xe0'\x85\xb6\xf9\xae\xd8sU\xb7\x0c{\xcd\x01\x13tI\xc3\xb2-\xb6"
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -700,6 +700,6 @@ def search_article_body(page):
         return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 if __name__ == '__main__':
-    app.secret_key='fpaoiega84qddq48q0f841fj0iggr9wrj'
+    #app.secret_key = "\xd5\x1e]\xe0'\x85\xb6\xf9\xae\xd8sU\xb7\x0c{\xcd\x01\x13tI\xc3\xb2-\xb6"
     #app.run('0.0.0.0', 443, ssl_context=('fullchain1.pem', 'privkey1.pem'))
-    app.run('0.0.0.0', 80)
+    app.run('0.0.0.0', 8021)

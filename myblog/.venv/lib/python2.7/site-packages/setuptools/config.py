@@ -4,9 +4,9 @@ import os
 import sys
 from collections import defaultdict
 from functools import partial
+from importlib import import_module
 
 from distutils.errors import DistutilsOptionError, DistutilsFileError
-from setuptools.py26compat import import_module
 from setuptools.extern.six import string_types
 
 
@@ -245,33 +245,39 @@ class ConfigHandler(object):
         directory with setup.py.
 
         Examples:
-            include: LICENSE
-            include: src/file.txt
+            file: LICENSE
+            file: README.rst, CHANGELOG.md, src/file.txt
 
         :param str value:
         :rtype: str
         """
+        include_directive = 'file:'
+
         if not isinstance(value, string_types):
             return value
 
-        include_directive = 'file:'
         if not value.startswith(include_directive):
             return value
 
-        current_directory = os.getcwd()
+        spec = value[len(include_directive):]
+        filepaths = (os.path.abspath(path.strip()) for path in spec.split(','))
+        return '\n'.join(
+            cls._read_file(path)
+            for path in filepaths
+            if (cls._assert_local(path) or True)
+            and os.path.isfile(path)
+        )
 
-        filepath = value.replace(include_directive, '').strip()
-        filepath = os.path.abspath(filepath)
-
-        if not filepath.startswith(current_directory):
+    @staticmethod
+    def _assert_local(filepath):
+        if not filepath.startswith(os.getcwd()):
             raise DistutilsOptionError(
                 '`file:` directive can not access %s' % filepath)
 
-        if os.path.isfile(filepath):
-            with io.open(filepath, encoding='utf-8') as f:
-                value = f.read()
-
-        return value
+    @staticmethod
+    def _read_file(filepath):
+        with io.open(filepath, encoding='utf-8') as f:
+            return f.read()
 
     @classmethod
     def _parse_attr(cls, value):
@@ -398,6 +404,7 @@ class ConfigMetadataHandler(ConfigHandler):
         """Metadata item name to parser function mapping."""
         parse_list = self._parse_list
         parse_file = self._parse_file
+        parse_dict = self._parse_dict
 
         return {
             'platforms': parse_list,
@@ -410,6 +417,7 @@ class ConfigMetadataHandler(ConfigHandler):
             'description': parse_file,
             'long_description': parse_file,
             'version': self._parse_version,
+            'project_urls': parse_dict,
         }
 
     def _parse_version(self, value):
