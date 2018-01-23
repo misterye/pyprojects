@@ -702,4 +702,4 @@ def search_article_body(page):
 if __name__ == '__main__':
     app.secret_key='fpaoiega84qddq48q0f841fj0iggr9wrj'
     #app.run('0.0.0.0', 443, ssl_context=('fullchain1.pem', 'privkey1.pem'))
-    app.run('0.0.0.0', 8021)
+    app.run('0.0.0.0', 80)
