@@ -171,7 +171,7 @@ def getTemp():
         data = cur.fetchone()
         user_name = data['name']
         
-        if float(temp) > 28:
+        if float(temp) > 30:
             alert_msg = user_name + "：" + temp + " 摄氏度"
             slack_payload = {"text": alert_msg}
             #dingding_payload = { 'msgtype': 'text', 'text': { 'content': alert_msg }, 'at': { 'atMobiles': ['13916838729'], 'isAtAll': 0 }}
@@ -184,7 +184,7 @@ def getTemp():
             except requests.RequestException as e:
                 print(e.message)
         # Send emails to alert@satelc.com
-        if float(temp) > 30:
+        if float(temp) > 33:
             msg = Message(subject=user_name, sender='service@satelc.com', recipients=['alert@satelc.com'])
             msg.html = user_name + '：' + temp
             thr = Thread(target=send_async_email, args=[app, msg])

@@ -93,12 +93,27 @@
                             document.getElementsByTagName("table")[0].rows[i+1].cells[4].style.backgroundColor = "#ffffff";
                             for (var j = 0; j < msg.nclientlen; j++) {                          
                                 if (msg.nclient[j] == x) {
-                                    document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "lightgreen";
+                                    document.getElementsByTagName("table")[0].rows[i+1].cells[0].style.backgroundColor = "#66FF99";
+                                    document.getElementsByTagName("table")[0].rows[i+1].cells[1].style.backgroundColor = "#66FF99";
+                                    document.getElementsByTagName("table")[0].rows[i+1].cells[2].style.backgroundColor = "#66FF99";
+                                    document.getElementsByTagName("table")[0].rows[i+1].cells[3].style.backgroundColor = "#66FF99";
+                                    document.getElementsByTagName("table")[0].rows[i+1].cells[4].style.backgroundColor = "#66FF99"; 
                                     document.getElementsByTagName("table")[0].rows[i+1].cells[4].innerHTML = '<a href="http://satelc.com:8085/" target="_blank">登录</a>';
                                     flag = i;
                                     if (msg.nclient[j] == msg.pname) {
-                                        document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "lightgreen";
+                                        document.getElementsByTagName("table")[0].rows[i+1].cells[0].style.backgroundColor = "#66FF99";
+                                        document.getElementsByTagName("table")[0].rows[i+1].cells[1].style.backgroundColor = "#66FF99";
+                                        document.getElementsByTagName("table")[0].rows[i+1].cells[2].style.backgroundColor = "#66FF99";
+                                        document.getElementsByTagName("table")[0].rows[i+1].cells[3].style.backgroundColor = "#66FF99";
+                                        document.getElementsByTagName("table")[0].rows[i+1].cells[4].style.backgroundColor = "#66FF99";
                                         document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = msg.tempdisplay;
+                                        var tempstr = msg.tempdisplay;
+                                        var tempnum = parseFloat(tempstr);
+                                        if (tempnum > 26.5) {
+                                            document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#FF99CC";
+                                            } else {
+                                                document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#66FF99";
+                                            }
                                         } 
                                         /*
                                         else {
@@ -107,7 +122,7 @@
                                             }
                                             */
                                 } else if (msg.nclient[j] != x && flag != i){
-                                    document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#ffffff";
+                                    document.getElementsByTagName("table")[0].rows[i+1].cells[4].style.backgroundColor = "#ffffff";
                                     document.getElementsByTagName("table")[0].rows[i+1].cells[4].innerHTML = '';
                                     //document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = '';
                                     }
