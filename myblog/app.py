@@ -40,14 +40,16 @@ if sys.getdefaultencoding() != default_encoding:
     sys.setdefaultencoding(default_encoding)
 '''
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_object('config.DevelopmentConfig')
+app.config.from_pyfile('config.py')
 #app.config['SECRET_KEY'] = '\xa3\xe9\r\xc3\xc2u\xc2\xf1\x05}\xa8`\x9f\x08l\xff\x05\xe6\x06\x89K&Kt'
 # Config MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = '840821'
-app.config['MYSQL_DB'] = 'myblog'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+#app.config['MYSQL_HOST'] = 'localhost'
+#app.config['MYSQL_USER'] = 'root'
+#app.config['MYSQL_PASSWORD'] = '840821'
+#app.config['MYSQL_DB'] = 'myblog'
+#app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
 #db = redis.StrictRedis('localhost', 6379, 0)
@@ -1284,6 +1286,7 @@ def client_status(id):
     return render_template('client_status.html', client_status=client_status)
 
 if __name__ == '__main__':
-    app.secret_key = '\xa3\xe9\r\xc3\xc2u\xc2\xf1\x05}\xa8`\x9f\x08l\xff\x05\xe6\x06\x89K&Kt'
+    #app.secret_key = '\xa3\xe9\r\xc3\xc2u\xc2\xf1\x05}\xa8`\x9f\x08l\xff\x05\xe6\x06\x89K&Kt'
     #app.run('0.0.0.0', 8019)
-    socketio.run(app, '0.0.0.0', debug=False, port=8019)
+    #socketio.run(app, '0.0.0.0', debug=False, port=8019)
+    socketio.run(app, '0.0.0.0', 8019)

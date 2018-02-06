@@ -4,6 +4,7 @@ log/*.pyc
 mainpage/*.pyc
 rssh/*.pyc
 myblog/.venv/
+myblog/instance
 wxtest/.venv/
 log/.venv/
 mainpage/.venv/
