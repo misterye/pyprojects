@@ -315,7 +315,7 @@ def readvlog():
             'tempdisplay': display,
             'pname': pname
         })
-        sleep(10)
+        sleep(5)
 
 
 @socketio.on('newstatus')
@@ -1286,4 +1286,4 @@ def client_status(id):
 if __name__ == '__main__':
     app.secret_key = '\xa3\xe9\r\xc3\xc2u\xc2\xf1\x05}\xa8`\x9f\x08l\xff\x05\xe6\x06\x89K&Kt'
     #app.run('0.0.0.0', 8019)
-    socketio.run(app, '0.0.0.0', debug=True, port=8019)
+    socketio.run(app, '0.0.0.0', debug=False, port=8019)
