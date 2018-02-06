@@ -19,20 +19,13 @@ from collections import OrderedDict
 
 #import ast
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config.DevelopmentConfig')
+app.config.from_pyfile('config.py')
 global perpage
 perpage = 10
 
 #app.debug = True
-'''
-# Config MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = '840821'
-app.config['MYSQL_DB'] = 'log'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-'''
 # init MYSQL
 mysql = MySQL(app)
 
@@ -486,39 +479,6 @@ def search_all_logs(page):
     return render_template('search_all_result.html', results=results, page=page, pages=pages)
 
 # The following is a test of json post request.
-'''
-def ordered_dict_to_xml(dict_data):
-    xml_str = '<xml>'
-    for key, value in dict_data.items():
-        xml_str += '<%s><![CDATA[%s]]></%s>' % (key, value, key)
-    xml_str += '</xml>'
-    return xml_str
-
-@app.route('/getStatus', methods=['POST'])
-def getStatus():
-    olddict = request.json
-    print olddict
-    print type(olddict)
-
-    dictdata = OrderedDict()
-    dictdata["ToUserName"] = olddict["ToUserName"]
-    dictdata["FromUserName"] = olddict["FromUserName"]
-    dictdata["CreateTime"] = olddict["CreateTime"]
-    dictdata["MsgType"] = olddict["MsgType"]
-    dictdata["Content"] = olddict["Content"]
-    dictdata["MsgId"] = olddict["MsgId"]
-
-    print dictdata
-    print type(dictdata)
-
-    #for key, value in dictdata.items():
-    #    print key, value
-    xml_data = ordered_dict_to_xml(dictdata)
-    print xml_data
-    print type(xml_data)
-    return xml_data
-    #return "ok"
-'''
 
 @app.route('/todo', defaults={'page':1})
 @app.route('/todo/<int:page>')

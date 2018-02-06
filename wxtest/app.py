@@ -20,21 +20,15 @@ import glob
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-app = Flask(__name__)
-#app = Flask(__name__, static_url_path='/home/yebin/wxtest_static')
-#app.config.from_object('config')
-app.config['SECRET_KEY'] = '\xd0J\xcd\x05\x9az\xfd\xd9\xc4\xcd_\x192\xc1c?\xa6\xe7<*\xb0\x91\xe7J'
-app.config['DEBUG'] = True
-# Config MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = '840821'
-app.config['MYSQL_DB'] = 'myblog'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_object('config.DevelopmentConfig')
+app.config.from_pyfile('config.py')
 # init MYSQL
 mysql = MySQL(app)
 
-client = WeChatClient('wxbb4a6657207eb833', '0faa958c65817027da5d099f1256e5fd')
+#client = WeChatClient('wxbb4a6657207eb833', '0faa958c65817027da5d099f1256e5fd')
+from secret import AppID, AppSecret
+client = WeChatClient(AppID, AppSecret)
 '''
 client.menu.create({
     "button":[

@@ -1,5 +1,14 @@
-DEBUG = True
+import os
 
-AppID = 'wxbb4a6657207eb833' 
-AppSecret = '0faa958c65817027da5d099f1256e5fd'
-access_token = ''
+class Config(object):
+    DEBUG = False
+    SECRET_KEY = os.urandom(24)
+
+class ProductionConfig(Config):
+    pass
+
+class DevelopmentConfig(Config):
+    pass
+
+class TestingConfig(Config):
+    TESTING = True

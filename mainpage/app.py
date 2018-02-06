@@ -15,25 +15,13 @@ from functools import wraps
 from math import ceil
 import hashlib
 import cgi
-#import web
-#import lxml
-#import time
-#import os
-#import urllib2,json
-#from lxml import etree
 
-app = Flask(__name__)
-#app.debug = True
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_object('config.DevelopmentConfig')
+app.config.from_pyfile('config.py')
 
 global perpage
 perpage = 5
-app.config['SECRET_KEY'] = "\xd5\x1e]\xe0'\x85\xb6\xf9\xae\xd8sU\xb7\x0c{\xcd\x01\x13tI\xc3\xb2-\xb6"
-# Config MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = '840821'
-app.config['MYSQL_DB'] = 'documents'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
 
@@ -700,6 +688,5 @@ def search_article_body(page):
         return render_template('search_result.html', results=results, page=page, pages=pages, urlstr=urlstr)
 
 if __name__ == '__main__':
-    #app.secret_key = "\xd5\x1e]\xe0'\x85\xb6\xf9\xae\xd8sU\xb7\x0c{\xcd\x01\x13tI\xc3\xb2-\xb6"
     #app.run('0.0.0.0', 443, ssl_context=('fullchain1.pem', 'privkey1.pem'))
     app.run('0.0.0.0', 8021)
