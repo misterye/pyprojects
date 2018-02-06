@@ -1,5 +1,9 @@
 myblog/*.pyc
 wxtest/*.pyc
+log/*.pyc
+mainpage/*.pyc
 myblog/.venv/
 wxtest/.venv/
+log/.venv/
+mainpage/.venv/
 .git/
