@@ -1,3 +1,5 @@
-*.pyc
-.venv/
+myblog/*.pyc
+wxtest/*.pyc
+myblog/.venv/
+wxtest/.venv/
 .git/
