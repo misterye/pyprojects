@@ -2,8 +2,10 @@ myblog/*.pyc
 wxtest/*.pyc
 log/*.pyc
 mainpage/*.pyc
+rssh/*.pyc
 myblog/.venv/
 wxtest/.venv/
 log/.venv/
 mainpage/.venv/
+rssh/.venv/
 .git/
