@@ -12,6 +12,7 @@
       <th class="text-center">编号</th>
       <th class="text-center">姓名</th>
       <th class="text-center">用户名</th>
+      <th class="text-center">用户组</th>
       <th class="text-center">电子邮箱</th>
       <th class="text-center">注册日期</th>
       <th></th>
@@ -22,6 +23,7 @@
         <td align="center" valign="middle">{{user.id}}</td>
         <td align="center" valign="middle">{{user.name}}</td>
         <td align="center" valign="middle">{{user.username}}</td>
+        <td align="center" valign="middle">{{user.usergroup}}</td>
         <td align="center" valign="middle">{{user.email}}</td>
         <td align="center" valign="middle">{{user.register_date}}</td>
         {% if session['username'] == 'admin' %}

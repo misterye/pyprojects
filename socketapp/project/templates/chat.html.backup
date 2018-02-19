@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div class="text-center well"><h3><b>用户讨论区</b></h3></div>
+    <div class="container">
+      <div class="col-sm-8">
+        <div class="no_message">
+          <h1 style='color: #ccc'>还没有任何消息……</h1>
+          <p>延时：<b><span id="ping-pong"></span>ms</b></p>
+          <div class="message_holder"></div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <form id="send" action="" method="POST">
+          <h4><b>在下方输入用户名和消息内容<span class="glyphicon glyphicon-arrow-down"></span></b></h4>
+          <div class="clearfix" style="margin-top: 5px;"></div>
+          <input type="text" class="username form-control" value="{{name}}">
+          <div style="padding-top: 5px;"></div>
+          <input type="text" class="message form-control" placeholder="输入消息内容">
+          <div style="padding-top: 5px;"></div>
+          <button type="submit" class="btn btn-success btn-block"><span class="glyphicon glyphicon-send"></span> 发送</button>
+          <a class="btn btn-primary btn-block" href="http://satelc.com/">离开</a>
+        </form>
+      </div>
+    </div>
+
+    <script type="text/javascript" charset="utf-8">
+      var socket;
+      $(document).ready(function(){
+          socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
+          socket.on('connect', function(){
+              socket.emit('my_event', {
+                  data: 'Connected!'
+                  });
+              });
+          $('form#send').submit(function(e){
+              e.preventDefault();
+              let user_name = $('input.username').val();
+              let user_input = $('input.message').val();
+              socket.emit('my_event', {
+                  user_name: user_name,
+                  message: user_input
+                  });
+              $('input.message').val('').focus();
+              });
+          
+          socket.on('my_response', function(msg){
+              console.log(msg);
+              if(typeof msg.user_name != 'undefined'){
+                  $('h1').remove();
+                  $('div.message_holder').append('<div class="msg_bbl"><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' );
+              };
+              });
+
+          // Interval function that tests message latency by sending a "ping"
+          // message. The server then responds with a "pong" message and the
+          // round trip time is measured.
+          var ping_pong_times = [];
+          var start_time;
+          window.setInterval(function() {
+             start_time = (new Date).getTime();
+              socket.emit('my_ping');
+          }, 1000);
+          // Handler for the "pong" message. When the pong is received, the
+          // time from the ping is stored, and the average of the last 30
+          // samples is average and displayed.
+          socket.on('my_pong', function() {
+              var latency = (new Date).getTime() - start_time;
+              ping_pong_times.push(latency);
+              ping_pong_times = ping_pong_times.slice(-30); // keep last 30 samples
+              var sum = 0;
+              for (var i = 0; i < ping_pong_times.length; i++)
+                  sum += ping_pong_times[i];
+              $('#ping-pong').text(Math.round(10 * sum / ping_pong_times.length) / 10);
+          });
+          });
+    </script>
+{% endblock %}

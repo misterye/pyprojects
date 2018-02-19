@@ -45,7 +45,7 @@ client.menu.create({
         {
             "type":"view",
             "name":"小站监控",
-            "url":"http://satelc.com/clientstatus"
+            "url":"http://satelc.com/monitor"
         }
         ]
     }

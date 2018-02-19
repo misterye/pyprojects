@@ -1,7 +1,7 @@
 import os
 
 class Config(object):
-    DEBUG = False
+    DEBUG = True
     SECRET_KEY = os.urandom(24)
 
 class ProductionConfig(Config):

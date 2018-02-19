@@ -552,5 +552,4 @@ def incomplete(id):
     return redirect(url_for('done'))
 
 if __name__ == '__main__':
-    app.secret_key='fpaoiega84qddq48q0dijfe41fj0iggr9wrj'
     app.run('0.0.0.0', 8018)

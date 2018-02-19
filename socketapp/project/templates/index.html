@@ -1,0 +1,19 @@
+
+{% extends 'base.html' %}
+
+{% block body %}
+<center>
+    <div class="text-center well"><h3><b>用户讨论</b></h3></div>
+    <div class="container">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.name.label }}: <span class="glyphicon"></span>
+        {{ form.name() }} {% for error in form.name.errors %}{{ error }}{% endfor %}<br>
+        {{ form.room.label }}: <span class="glyphicon"></span>
+        {{ form.room() }} {% for error in form.room.errors %}{{ error }}{% endfor %}<br>
+        <div style="padding-top: 10px;"></div>
+        <span class="glyphicon"></span>{{ form.submit() }}
+    </form>
+    </div>
+</center>
+{% endblock %}
