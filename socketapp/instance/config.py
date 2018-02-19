@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 DEBUG = False
 #SERVER_NAME = 'myblog.app:8019'
 

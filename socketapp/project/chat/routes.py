@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 import sys;
 # set the default encoding to utf-8
 # reload sys model to enable the getdefaultencoding method.
@@ -51,6 +51,7 @@ def is_logged_in(f):
             return redirect(url_for('.chat_login'))
     return wrap
 
+'''
 # Home Page: Join Room
 @chat_blueprint.route('/', methods=['GET', 'POST'])
 @is_logged_in
@@ -81,9 +82,41 @@ def index():
             form.room.data = session['room']
             #form.room.data = session.get('room', '')
     return render_template('index.html', form=form)
+'''
+
+# Home Page: Join Room
+@chat_blueprint.route('/', methods=['GET', 'POST'])
+@is_logged_in
+def index():
+    """Login form to enter a room."""
+    form = LoginForm()
+    cur = db.connection.cursor()
+    result = cur.execute("SELECT usergroup FROM users WHERE username = %s", [session['username']])
+    if result > 0:
+        data = cur.fetchone()
+        usergroup = data['usergroup']
+    else:
+        usergroup = 'public'
+    if request.method == 'GET':
+        form.name.data = session.get('name', '')
+        if usergroup == 'test':
+            session['room'] = '测试组'
+            form.room.data = session['room']
+        elif usergroup == 'admin':
+            session['room'] = '管理员组'
+            form.room.data = session['room']
+        else:
+            session['room'] = '公共组'
+            form.room.data = session['room']
+    else:
+        if form.validate_on_submit():
+            session['name'] = form.name.data
+            session['room'] = form.room.data
+            return redirect(url_for('.chat'))
+    return render_template('index.html', form=form)
 
 
-@chat_blueprint.route('/chat')
+@chat_blueprint.route('/chat', methods=['GET', 'POST'])
 @is_logged_in
 def chat():
     """Chat room. The user's name and room must be stored in

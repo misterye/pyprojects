@@ -8,14 +8,26 @@
             socket.on('connect', function() {
                 socket.emit('joined', {});
             });
+            /*
             socket.on('status', function(data) {
-                $('#chat').val($('#chat').val() + '<' + data.msg + '>\n');
+                $('#chat').val($('#chat').val() + '<' + data.name + '>\n');
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
             });
+            */
+            socket.on('status', function(data) {
+                $('div.message_holder').append('<div class="msg_bbl"><b style="color: #000">'+data.name+'</div>');
+            });
+            /*
             socket.on('message', function(data) {
                 $('#chat').val($('#chat').val() + data.msg + '\n');
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
             });
+            */
+            socket.on('message', function(data){
+                $('h3').remove();
+                $('div.message_holder').append('<div class="msg_bbl"><b style="color: #000">'+data.name+'：'+data.msg+'</div>');
+            });
+            /*
             $('#text').keypress(function(e) {
                 var code = e.keyCode || e.which;
                 if (code == 13) {
@@ -24,6 +36,14 @@
                     socket.emit('text', {msg: text});
                 }
             });
+            */
+            $('form#send').submit(function(e){
+                e.preventDefault();
+                let user_input = $('input.message').val();
+                socket.emit('text', {msg: user_input});
+                $('input.message').val('').focus();
+            });
+            /*
             $('#broadcast_text').keypress(function(e) {
                 var code = e.keyCode || e.which;
                 if (code == 13) {
@@ -31,6 +51,13 @@
                     $('#broadcast_text').val('');
                     socket.emit('broadcast_text', {msg: broadcast_text});
                 }
+            });
+            */
+            $('form#broadcast').submit(function(e){
+                e.preventDefault();
+                let user_input = $('input.broadcast_message').val();
+                socket.emit('broadcast_text', {msg: user_input});
+                $('input.broadcast_message').val('').focus();
             });
             // Interval function that tests message latency by sending a "ping"
             // message. The server then responds with a "pong" message and the
@@ -63,13 +90,25 @@
             });
         }
     </script>
-    <h1>用户讨论组: {{ room }}</h1>
+    <h3>用户讨论组: {{ room }}</h3>
     <p>延时：<b><span id="ping-pong"></span>ms</b></p>
-    <textarea id="chat" cols="80" rows="20"></textarea><br><br>
-    {% if room == '公共频道' %}
-        <input id="broadcast_text" size="80" placeholder="Enter your message here"><br><br>
+    <div class="no_message">
+        <h3 style='color: #ccc'>暂无消息 ...</h3>
+        <div class="message_holder"></div>
+    </div>
+    {% if room == '公共组' %}
+    <form id="broadcast" action="" method="POST">
+        <input type="text" class="broadcast_message form-control" id="broadcast_text" placeholder="输入消息内容"><br>
+        <div style="padding-top: 5px;"></div>
+        <button type="submit" class="btn btn-success"><span class="glyphicon"></span>发送</button>
+    </form>
     {% else %}
-        <input id="text" size="80" placeholder="Enter your message here"><br><br>
+    <form id="send" action="" method="POST">
+        <input type="text" class="message form-control" id="text" placeholder="输入消息内容"><br>
+        <div style="padding-top: 5px;"></div>
+        <button type="submit" class="btn btn-success"><span class="glyphicon"></span>发送</button>
+    </form>
     {% endif %}
-    <a href="#" onclick="leave_room();">Leave this room</a>
+    <div style="padding-top: 5px;"></div>
+    <a class="btn btn-primary" href="#" onclick="leave_room();">离开</a>
 {% endblock %}

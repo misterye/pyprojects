@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 import sys;
 # set the default encoding to utf-8
 # reload sys model to enable the getdefaultencoding method.
