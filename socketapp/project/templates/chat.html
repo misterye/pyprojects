@@ -24,7 +24,7 @@
             });
             */
             socket.on('message', function(data){
-                $('h3').remove();
+                $('h4').remove();
                 $('div.message_holder').append('<div class="msg_bbl"><b style="color: #000">'+data.name+'：'+data.msg+'</div>');
             });
             /*
@@ -93,20 +93,26 @@
     <h3>用户讨论组: {{ room }}</h3>
     <p>延时：<b><span id="ping-pong"></span>ms</b></p>
     <div class="no_message">
-        <h3 style='color: #ccc'>暂无消息 ...</h3>
+        <h4 style='color: #ccc'>暂无消息 ...</h4>
         <div class="message_holder"></div>
     </div>
     {% if room == '公共组' %}
     <form id="broadcast" action="" method="POST">
-        <input type="text" class="broadcast_message form-control" id="broadcast_text" placeholder="输入消息内容"><br>
-        <div style="padding-top: 5px;"></div>
-        <button type="submit" class="btn btn-success"><span class="glyphicon"></span>发送</button>
+        <div style="width: 200px">
+            <input type="text" class="broadcast_message form-control" id="broadcast_text" placeholder="输入消息内容">
+        </div>
+        <div style="width: 80px; margin-left: 200px; margin-top: -34px">
+            <button type="submit" class="btn btn-success"><span class="glyphicon"></span>发送</button>
+        </div>
     </form>
     {% else %}
     <form id="send" action="" method="POST">
-        <input type="text" class="message form-control" id="text" placeholder="输入消息内容"><br>
-        <div style="padding-top: 5px;"></div>
-        <button type="submit" class="btn btn-success"><span class="glyphicon"></span>发送</button>
+        <div style="width: 200px">
+            <input type="text" class="message form-control" id="text" placeholder="输入消息内容">
+        </div>
+        <div style="width: 80px; margin-left: 200px; margin-top: -34px">
+            <button type="submit" class="btn btn-success"><span class="glyphicon"></span>发送</button>
+        </div>
     </form>
     {% endif %}
     <div style="padding-top: 5px;"></div>
