@@ -78,7 +78,7 @@ def monitor():
 # RSSH
 @app.route('/rssh')
 def rssh():
-    return redirect("http://rssh.satelc.com/")
+    return redirect("http://satelc.com:8085/")
     #return redirect("http://139.224.114.83:8085/")
 
 # Articles
