@@ -29,7 +29,7 @@ def chat_login():
                 session['logged_in'] = True
                 session['username'] = username
                 session['name'] = name
-                flash("登录成功。", 'success')
+                #flash("登录成功。", 'success')
                 return redirect(url_for('.chat_index'))
             else:
                 error = 'Invalid login'
