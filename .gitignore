@@ -3,6 +3,8 @@ myblog/*.pyc
 myblog/.venv/
 myblog/instance/
 myblog/*.dat
+myblog/expovlog.py
+myblog/store_client_status.py
 wxtest/*.pyc
 wxtest/.venv/
 wxtest/instance/

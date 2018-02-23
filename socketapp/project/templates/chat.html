@@ -86,15 +86,15 @@
                 socket.disconnect();
 
                 // go back to the login page
-                window.location.href = "{{ url_for('chat_blueprint.index') }}";
+                window.location.href = "{{ url_for('chat_blueprint.chat_index') }}";
             });
         }
     </script>
     <h3>用户讨论组: {{ room }}</h3>
     <p>延时：<b><span id="ping-pong"></span>ms</b></p>
     <div class="no_message">
-        <h4 style='color: #ccc'>暂无消息 ...</h4>
         <div class="message_holder"></div>
+        <h4 style='color: #ccc'>暂无消息 ...</h4>
     </div>
     {% if room == '公共组' %}
     <form id="broadcast" action="" method="POST">

@@ -10,6 +10,9 @@ assert sys.getdefaultencoding().lower() == "utf-8";
 from flask import Flask
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO
+#from flask_mail import Mail
+#from flask_mail import Message
+#from threading import Thread
 
 socketio = SocketIO()
 
@@ -18,12 +21,13 @@ app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config.DevelopmentConfig')
 app.config.from_pyfile('config.py')
 db = MySQL(app)
+#mail = Mail(app)
 
 from .chat import chat_blueprint
-#from project.monitor import monitor_blueprint
+from .monitor import monitor_blueprint
 
-app.register_blueprint(chat_blueprint)
-#app.register_blueprint(monitor_blueprint, url_prefix='/monitor')
+app.register_blueprint(chat_blueprint, url_prefix='/chat')
+app.register_blueprint(monitor_blueprint, url_prefix='/monitor')
 
 socketio.init_app(app)
 

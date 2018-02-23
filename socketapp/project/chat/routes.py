@@ -30,7 +30,7 @@ def chat_login():
                 session['username'] = username
                 session['name'] = name
                 flash("登录成功。", 'success')
-                return redirect(url_for('.index'))
+                return redirect(url_for('.chat_index'))
             else:
                 error = 'Invalid login'
                 return render_template('chat_login.html', error=error)
@@ -55,7 +55,7 @@ def is_logged_in(f):
 # Home Page: Join Room
 @chat_blueprint.route('/', methods=['GET', 'POST'])
 @is_logged_in
-def index():
+def chat_index():
     """Login form to enter a room."""
     form = LoginForm()
     cur = db.connection.cursor()
@@ -81,13 +81,13 @@ def index():
             session['room'] = '公共频道'
             form.room.data = session['room']
             #form.room.data = session.get('room', '')
-    return render_template('index.html', form=form)
+    return render_template('chat_index.html', form=form)
 '''
 
 # Home Page: Join Room
 @chat_blueprint.route('/', methods=['GET', 'POST'])
 @is_logged_in
-def index():
+def chat_index():
     """Login form to enter a room."""
     form = LoginForm()
     cur = db.connection.cursor()
@@ -113,7 +113,7 @@ def index():
             session['name'] = form.name.data
             session['room'] = form.room.data
             return redirect(url_for('.chat'))
-    return render_template('index.html', form=form)
+    return render_template('chat_index.html', form=form)
 
 
 @chat_blueprint.route('/chat', methods=['GET', 'POST'])
@@ -124,13 +124,13 @@ def chat():
     name = session.get('name', '')
     room = session.get('room', '')
     if name == '' or room == '':
-        return redirect(url_for('.index'))
+        return redirect(url_for('.chat_index'))
     return render_template('chat.html', name=name, room=room)
 
 # Logout
 @chat_blueprint.route('/chat_logout')
 @is_logged_in
-def logout():
+def chat_logout():
     session.clear()
     flash("已注销。", 'success')
     return redirect(url_for('.chat_login'))
@@ -151,10 +151,21 @@ def articles():
 def terminals():
     return redirect("http://satelc.com/terminals")
 
-@chat_blueprint.route('/monitor')
-def monitor():
-    pass
-    #return redirect("http://monitor.satelc.com/")
+@chat_blueprint.route('/navmonitor')
+def navmonitor():
+    return redirect("http://satelc.com:8084/monitor/monitor_index")
+
+@chat_blueprint.route('/navchat')
+def navchat():
+    return redirect("http://satelc.com:8084/chat/chat")
+
+@chat_blueprint.route('/navlogout')
+def navlogout():
+    return redirect("http://satelc.com:8084/chat/chat_logout")
+
+@chat_blueprint.route('/navlogin')
+def navlogin():
+    return redirect("http://satelc.com:8084/chat/chat_login")
 
 # Messages
 @chat_blueprint.route('/messages')
@@ -179,7 +190,7 @@ def dashboard_users():
 # RSSH
 @chat_blueprint.route('/rssh')
 def rssh():
-    return redirect("http://rssh.satelc.com/")
+    return redirect("http://satelc.com:8085/")
 
 # Search_keyword
 @chat_blueprint.route('/search_keyword')

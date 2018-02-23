@@ -67,13 +67,13 @@ def is_admin(f):
 @app.route('/chat', methods=['GET', 'POST'])
 @is_logged_in
 def chat():
-    return redirect("http://chat.satelc.com/")
-    #return redirect("http://139.224.114.83:8084/")
+    return redirect("http://satelc.com:8084/chat/chat")
+    #return redirect("http://139.224.114.83:8084/chat")
 
 @app.route('/monitor', methods=['GET', 'POST'])
 @is_logged_in
 def monitor():
-    pass
+    return redirect("http://satelc.com:8084/monitor/monitor_index")
 
 # RSSH
 @app.route('/rssh')

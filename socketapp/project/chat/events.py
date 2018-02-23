@@ -5,6 +5,10 @@ import sys;
 reload(sys);
 # using exec to set the excoding, to avoid error in IDE
 exec("sys.setdefaultencoding('utf-8')");
+
+import eventlet
+eventlet.monkey_patch()
+
 from flask import session
 from flask_socketio import emit, join_room, leave_room
 from ..app import socketio
@@ -26,7 +30,8 @@ def text(message):
     #print("用户组为：%s" % room)
     #print("消息为：%s" % message['msg'].encode("latin-1","ignore"))
     #print("消息类型为：%s" % type(message['msg']))
-    emit('message', {'name': session.get('name'), 'msg': message['msg'].encode("latin-1","ignore")}, room=room)
+    #emit('message', {'name': session.get('name'), 'msg': message['msg'].encode("latin-1","ignore")}, room=room)
+    emit('message', {'name': session.get('name'), 'msg': message['msg']}, room=room)
 
 @socketio.on('broadcast_text', namespace='/chat')
 def broadcast_text(message):
