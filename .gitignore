@@ -5,6 +5,8 @@ myblog/instance/
 myblog/*.dat
 myblog/expovlog.py
 myblog/store_client_status.py
+myblog/store_client_status*.*
+myblog/*.pid
 wxtest/*.pyc
 wxtest/.venv/
 wxtest/instance/
