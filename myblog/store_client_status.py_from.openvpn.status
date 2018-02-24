@@ -1,0 +1,59 @@
+# -*- coding: utf-8 -*-
+import sys;
+# set the default encoding to utf-8
+# reload sys model to enable the getdefaultencoding method.
+reload(sys);
+# using exec to set the excoding, to avoid error in IDE
+exec("sys.setdefaultencoding('utf-8')");
+import MySQLdb
+from openvpn_status import parse_status
+from time import sleep
+
+db = MySQLdb.connect(host='localhost', user='root', passwd='840821', db='myblog')
+cur = db.cursor()
+try:
+    print "Getting all the clients ..."
+    cur.execute("""SELECT client FROM terminals""")
+    data = cur.fetchall()
+    print data
+    clients = []
+    for d in data:
+        clients.append(d[0])
+    print clients
+except:
+    db.rollback()
+    print "Operation failed!"
+cur.close()
+
+while True:
+    with open('/home/yebin/pyprojects/myblog/vlog.log') as log:
+        online_status = parse_status(log.read())
+    online_clients = online_status.client_list
+    #online_list = []
+    #offline_list = []
+    on = 'on'
+    off = 'off'
+    cur = db.cursor()
+    for client in clients:
+        if client in online_clients:
+            try:
+                print "Storing online client's status ..."
+                #online_list.append(client)
+                sql = ("""INSERT INTO status (client, connect) VALUES (%s, %s)""", (client, on))
+                cur.execute(*sql)
+                db.commit()
+            except:
+                db.rollback()
+                print "Operation failed!"
+        else:
+            try:
+                print "Storing offline client's status ..."
+                #offline_list.append(client)
+                sql = ("""INSERT INTO status (client, connect) VALUES (%s, %s)""", (client, off))
+                cur.execute(*sql)
+                db.commit()
+            except:
+                db.rollback()
+                print "Operation failed!"
+    cur.close()
+    sleep(60)
