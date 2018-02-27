@@ -7,6 +7,10 @@ myblog/expovlog.py
 myblog/store_client_status.py
 myblog/store_client_status*.*
 myblog/*.pid
+myblog/del_status_data
+myblog/del_temperature_data.py
+myblog/send_email_attachment.py
+myblog/send_email_hourly.py
 wxtest/*.pyc
 wxtest/.venv/
 wxtest/instance/

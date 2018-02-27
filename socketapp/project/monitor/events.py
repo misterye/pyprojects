@@ -21,6 +21,18 @@ from ..app import db
 def my_event(msg):
     emit('my_response', msg)
 
+def fetchTemp(client_name):
+    cur = db.connection.cursor()
+    cur.execute("SELECT tempdata FROM temperature WHERE client=%s ORDER BY ID DESC LIMIT 1", [client_name])
+    result = cur.fetchone()
+    if result != None:
+        temp = result['tempdata']
+    else:
+        temp = '--'
+    cur.close()
+    return temp
+    
+
 @socketio.on('status', namespace='/monitor')
 def clientStatus():
     cur = db.connection.cursor()
@@ -36,9 +48,12 @@ def clientStatus():
             client = cur.fetchone()
             #print("小站名称：%s" % client['client'])
             #print("小站状态：%s" % client['connect'])
+            client_temp = fetchTemp(c)
+            print("THE CLIENT TEMPERATURE IS: %s" % client_temp)
             emit('online', {
                 'client_name': client['client'],
-                'client_status': client['connect']
+                'client_status': client['connect'],
+                'client_temperature': client_temp
                 })
         #socketio.sleep(10)
         eventlet.sleep(10)

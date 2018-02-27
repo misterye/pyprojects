@@ -15,6 +15,7 @@
             <th class="text-center">终端类型</th>
             <th class="text-center">远程管理</th>
             <th class="text-center">在线状态</th>
+            <th class="text-center">设备温度</th>
         </tr>
         </thead>
         {% for t in range(ccount) %}
@@ -24,6 +25,7 @@
                 <td align="center" valign="middle">{{satellites[t]}}</td>
                 <td align="center" valign="middle">{{modems[t]}}</td>
                 <td align="center" valign="middle" id="logon">&nbsp;</td>
+                <td align="center" valign="middle" id="stat">&nbsp;</td>
                 <td align="center" valign="middle" id="temp">&nbsp;</td>
             </tr>
         {% endfor %}
@@ -38,6 +40,7 @@
             document.getElementsByTagName("table")[0].rows[0].cells[3].style.backgroundColor = "#dddddd";
             document.getElementsByTagName("table")[0].rows[0].cells[4].style.backgroundColor = "#dddddd";
             document.getElementsByTagName("table")[0].rows[0].cells[5].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[6].style.backgroundColor = "#dddddd";
 
             socket.on('connect', function(){
                 socket.emit('my_event', {
@@ -70,6 +73,8 @@
                             document.getElementsByTagName("table")[0].rows[i+1].cells[4].style.backgroundColor = "#66FF99";
                             document.getElementsByTagName("table")[0].rows[i+1].cells[4].innerHTML = '<a href="http://satelc.com:8085/" target="_blank">登录</a>';
                             document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[6].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[6].innerHTML = msg.client_temperature;
                         } else {
                             document.getElementsByTagName("table")[0].rows[i+1].cells[0].style.backgroundColor = "#ffffff";
                             document.getElementsByTagName("table")[0].rows[i+1].cells[1].style.backgroundColor = "#ffffff";
@@ -78,6 +83,7 @@
                             document.getElementsByTagName("table")[0].rows[i+1].cells[4].style.backgroundColor = "#ffffff";
                             document.getElementsByTagName("table")[0].rows[i+1].cells[4].innerHTML = "<a href='#'><font color='D3D3D3'>登录</a>";
                             document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#ffffff";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[6].style.backgroundColor = "#ffffff";
                         }
                     }
                 }
