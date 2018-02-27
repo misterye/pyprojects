@@ -29,7 +29,7 @@ mysql = MySQL(app)
 #client = WeChatClient('wxbb4a6657207eb833', '0faa958c65817027da5d099f1256e5fd')
 from secret import AppID, AppSecret
 client = WeChatClient(AppID, AppSecret)
-'''
+
 client.menu.create({
     "button":[
         {
@@ -45,7 +45,7 @@ client.menu.create({
         {
             "type":"view",
             "name":"小站监控",
-            "url":"http://satelc.com/monitor"
+            "url":"http://satelc.com:8084/monitor/monitor_index"
         }
         ]
     }
@@ -53,7 +53,7 @@ client.menu.create({
 
 menu = client.menu.get()
 print menu
-'''
+
 def replyMsg(data):
     msg = parse_message(data)
     if msg.type == 'event' and msg.event == 'subscribe':
@@ -72,24 +72,24 @@ def replyMsg(data):
         for cn in client_name:
             client_list.append(cn['client'])
         if msg.content in client_list:
-            status_result = cur.execute("SELECT connect, create_time FROM status WHERE client = %s ORDER BY id DESC  LIMIT 1", [msg.content])
+            cur.execute("SELECT connect, create_time FROM status WHERE client = %s ORDER BY id DESC  LIMIT 1", [msg.content])
             current_status = cur.fetchone()
             msg_status = current_status['connect']
             msg_status_time = current_status['create_time']
             if msg_status == 'on':
                 replystat = "小站状态：在线\n设备温度："
-                temp_from_server_db = cur.execute("SELECT client FROM temperature")
+                cur.execute("SELECT client FROM temperature")
                 temp_client_server_db = cur.fetchall()
                 temp_client_server_db_list = []
                 for tl in temp_client_server_db:
                     temp_client_server_db_list.append(tl['client'])
                 if msg.content in temp_client_server_db_list:
-                    temp_result = cur.execute("SELECT tempdata, create_time FROM temperature WHERE client = %s ORDER BY id DESC LIMIT 1", [msg.content])
+                    cur.execute("SELECT tempdata, create_time FROM temperature WHERE client = %s ORDER BY id DESC LIMIT 1", [msg.content])
                     current_temp = cur.fetchone()
                     msg_temp = current_temp['tempdata']
                     msg_temp_time = current_temp['create_time']
                     #reply = TextReply(content='小站在线', message=msg)
-                    replytemp = msg_temp
+                    replytemp = str(msg_temp)
                     replytimemsg = "\n获取时间："
                     replytime = str(msg_temp_time)
                     replycontent = replystat+replytemp+replytimemsg+replytime
