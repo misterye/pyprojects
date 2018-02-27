@@ -12,6 +12,7 @@ eventlet.monkey_patch()
 from flask import session
 from flask_socketio import emit, join_room, leave_room
 from ..app import socketio
+import cgi
 
 @socketio.on('joined', namespace='/chat')
 def joined(message):
@@ -31,7 +32,7 @@ def text(message):
     #print("消息为：%s" % message['msg'].encode("latin-1","ignore"))
     #print("消息类型为：%s" % type(message['msg']))
     #emit('message', {'name': session.get('name'), 'msg': message['msg'].encode("latin-1","ignore")}, room=room)
-    emit('message', {'name': session.get('name'), 'msg': message['msg']}, room=room)
+    emit('message', {'name': session.get('name'), 'msg': cgi.escape(message['msg'])}, room=room)
 
 @socketio.on('broadcast_text', namespace='/chat')
 def broadcast_text(message):
