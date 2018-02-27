@@ -4,10 +4,8 @@
   <ul class="list-group">
     {% for result in results %}
       {% if result.author == session['username'] %}
-        <h3><a href="{{url_for('log', id=result.id)}}">{{result.create_date}} | {{result.author}}</a></h3>
-      <div class="well">
-        <h3>{{result.body | safe}}</h3>
-      </div>
+        <h3><a href="{{url_for('log', id=result.id)}}">{{result.title}}</a></h3>
+        <small>{{result.author}} | {{result.create_date}}</small>
       {% endif %}
     {% endfor %}
   </ul>

@@ -8,6 +8,7 @@
   <table class="table table-striped">
     <tr>
       <th class="text-center">编号</th>
+      <th class="text-center">标题</th>
       <th class="text-center">发布者</th>
       <th class="text-center">日期</th>
       <th class="text-center"></th>
@@ -16,8 +17,9 @@
     {% for log in logs %}
       <tr>
         <td align="center" valign="middle">{{log.id}}</td>
+        <td align="center" valign="middle"><a href="{{url_for('log_to_admin',id=log.id)}}">{{log.title}}</a></td>
         <td align="center" valign="middle">{{log.author}}</td>
-        <td align="center" valign="middle"><a href="{{url_for('log_to_admin',id=log.id)}}">{{log.create_date}}</a></td>
+        <td align="center" valign="middle">{{log.create_date}}</td>
         {% if session['username'] == 'admin' %}
         <td><a href="{{url_for('edit_log',id=log.id)}}" class="btn btn-default pull-right">编辑</a></td>
         <td>

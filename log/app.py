@@ -75,6 +75,7 @@ class UserForm(Form):
 	
 # Log Form Class
 class LogForm(Form):
+    title = StringField("标题")
     body = TextAreaField("内容", [validators.Length(min=1)])
 
 # Search Form Class
@@ -359,11 +360,12 @@ def add_log():
     form = LogForm(request.form)
     if request.method == 'POST' and form.validate():
         author = session['username']
+        title = form.title.data
         body = form.body.data
         # Create cursor
         cur = mysql.connection.cursor()
         # Execute
-        cur.execute("INSERT INTO logs(author, body) VALUES(%s, %s)",(author, body))
+        cur.execute("INSERT INTO logs(title, author, body) VALUES(%s, %s, %s)",(title, author, body))
         # Commit to DB
         mysql.connection.commit()
         # Close connection
@@ -385,13 +387,15 @@ def edit_log(id):
     # Get form
     form = LogForm(request.form)
     # Populate log form fields
+    form.title.data = log['title']
     form.body.data = log['body']
     if request.method == 'POST' and form.validate():
+        title = request.form['title']
         body = request.form['body']
         # Create cursor
         cur = mysql.connection.cursor()
         # Execute
-        cur.execute("UPDATE logs SET body=%s WHERE id = %s", (body, id))
+        cur.execute("UPDATE logs SET title=%s, body=%s WHERE id = %s", (title, body, id))
         # Commit to DB
         mysql.connection.commit()
         # Close connection
