@@ -111,7 +111,8 @@ def register():
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('home.html')
+    #return render_template('home.html')
+    return redirect(url_for('user_logs'))
 
 # User login
 #@app.route('/', methods=['GET', 'POST'])
