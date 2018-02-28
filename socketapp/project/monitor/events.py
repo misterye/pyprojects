@@ -23,7 +23,7 @@ def my_event(msg):
 
 def fetchTemp(client_name):
     cur = db.connection.cursor()
-    cur.execute("SELECT tempdata FROM temperature WHERE client=%s ORDER BY ID DESC LIMIT 1", [client_name])
+    cur.execute("SELECT tempdata FROM temperature WHERE client=%s ORDER BY create_time DESC LIMIT 1", [client_name])
     result = cur.fetchone()
     if result != None:
         temp = result['tempdata']
@@ -44,7 +44,7 @@ def clientStatus():
     #print("数据库中所有小站：%s" % clients)
     while True:
         for c in clients:
-            cur.execute("SELECT client, connect FROM status WHERE client=%s ORDER BY ID DESC LIMIT 1", [c])
+            cur.execute("SELECT client, connect FROM status WHERE client=%s ORDER BY create_time DESC LIMIT 1", [c])
             client = cur.fetchone()
             #print("小站名称：%s" % client['client'])
             #print("小站状态：%s" % client['connect'])

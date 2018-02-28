@@ -1,0 +1,14 @@
+[Unit]
+Description=serve delete online status data service
+After=network.target
+
+[Service]
+User=yebin
+Group=root
+WorkingDirectory=/home/yebin/pyprojects/myblog
+Environment="PATH=/home/yebin/pyprojects/.venv/bin"
+ExecStart=/home/yebin/pyprojects/.venv/bin/python del_status_data.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
