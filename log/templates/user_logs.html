@@ -3,10 +3,12 @@
 {% block body %}
   <ul class="list-group">
     {% for log in logs %}
+      <li class="list-group-item">
       {% if log.author == session['username'] %}
         <h3><a href="{{url_for('log',id=log.id)}}">{{log.title}}</a></h3>
         <small>{{log.author}} | {{log.create_date}}</small>
       {% endif %}
+      </li>
     {% endfor %}
   </ul>
   <center>

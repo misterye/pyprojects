@@ -29,7 +29,7 @@ mysql = MySQL(app)
 #client = WeChatClient('wxbb4a6657207eb833', '0faa958c65817027da5d099f1256e5fd')
 from secret import AppID, AppSecret
 client = WeChatClient(AppID, AppSecret)
-
+'''
 client.menu.create({
     "button":[
         {
@@ -50,10 +50,9 @@ client.menu.create({
         ]
     }
 )
-
 menu = client.menu.get()
 print menu
-
+'''
 def replyMsg(data):
     msg = parse_message(data)
     if msg.type == 'event' and msg.event == 'subscribe':
@@ -72,7 +71,7 @@ def replyMsg(data):
         for cn in client_name:
             client_list.append(cn['client'])
         if msg.content in client_list:
-            cur.execute("SELECT connect, create_time FROM status WHERE client = %s ORDER BY id DESC  LIMIT 1", [msg.content])
+            cur.execute("SELECT connect, create_time FROM status WHERE client = %s ORDER BY create_time DESC  LIMIT 1", [msg.content])
             current_status = cur.fetchone()
             msg_status = current_status['connect']
             msg_status_time = current_status['create_time']
@@ -84,7 +83,7 @@ def replyMsg(data):
                 for tl in temp_client_server_db:
                     temp_client_server_db_list.append(tl['client'])
                 if msg.content in temp_client_server_db_list:
-                    cur.execute("SELECT tempdata, create_time FROM temperature WHERE client = %s ORDER BY id DESC LIMIT 1", [msg.content])
+                    cur.execute("SELECT tempdata, create_time FROM temperature WHERE client = %s ORDER BY create_time DESC LIMIT 1", [msg.content])
                     current_temp = cur.fetchone()
                     msg_temp = current_temp['tempdata']
                     msg_temp_time = current_temp['create_time']

@@ -1,6 +1,4 @@
-#coding:utf-8
-#encoding=utf-8
-
+# -*- coding: utf-8 -*-
 import time
 import requests
 import json
@@ -8,8 +6,23 @@ import MySQLdb
 import sys
 import urllib2
 
+from flask import Flask
+from flask_mail import Mail
+from flask_mail import Message
+from threading import Thread
+
 reload(sys)
 sys.setdefaultencoding('utf8')
+
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_object('config.DevelopmentConfig')
+app.config.from_pyfile('config.py')
+
+mail = Mail(app)
+
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
 
 def send_slack_link(id):
     link_id = "http://satelc.com/client_status/"+str(id)+"/"
@@ -35,7 +48,7 @@ while True:
     clients = cur.fetchall()
     str_cn = ""
     for cn in clients:
-        sql = ("""SELECT connect, create_time FROM status WHERE client = %s ORDER BY id DESC  LIMIT 1""", [cn[7]])
+        sql = ("""SELECT connect, create_time FROM status WHERE client = %s ORDER BY create_time DESC  LIMIT 1""", [cn[7]])
         cur.execute(*sql)
         current_status = cur.fetchone()
         msg_status = current_status[0]
@@ -44,13 +57,13 @@ while True:
         if msg_status == 'on':
             replystat = "小站状态：在线<br>设备温度："
             replyname = "小站名称："+msg_name+"<br>"
-            sql = ("""SELECT tempdata, create_time FROM temperature WHERE client = %s ORDER BY id DESC LIMIT 1""", [cn[7]])
+            sql = ("""SELECT tempdata, create_time FROM temperature WHERE client = %s ORDER BY create_time DESC LIMIT 1""", [cn[7]])
             temp_result = cur.execute(*sql)
             if temp_result > 0:
                 current_temp = cur.fetchone()
                 msg_temp = current_temp[0]
                 msg_temp_time = current_temp[1]
-                replytemp = msg_temp
+                replytemp = str(msg_temp)
                 replytimemsg = "<br>获取时间："
                 replytime = str(msg_temp_time)
                 replycontent = replyname+replystat+replytemp+replytimemsg+replytime
@@ -68,6 +81,10 @@ while True:
         str_cn += replycontent+"<br><br>"
         statusreplytime = str(msg_status_time)
     content_title = "Status of All Clients @ "+statusreplytime
+    msg = Message(subject='卫星终端控制器状态', sender='service@satelc.com', recipients=['13916838729@139.com'])
+    msg.html = str_cn
+    thr = Thread(target=send_async_email, args=[app, msg])
+    thr.start()
     try:
         newsql = ("""INSERT INTO client_status(title, body) VALUES(%s, %s)""", ([content_title], [str_cn]))
         cur.execute(*newsql)
@@ -82,6 +99,7 @@ while True:
 
     send_slack_link(current_id)
     send_dingding_link(current_id)
+
     cur.close()
     db.close()
     time.sleep(3600)

@@ -15,6 +15,7 @@ wxtest/*.pyc
 wxtest/.venv/
 wxtest/instance/
 wxtest/secret.py
+wxtest/send_msg_hourly.py
 log/*.pyc
 log/.venv/
 log/instance/

@@ -4,8 +4,10 @@
   {% if session['username'] == 'admin' %}
   <h2>所有日志</h2>
     {% for log in logs %}
+    <li class="list-group-item">
       <h3><a href="{{url_for('log_to_admin',id=log.id)}}">{{log.title}}</a></h3>
       <small>{{log.author}} | {{log.create_date}}</small>
+    </li>
     {% endfor %}
   {% endif %}
 
