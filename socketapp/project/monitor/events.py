@@ -31,7 +31,6 @@ def fetchTemp(client_name):
         temp = '--'
     cur.close()
     return temp
-    
 
 @socketio.on('status', namespace='/monitor')
 def clientStatus():
