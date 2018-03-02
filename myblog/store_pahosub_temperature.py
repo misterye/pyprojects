@@ -39,7 +39,7 @@ while Connected != True:
 client.subscribe('devices/raspi/#')
 try:
     while True:
-        time.sleep(1)
+        time.sleep(10)
 except KeyboardInterrupt:
     print "exiting..."
     cur.close()
