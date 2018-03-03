@@ -82,27 +82,28 @@ def replyMsg(data):
                 for sr in statusresult:
                     for s in sr:
                         conn_stat = s['connect']
-                        conn_time = s['time']
+                        #conn_time = s['time']
             else:
                 conn_stat = 'off'
-
-
-            #cur.execute("SELECT connect, create_time FROM status WHERE client = %s ORDER BY create_time DESC  LIMIT 1", [msg.content])
-            #current_status = cur.fetchone()
             msg_status = conn_stat
-            #msg_status_time = current_status['create_time']
             if msg_status == 'on':
                 replystat = "小站状态：在线\n设备温度："
-
-
-
                 qtemp = "select * from temperature where client=" + "\'"+msg.content+"\'" + " order by time desc limit 1"
                 tempresult = influxclient.query(qtemp)
                 if tempresult:
                     for tr in tempresult:
                         for t in tr:
                             client_temp = t['tempdata']
-                            client_temp_time = t['time']
+
+                            utc_time = t['time']
+                            diff = int(utc_time[11:13])+8
+                            if diff >= 24:
+                                local_hour = diff - 24
+                            else:
+                                local_hour = diff
+                            replace = str(local_hour)
+                            local_time = utc_time[:11] + replace + utc_time[13:]
+                            client_temp_time = local_time
                     replytemp = str(client_temp)
                     replytimemsg = "\n获取时间："
                     replytime = str(client_temp_time)

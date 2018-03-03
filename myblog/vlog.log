@@ -1,12 +1,12 @@
 OpenVPN CLIENT LIST
-Updated,Sat Mar  3 21:05:21 2018
+Updated,Sat Mar  3 22:20:41 2018
 Common Name,Real Address,Bytes Received,Bytes Sent,Connected Since
-gxgadzt,117.185.37.94:1516,12969955,6911401,Thu Mar  1 11:38:21 2018
-xiqidongshu_test,117.185.37.94:2086,27225636,32544618,Tue Feb 27 22:18:35 2018
+gxgadzt,117.185.37.94:1516,13253390,7054693,Thu Mar  1 11:38:21 2018
+xiqidongshu_test,117.185.37.94:2086,27493876,32681876,Tue Feb 27 22:18:35 2018
 ROUTING TABLE
 Virtual Address,Common Name,Real Address,Last Ref
-10.8.0.15,gxgadzt,117.185.37.94:1516,Sat Mar  3 21:05:19 2018
-10.8.0.6,xiqidongshu_test,117.185.37.94:2086,Sat Mar  3 21:05:16 2018
+10.8.0.15,gxgadzt,117.185.37.94:1516,Sat Mar  3 22:20:39 2018
+10.8.0.6,xiqidongshu_test,117.185.37.94:2086,Sat Mar  3 22:20:40 2018
 GLOBAL STATS
 Max bcast/mcast queue length,0
 END

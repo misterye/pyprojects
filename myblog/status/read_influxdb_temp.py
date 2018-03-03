@@ -2,7 +2,7 @@
 from influxdb import InfluxDBClient
 
 s = 'gxgadzt'
-q="select * from temperature where client=" + "\'"+s+"\'" + " order by time desc limit 10"
+q="select * from temperature where client=" + "\'"+s+"\'" + " order by time desc limit 1"
 client = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
 #result = client.query("select * from temperature where client='gxgadzt' order by time desc limit 10")
 result = client.query(q)
@@ -10,4 +10,12 @@ result = client.query(q)
 for r in result:
     #print r
     for t in r:
-        print("Client: %s; Temperature: %s; Time: %s" % (t['client'], t['tempdata'], t['time']))
+        utc_time = t['time']
+        diff = int(utc_time[11:13])+8
+        if diff >= 24:
+            local_hour = diff - 24
+        else:
+            local_hour = diff
+        replace = str(local_hour)
+        local_time = utc_time[:11] + replace + utc_time[13:]
+        print("Client: %s; Temperature: %s; Time: %s" % (t['client'], t['tempdata'], local_time))

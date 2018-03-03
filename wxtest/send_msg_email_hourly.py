@@ -62,7 +62,15 @@ while True:
             for sr in statusresult:
                 for s in sr:
                     conn_stat = s['connect']
-                    conn_time = s['time']
+                    utc_time = s['time']
+                    diff = int(utc_time[11:13])+8
+                    if diff >= 24:
+                        local_hour = diff - 24
+                    else:
+                        local_hour = diff
+                    replace = str(local_hour)
+                    local_time = utc_time[:11] + replace + utc_time[13:]
+                    conn_time = local_time
         else:
             conn_stat = 'off'    
         msg_name = c[1]
@@ -75,7 +83,15 @@ while True:
                 for tr in tempresult:
                     for t in tr:
                         client_temp = t['tempdata']
-                        client_temp_time = t['time']
+                        utc_time = t['time']
+                        diff = int(utc_time[11:13])+8
+                        if diff >= 24:
+                            local_hour = diff - 24
+                        else:
+                            local_hour = diff
+                        replace = str(local_hour)
+                        local_time = utc_time[:11] + replace + utc_time[13:]
+                        client_temp_time = local_time
                 replytemp = str(client_temp)
                 replytime = str(client_temp_time)
                 replytimemsg = "<br>获取时间："
