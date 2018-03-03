@@ -10,6 +10,7 @@ from flask import Flask
 from flask_mail import Mail
 from flask_mail import Message
 from threading import Thread
+from influxdb import InfluxDBClient
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -45,41 +46,52 @@ while True:
     db = MySQLdb.connect(host="localhost", user="root", passwd="840821", db="myblog", charset="utf8")
     cur = db.cursor()
     cur.execute("""SELECT * FROM terminals""")
-    clients = cur.fetchall()
+    allclients = cur.fetchall()
+    clientlist = []
+    for c in allclients:
+        clientlist.append(c[7])
+    clients = {}
+    for c in allclients:
+        clients[c[7]] = c[4]
     str_cn = ""
-    for cn in clients:
-        sql = ("""SELECT connect, create_time FROM status WHERE client = %s ORDER BY create_time DESC  LIMIT 1""", [cn[7]])
-        cur.execute(*sql)
-        current_status = cur.fetchone()
-        msg_status = current_status[0]
-        msg_status_time = current_status[1]
-        msg_name = cn[1]
-        if msg_status == 'on':
+    influxclient = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+    for c in allclients:
+        qstatus = "select * from status where ip=" + "\'"+clients[c[7]]+"\'" + " order by time desc limit 1"
+        statusresult = influxclient.query(qstatus)
+        if statusresult:
+            for sr in statusresult:
+                for s in sr:
+                    conn_stat = s['connect']
+                    conn_time = s['time']
+        else:
+            conn_stat = 'off'    
+        msg_name = c[1]
+        if conn_stat == 'on':
             replystat = "小站状态：在线<br>设备温度："
             replyname = "小站名称："+msg_name+"<br>"
-            sql = ("""SELECT tempdata, create_time FROM temperature WHERE client = %s ORDER BY create_time DESC LIMIT 1""", [cn[7]])
-            temp_result = cur.execute(*sql)
-            if temp_result > 0:
-                current_temp = cur.fetchone()
-                msg_temp = current_temp[0]
-                msg_temp_time = current_temp[1]
-                replytemp = str(msg_temp)
+            qtemp = "select * from temperature where client=" + "\'"+c[7]+"\'" + " order by time desc limit 1"
+            tempresult = influxclient.query(qtemp)
+            if tempresult:
+                for tr in tempresult:
+                    for t in tr:
+                        client_temp = t['tempdata']
+                        client_temp_time = t['time']
+                replytemp = str(client_temp)
+                replytime = str(client_temp_time)
                 replytimemsg = "<br>获取时间："
-                replytime = str(msg_temp_time)
                 replycontent = replyname+replystat+replytemp+replytimemsg+replytime
             else:
+                client_temp = 99.9
                 replytemp = "无"
                 replytimemsg = "<br>获取时间："
-                replytime = str(msg_status_time)
+                replytime = str(conn_time)
                 replycontent = replyname+replystat+replytemp+replytimemsg+replytime
-        elif msg_status == 'off':
+        elif conn_stat == 'off':
             replyname = "小站名称："+msg_name+"<br>"
             replystat = "小站状态：断线"
-            replytimemsg = "<br>获取时间："
-            replytime = str(msg_status_time)
-            replycontent = replyname+replystat+replytimemsg+replytime
+            replycontent = replyname+replystat
         str_cn += replycontent+"<br><br>"
-        statusreplytime = str(msg_status_time)
+        statusreplytime = time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(time.time()))
     content_title = "Status of All Clients @ "+statusreplytime
     msg = Message(subject='卫星终端控制器状态', sender='service@satelc.com', recipients=['13916838729@139.com'])
     msg.html = str_cn

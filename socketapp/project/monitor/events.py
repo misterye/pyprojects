@@ -15,44 +15,46 @@ from flask_socketio import emit
 from openvpn_status import parse_status
 from ..app import socketio
 from ..app import db
+from influxdb import InfluxDBClient
 #from time import sleep
 
 @socketio.on('my_event', namespace='/monitor')
 def my_event(msg):
     emit('my_response', msg)
 
-def fetchTemp(client_name):
-    cur = db.connection.cursor()
-    cur.execute("SELECT tempdata FROM temperature WHERE client=%s ORDER BY create_time DESC LIMIT 1", [client_name])
-    result = cur.fetchone()
-    if result != None:
-        temp = result['tempdata']
-    else:
-        temp = '--'
-    cur.close()
-    return temp
-
 @socketio.on('status', namespace='/monitor')
 def clientStatus():
     cur = db.connection.cursor()
-    cur.execute("SELECT client FROM terminals")
+    cur.execute("SELECT ip, client FROM terminals")
     allclients = cur.fetchall()
-    clients = []
-    for dc in allclients:
-        clients.append(dc['client'])
-    #print("数据库中所有小站：%s" % clients)
+    clientlist = []
+    for c in allclients:
+        clientlist.append(c['client'])
+    clients = {}
+    for c in allclients:
+        clients[c['client']] = c['ip']
     while True:
-        for c in clients:
-            cur.execute("SELECT client, connect FROM status WHERE client=%s ORDER BY create_time DESC LIMIT 1", [c])
-            client = cur.fetchone()
-            #print("小站名称：%s" % client['client'])
-            #print("小站状态：%s" % client['connect'])
-            client_temp = fetchTemp(c)
-            print("THE CLIENT TEMPERATURE IS: %s" % client_temp)
+        influxclient = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+        for c in clientlist:
+            qstatus = "select * from status where ip=" + "\'"+clients[c]+"\'" + " order by time desc limit 1"
+            statusresult = influxclient.query(qstatus)
+            if statusresult:
+                for sr in statusresult:
+                    for s in sr:
+                        conn_stat = s['connect']
+            else:
+                conn_stat = 'off'
+            qtemp = "select * from temperature where client=" + "\'"+c+"\'" + " order by time desc limit 1"
+            tempresult = influxclient.query(qtemp)
+            if tempresult:
+                for tr in tempresult:
+                    for t in tr:
+                        client_temp = t['tempdata']
+            else:
+                client_temp = 99.9
             emit('online', {
-                'client_name': client['client'],
-                'client_status': client['connect'],
+                'client_name': c,
+                'client_status': conn_stat,
                 'client_temperature': client_temp
                 })
-        #socketio.sleep(10)
         eventlet.sleep(10)

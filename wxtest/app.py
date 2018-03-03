@@ -15,6 +15,7 @@ from collections import OrderedDict
 import requests
 import os
 import glob
+from influxdb import InfluxDBClient
 #import ast
 
 reload(sys)
@@ -65,48 +66,59 @@ def replyMsg(data):
         return reply.render()
     elif msg.type == 'text':
         cur = mysql.connection.cursor()
-        data = cur.execute("SELECT client FROM terminals")
-        client_name = cur.fetchall()
+        data = cur.execute("SELECT client, ip FROM terminals")
+        allclients = cur.fetchall()
         client_list = []
-        for cn in client_name:
-            client_list.append(cn['client'])
+        for c in allclients:
+            client_list.append(c['client'])
+        clients = {}
+        for c in allclients:
+            clients[c['client']] = c['ip']
         if msg.content in client_list:
-            cur.execute("SELECT connect, create_time FROM status WHERE client = %s ORDER BY create_time DESC  LIMIT 1", [msg.content])
-            current_status = cur.fetchone()
-            msg_status = current_status['connect']
-            msg_status_time = current_status['create_time']
+            influxclient = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+            qstatus = "select * from status where ip=" + "\'"+clients[msg.content]+"\'" + " order by time desc limit 1"
+            statusresult = influxclient.query(qstatus)
+            if statusresult:
+                for sr in statusresult:
+                    for s in sr:
+                        conn_stat = s['connect']
+                        conn_time = s['time']
+            else:
+                conn_stat = 'off'
+
+
+            #cur.execute("SELECT connect, create_time FROM status WHERE client = %s ORDER BY create_time DESC  LIMIT 1", [msg.content])
+            #current_status = cur.fetchone()
+            msg_status = conn_stat
+            #msg_status_time = current_status['create_time']
             if msg_status == 'on':
                 replystat = "小站状态：在线\n设备温度："
-                cur.execute("SELECT client FROM temperature")
-                temp_client_server_db = cur.fetchall()
-                temp_client_server_db_list = []
-                for tl in temp_client_server_db:
-                    temp_client_server_db_list.append(tl['client'])
-                if msg.content in temp_client_server_db_list:
-                    cur.execute("SELECT tempdata, create_time FROM temperature WHERE client = %s ORDER BY create_time DESC LIMIT 1", [msg.content])
-                    current_temp = cur.fetchone()
-                    msg_temp = current_temp['tempdata']
-                    msg_temp_time = current_temp['create_time']
-                    #reply = TextReply(content='小站在线', message=msg)
-                    replytemp = str(msg_temp)
+
+
+
+                qtemp = "select * from temperature where client=" + "\'"+msg.content+"\'" + " order by time desc limit 1"
+                tempresult = influxclient.query(qtemp)
+                if tempresult:
+                    for tr in tempresult:
+                        for t in tr:
+                            client_temp = t['tempdata']
+                            client_temp_time = t['time']
+                    replytemp = str(client_temp)
                     replytimemsg = "\n获取时间："
-                    replytime = str(msg_temp_time)
+                    replytime = str(client_temp_time)
                     replycontent = replystat+replytemp+replytimemsg+replytime
                     reply = TextReply(content=replycontent, message=msg)
                     xml = reply.render()
                 else:
                     replytemp = "无"
-                    replytimemsg = "\n获取时间："
-                    replytime = str(msg_status_time)
-                    replycontent = replystat+replytemp+replytimemsg+replytime
+                    replycontent = replystat+replytemp
                     reply = TextReply(content=replycontent, message=msg)
                     xml = reply.render()
+
             elif msg_status == 'off':
                 #reply = TextReply(content='小站断线', message=msg)
                 replystat = "小站状态：断线"
-                replytimemsg = "\n获取时间："
-                replytime = str(msg_status_time)
-                replycontent = replystat+replytimemsg+replytime
+                replycontent = replystat
                 reply = TextReply(content=replycontent, message=msg)
                 xml = reply.render()
             return xml

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-DEBUG = False
+#DEBUG = False
 #SERVER_NAME = 'myblog.app:8019'
 
 # email server
