@@ -12,19 +12,17 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, message):
     clientstr = message.topic.split('/')[2]
-    client = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+    influxclient = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
     json_body = [
         {
             "measurement": "temperature",
-            "tags": {
-                "client": clientstr
-            },
             "fields": {
+                "client": clientstr,
                 "tempdata": message.payload
             }
         }
     ]
-    client.write_points(json_body)
+    influxclient.write_points(json_body)
 
 broker = '111.47.20.166'
 Connected = False

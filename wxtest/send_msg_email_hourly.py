@@ -107,7 +107,7 @@ while True:
             replystat = "小站状态：断线"
             replycontent = replyname+replystat
         str_cn += replycontent+"<br><br>"
-        statusreplytime = time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(time.time()))
+        statusreplytime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
     content_title = "Status of All Clients @ "+statusreplytime
     msg = Message(subject='卫星终端控制器状态', sender='service@satelc.com', recipients=['13916838729@139.com'])
     msg.html = str_cn

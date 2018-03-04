@@ -39,10 +39,8 @@ class DetectorService(internet.TimerService):
             json_body = [
                 {
                     "measurement": "status",
-                    "tags": {
-                        "ip": ip
-                    },
                     "fields": {
+                        "ip": ip,
                         "connect": "on"
                     }
                 }
