@@ -1,4 +1,5 @@
 .venv/
+webssh/
 myblog/*.pyc
 myblog/.venv/
 myblog/instance/
@@ -6,16 +7,20 @@ myblog/*.dat
 myblog/expovlog.py
 myblog/store_client_status.py
 myblog/store_client_status*.*
+myblog/store_pahosub_temperature.py
 myblog/*.pid
-myblog/del_status_data
+myblog/del_status_data.py
 myblog/del_temperature_data.py
 myblog/send_email_attachment.py
 myblog/send_email_hourly.py
+myblog/memuse.py
 wxtest/*.pyc
 wxtest/.venv/
 wxtest/instance/
 wxtest/secret.py
 wxtest/send_msg_hourly.py
+wxtest/send_msg_email_hourly.py
+db_backup/*.sh
 log/*.pyc
 log/.venv/
 log/instance/
