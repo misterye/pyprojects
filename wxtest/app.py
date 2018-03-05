@@ -103,7 +103,7 @@ def replyMsg(data):
                                 local_hour = diff
                             replace = str(local_hour)
                             local_time = utc_time[:11] + replace + utc_time[13:]
-                            client_temp_time = local_time
+                            client_temp_time = local_time[:10] + " " + local_time[11:19]
                     replytemp = str(client_temp)
                     replytimemsg = "\n获取时间："
                     replytime = str(client_temp_time)

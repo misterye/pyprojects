@@ -70,7 +70,7 @@ while True:
                         local_hour = diff
                     replace = str(local_hour)
                     local_time = utc_time[:11] + replace + utc_time[13:]
-                    conn_time = local_time
+                    conn_time = local_time[:10] + " " + local_time[11:19]
         else:
             conn_stat = 'off'    
         msg_name = c[1]
@@ -91,7 +91,7 @@ while True:
                             local_hour = diff
                         replace = str(local_hour)
                         local_time = utc_time[:11] + replace + utc_time[13:]
-                        client_temp_time = local_time
+                        client_temp_time = local_time[:10] + " " + local_time[11:19]
                 replytemp = str(client_temp)
                 replytime = str(client_temp_time)
                 replytimemsg = "<br>获取时间："

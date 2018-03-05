@@ -10,6 +10,7 @@ from twisted.application import internet, service
 from twisted.internet import protocol
 from twisted.python import log
 from influxdb import InfluxDBClient
+import MySQLdb
 
 class Receiver(protocol.DatagramProtocol):
     """Receive UDP packets and log them in the clients dictionary"""
@@ -35,23 +36,49 @@ class DetectorService(internet.TimerService):
         online = [ip for (ip, ipTime) in self.beats.items() if ipTime > limit]
 
         client = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
-        for ip in online:
-            json_body = [
-                {
-                    "measurement": "status",
-                    "fields": {
-                        "ip": ip,
-                        "connect": "on"
+        for ip in ips:
+            if ip in online:
+                json_body = [
+                    {
+                        "measurement": "status",
+                        "fields": {
+                            "ip": ip,
+                            "client": clientsdic[ip],
+                            "connect": "on"
+                        }
                     }
-                }
-            ]
-            client.write_points(json_body)
+                ]
+                client.write_points(json_body)
+            else:
+                json_body = [
+                    {
+                        "measurement": "status",
+                        "fields": {
+                            "ip": ip,
+                            "client": clientsdic[ip],
+                            "connect": "off"
+                        }
+                    }
+                ]
+                client.write_points(json_body)
 
         #log.msg('Beats items: %s' % self.beats)
         #log.msg('Silent clients: %s' % silent)
         log.msg('Clients\' ips: %s' % online)
 
 application = service.Application('Heartbeat')
+# fetch all clients from database
+db = MySQLdb.connect(host="localhost", user="root", passwd="840821", db="myblog", charset="utf8")
+cur = db.cursor()
+cur.execute("""SELECT client, ip FROM terminals""")
+allclients = cur.fetchall()
+ips = []
+for ip in allclients:
+    ips.append(ip[1])
+clientsdic = {}
+for c in allclients:
+    clientsdic[c[1]] = c[0]
+
 # define and link the silent clients' detector service
 detectorSvc = DetectorService()
 detectorSvc.setServiceParent(application)
