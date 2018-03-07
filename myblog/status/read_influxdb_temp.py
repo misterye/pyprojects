@@ -1,9 +1,9 @@
 #import time
 from influxdb import InfluxDBClient
 
-s = 'gxgadzt'
-q="select * from temperature where client=" + "\'"+s+"\'" + " order by time desc limit 1"
-client = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+s = 'xiqidongshu_test'
+q="select * from temperature where client=" + "\'"+s+"\'" + " order by time desc limit 10"
+client = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'terminals')
 #result = client.query("select * from temperature where client='gxgadzt' order by time desc limit 10")
 result = client.query(q)
 #print result

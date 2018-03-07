@@ -75,7 +75,7 @@ def replyMsg(data):
         for c in allclients:
             clients[c['client']] = c['ip']
         if msg.content in client_list:
-            influxclient = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+            influxclient = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'terminals')
             qstatus = "select * from status where ip=" + "\'"+clients[msg.content]+"\'" + " order by time desc limit 1"
             statusresult = influxclient.query(qstatus)
             if statusresult:

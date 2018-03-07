@@ -1,0 +1,14 @@
+[Unit]
+Description=Store Client's Online Status Sevice From Twisted 
+After=network.target
+
+[Service]
+User=yebin
+Group=yebin
+WorkingDirectory=/home/yebin/pyprojects/myblog/status
+Environment="PATH=/home/yebin/pyprojects/.venv/bin"
+ExecStart=/home/yebin/pyprojects/.venv/bin/twistd -ony store_client_status.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

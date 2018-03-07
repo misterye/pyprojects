@@ -1,5 +1,4 @@
 .venv/
-webssh/
 myblog/*.pyc
 myblog/.venv/
 myblog/instance/

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div class="text-center"><h3><b>用户终端在线状态</b></h3></div>
+    <div class="container">
+      <div class="col-sm-8">
+        <div class="message_holder"></div>
+        <div class="memuse"></div>
+      </div>
+      <div>
+          <form id="alert" name="alert_form">
+              报警温度：<input type="number" id="temp_alert" min="-99.9" max="99.9" step="0.1" size="5" value="38.5">
+          </form>
+      </div>
+    <br>
+    <table border="1" class="table table-striped table-bordered table-condensed">
+        <thead>
+        <tr>
+            <th class="text-center">用户名称</th>
+            <th style="display:none;" class="text-center">终端名称</th>
+            <th class="text-center">通信卫星</th>
+            <th class="text-center">终端类型</th>
+            <th class="text-center">远程管理</th>
+            <th class="text-center">在线状态</th>
+            <th class="text-center">设备温度</th>
+            <th class="text-center">获取时间</th>
+            <th class="text-center">测试数据</th>  
+        </tr>
+        </thead>
+        {% for t in range(ccount) %}
+            <tr>
+                <td align="center" valign="middle"><a href="#" title="{{ips[t]}}">{{names[t]}}</a></td>
+                <td align="center" valign="middle" style="display:none;">{{clients[t]}}</td>
+                <td align="center" valign="middle">{{satellites[t]}}</td>
+                <td align="center" valign="middle">{{modems[t]}}</td>
+                <td align="center" valign="middle" id="logon">&nbsp;</td>
+                <td align="center" valign="middle" id="stat">&nbsp;</td>
+                <td align="center" valign="middle" id="temp">&nbsp;</td>
+                <td align="center" valign="middle" id="time">&nbsp;</td>
+                <td align="center" valign="middle" id="test">&nbsp;</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            var socket = io.connect('http://' + document.domain + ':' + location.port + '/monitor');
+
+            document.getElementsByTagName("table")[0].rows[0].cells[0].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[1].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[2].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[3].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[4].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[5].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[6].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[7].style.backgroundColor = "#dddddd";
+            document.getElementsByTagName("table")[0].rows[0].cells[8].style.backgroundColor = "#dddddd";
+
+            socket.on('connect', function(){
+                socket.emit('my_event', {
+                    data: '已连接！'
+                    });
+                });
+
+            socket.on('disconnect', function(){
+                socket.emit('my_event', {
+                    data: '已断开！'
+                    });
+                });
+
+            socket.on('my_response', function(msg){
+                    //$('div.message_holder').append('<div class="msg_bbl"><b style="color: #000">'+msg.data+'</b></div>');
+                    $('div.message_holder').html('<div><b style="color: #000">'+msg.data+'</b></div>');
+                    socket.emit('test');
+                    socket.emit('status');
+                });
+
+            //socket.emit('status');
+            socket.on('online', function(msg) {
+                $('div.memuse').html('<div><b style="color: #000">'+msg.memory_usage+'</b></div>');
+                for (var i = 0; i < {{ ccount }}; i++) {
+                    if ( msg.client_name == document.getElementsByTagName("table")[0].rows[i+1].cells[1].innerHTML ) {
+                        document.getElementsByTagName("table")[0].rows[i+1].cells[5].innerHTML = msg.client_status;
+                        if ( msg.client_status == 'on') {
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[0].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[1].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[2].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[3].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[4].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[4].innerHTML = '<a href="http://satelc.com:8085/" target="_blank">登录</a>';
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[6].innerHTML = msg.client_temperature;
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[7].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[8].style.backgroundColor = "#66FF99";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[8].innerHTML = msg.test;
+                            if ( msg.client_temperature != 99.9 ) {
+                                document.getElementsByTagName("table")[0].rows[i+1].cells[7].innerHTML = msg.temperature_time;
+                            } else {
+                                document.getElementsByTagName("table")[0].rows[i+1].cells[7].innerHTML = msg.connect_time;
+                            }
+                            var setTemp = document.getElementById("temp_alert").value;
+                            if ( msg.client_temperature > setTemp) {
+                                document.getElementsByTagName("table")[0].rows[i+1].cells[6].style.backgroundColor = "Violet";
+                                } else {
+                                    document.getElementsByTagName("table")[0].rows[i+1].cells[6].style.backgroundColor = "#66FF99";
+                                    }
+                        } else {
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[0].style.backgroundColor = "#ffffff";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[1].style.backgroundColor = "#ffffff";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[2].style.backgroundColor = "#ffffff";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[3].style.backgroundColor = "#ffffff";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[4].style.backgroundColor = "#ffffff";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[4].innerHTML = "<a href='#'><font color='D3D3D3'>登录</a>";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[5].style.backgroundColor = "#ffffff";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[6].style.backgroundColor = "#ffffff";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[7].style.backgroundColor = "#ffffff";
+                            document.getElementsByTagName("table")[0].rows[i+1].cells[8].style.backgroundColor = "#ffffff";
+                        }
+                    }
+                }
+            });
+        });
+
+    </script>
+{% endblock %}

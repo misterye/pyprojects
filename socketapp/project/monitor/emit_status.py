@@ -35,7 +35,7 @@ class DetectorService(internet.TimerService):
         #silent = [ip for (ip, ipTime) in self.beats.items() if ipTime < limit]
         online = [ip for (ip, ipTime) in self.beats.items() if ipTime > limit]
 
-        client = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'terminals')
+        client = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
         for ip in ips:
             if ip in online:
                 json_body = [
@@ -78,8 +78,6 @@ for ip in allclients:
 clientsdic = {}
 for c in allclients:
     clientsdic[c[1]] = c[0]
-cur.close()
-db.close()
 
 # define and link the silent clients' detector service
 detectorSvc = DetectorService()

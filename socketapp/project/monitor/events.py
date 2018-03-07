@@ -15,7 +15,6 @@ from flask_socketio import emit
 from openvpn_status import parse_status
 from ..app import socketio, db, memoryUsage
 from influxdb import InfluxDBClient
-#from time import sleep
 
 @socketio.on('my_event', namespace='/monitor')
 def my_event(msg):
@@ -32,9 +31,10 @@ def clientStatus():
     clients = {}
     for c in allclients:
         clients[c['client']] = c['ip']
+    cur.close()
     while True:
         memoryUsageStr = memoryUsage()
-        influxclient = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+        influxclient = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'terminals')
         for c in clientlist:
             qstatus = "select * from status where ip=" + "\'"+clients[c]+"\'" + " order by time desc limit 1"
             statusresult = influxclient.query(qstatus)
@@ -54,6 +54,7 @@ def clientStatus():
             else:
                 conn_stat = 'off'
                 conn_time = 'NULL'
+
             qtemp = "select * from temperature where client=" + "\'"+c+"\'" + " order by time desc limit 1"
             tempresult = influxclient.query(qtemp)
             if tempresult:
@@ -72,6 +73,7 @@ def clientStatus():
             else:
                 client_temp = 99.9
                 temp_time = 'NULL'
+
             emit('online', {
                 'connect_time': conn_time,
                 'temperature_time': temp_time,
