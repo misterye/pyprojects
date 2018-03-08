@@ -368,8 +368,9 @@ def add_log():
         author = session['username']
         title = form.title.data
         body = form.body.data
+        subject_title = "工作日志：" + title
         # send log to mail
-        mailmsg = Message(subject=title, sender='service@satelc.com', recipients=['yebin1982@qq.com'])
+        mailmsg = Message(subject=subject_title, sender='service@satelc.com', recipients=['yebin1982@qq.com'])
         mailmsg.html = body
         mail.send(mailmsg)
         # Create cursor
