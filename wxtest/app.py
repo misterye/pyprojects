@@ -16,6 +16,7 @@ import requests
 import os
 import glob
 from influxdb import InfluxDBClient
+from dateutil import parser
 #import ast
 
 reload(sys)
@@ -95,15 +96,9 @@ def replyMsg(data):
                         for t in tr:
                             client_temp = t['tempdata']
 
-                            utc_time = t['time']
-                            diff = int(utc_time[11:13])+8
-                            if diff >= 24:
-                                local_hour = diff - 24
-                            else:
-                                local_hour = diff
-                            replace = str(local_hour)
-                            local_time = utc_time[:11] + replace + utc_time[13:]
-                            client_temp_time = local_time[:10] + " " + local_time[11:19]
+                            utc_time_str = t['time']
+                            utc_time = parser.parse(utc_time_str)
+                            client_temp_time = utc_time.now().strftime("%Y-%m-%d %H:%M:%S")
                     replytemp = str(client_temp)
                     replytimemsg = "\n获取时间："
                     replytime = str(client_temp_time)
