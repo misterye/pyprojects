@@ -16,8 +16,10 @@ import hashlib
 import cgi
 import json
 from collections import OrderedDict
-
 #import ast
+
+from flask_mail import Mail
+from flask_mail import Message
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config.DevelopmentConfig')
@@ -28,6 +30,9 @@ perpage = 10
 #app.debug = True
 # init MYSQL
 mysql = MySQL(app)
+
+# init mail
+mail = Mail(app)
 
 # Check if user logged in
 def is_logged_in(f):
@@ -363,6 +368,10 @@ def add_log():
         author = session['username']
         title = form.title.data
         body = form.body.data
+        # send log to mail
+        mailmsg = Message(subject=title, sender='service@satelc.com', recipients=['yebin1982@qq.com'])
+        mailmsg.html = body
+        mail.send(mailmsg)
         # Create cursor
         cur = mysql.connection.cursor()
         # Execute
