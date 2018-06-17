@@ -4,7 +4,9 @@ from influxdb import InfluxDBClient
 
 def on_message(client, userdata, message):
     clientstr = message.topic.split('/')[2]
-    influxclient = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+    print clientstr
+    print message.payload
+    influxclient = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'terminals')
     json_body = [
         {
             "measurement": "temperature",

@@ -24,7 +24,7 @@
             </thead>
             {% for todo in complete %}
                 <tr>
-                    <td align="center" valign="middle">{{ todo.content }}</td>
+                    <td align="left" valign="middle">{{ todo.content }}</td>
                     <td align="center" valign="middle">{{ todo.create_time }}</td>
                     <td align="center" valign="middle"><a href="{{ url_for('incomplete', id=todo.id) }}">点击重做</a></td>
                 </tr>

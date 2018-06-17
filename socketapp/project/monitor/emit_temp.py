@@ -12,7 +12,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, message):
     clientstr = message.topic.split('/')[2]
-    influxclient = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+    influxclient = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'terminals')
     json_body = [
         {
             "measurement": "temperature",
