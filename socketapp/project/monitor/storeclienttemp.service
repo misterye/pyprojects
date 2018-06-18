@@ -1,0 +1,14 @@
+[Unit]
+Description=Store Client's Temperature Sevice 
+After=network.target
+
+[Service]
+User=yebin
+Group=yebin
+WorkingDirectory=/home/yebin/pyprojects/socketapp/project/monitor
+Environment="PATH=/home/yebin/pyprojects/.venv/bin"
+ExecStart=/home/yebin/pyprojects/.venv/bin/python emit_temp.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

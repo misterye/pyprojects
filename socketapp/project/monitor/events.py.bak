@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
+import sys;
 # set the default encoding to utf-8
 # reload sys model to enable the getdefaultencoding method.
 reload(sys);
@@ -17,7 +16,6 @@ from openvpn_status import parse_status
 from ..app import socketio, db, memoryUsage
 from influxdb import InfluxDBClient
 from dateutil import parser
-influxclient = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'telegraf')
 
 @socketio.on('my_event', namespace='/monitor')
 def my_event(msg):
@@ -37,20 +35,27 @@ def clientStatus():
     cur.close()
     while True:
         memoryUsageStr = memoryUsage()
+        influxclient = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'terminals')
         for c in clientlist:
-            ping_command = "ping -w 1 -c 1 -i 0.2 -q " + clients[c]
-            client_response = os.system(ping_command)
-            if client_response == 0:
-                conn_stat = 'on'
+            qstatus = "select * from status where ip=" + "\'"+clients[c]+"\'" + " order by time desc limit 1"
+            statusresult = influxclient.query(qstatus)
+            if statusresult:
+                for sr in statusresult:
+                    for s in sr:
+                        conn_stat = s['connect']
+                        utc_time_str = s['time']
+                        utc_time = parser.parse(utc_time_str)
+                        conn_time = utc_time.now().strftime("%Y-%m-%d %H:%M:%S")
             else:
                 conn_stat = 'off'
+                conn_time = 'NULL'
 
-            qtemp = "select * from mqtt_consumer where topic=" + "\'devices/raspi/"+c+"/temperature\'" + " order by time desc limit 1"
+            qtemp = "select * from temperature where client=" + "\'"+c+"\'" + " order by time desc limit 1"
             tempresult = influxclient.query(qtemp)
             if tempresult:
                 for tr in tempresult:
                     for t in tr:
-                        client_temp = int(t['value'])
+                        client_temp = t['tempdata']
                         utc_time_str = t['time']
                         utc_time = parser.parse(utc_time_str)
                         temp_time = utc_time.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -59,6 +64,7 @@ def clientStatus():
                 temp_time = 'NULL'
 
             emit('online', {
+                'connect_time': conn_time,
                 'temperature_time': temp_time,
                 'memory_usage': memoryUsageStr,
                 'client_name': c,

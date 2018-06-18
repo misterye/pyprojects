@@ -90,7 +90,7 @@
                             if ( msg.client_temperature != 99.9 ) {
                                 document.getElementsByTagName("table")[0].rows[i+1].cells[7].innerHTML = msg.temperature_time;
                             } else {
-                                document.getElementsByTagName("table")[0].rows[i+1].cells[7].innerHTML = msg.connect_time;
+                                document.getElementsByTagName("table")[0].rows[i+1].cells[7].innerHTML = msg.temperature_time;
                             }
                             var setTemp = document.getElementById("temp_alert").value;
                             if ( msg.client_temperature > setTemp) {

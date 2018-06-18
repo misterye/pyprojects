@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys;
+import sys
 # set the default encoding to utf-8
 # reload sys model to enable the getdefaultencoding method.
 reload(sys);
