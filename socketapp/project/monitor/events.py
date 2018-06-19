@@ -18,6 +18,7 @@ from ..app import socketio, db, memoryUsage
 from influxdb import InfluxDBClient
 from dateutil import parser
 influxclient = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'telegraf')
+influxclient_status = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
 
 @socketio.on('my_event', namespace='/monitor')
 def my_event(msg):
@@ -38,13 +39,14 @@ def clientStatus():
     while True:
         memoryUsageStr = memoryUsage()
         for c in clientlist:
-            ping_command = "ping -w 1 -c 1 -i 0.2 -q " + clients[c]
-            client_response = os.system(ping_command)
-            if client_response == 0:
-                conn_stat = 'on'
+            qstatus = "select * from status where client=" + "\'"+c+"\'" + " order by time desc limit 1"
+            statusresult = influxclient_status.query(qstatus)
+            if statusresult:
+        	    for sr in statusresult:
+        		    for s in sr:
+        			    conn_stat = s['status']
             else:
-                conn_stat = 'off'
-
+        	    conn_stat = 'NULL'
             qtemp = "select * from mqtt_consumer where topic=" + "\'devices/raspi/"+c+"/temperature\'" + " order by time desc limit 1"
             tempresult = influxclient.query(qtemp)
             if tempresult:
