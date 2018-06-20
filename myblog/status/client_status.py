@@ -35,4 +35,4 @@ while True:
                 }
             ]
             influxclient.write_points(json_body)
-    sleep(5)
+    sleep(30)
