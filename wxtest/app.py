@@ -72,39 +72,59 @@ def replyMsg(data):
         client_list = []
         for c in allclients:
             client_list.append(c['client'])
-        clients = {}
-        for c in allclients:
-            clients[c['client']] = c['ip']
+        ##clients = {}
+        ##for c in allclients:
+        ##    clients[c['client']] = c['ip']
         if msg.content in client_list:
-            influxclient = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'telegraf')
-            replystat = "小站 " + msg.content + " 的状态：\n设备温度："
-            qtemp = "select * from mqtt_consumer where topic=" + "\'devices/raspi/"+msg.content+"/temperature\'" + " order by time desc limit 1"
-            tempresult = influxclient.query(qtemp)
-            if tempresult:
-                for tr in tempresult:
-                    for t in tr:
-                        client_temp = t['value']
-                        utc_time_str = t['time']
+            influxclient_status = InfluxDBClient('localhost', 8086, 'admin', '', 'terminals')
+            qstatus = "select * from status where client=" + "\'" + msg.content + "\'" + " order by time desc limit 1"
+            statusresult = influxclient_status.query(qstatus)
+            if statusresult:
+                for sr in statusresult:
+                    for s in sr:
+                        conn_stat = s['status']
+                        utc_time_str = s['time']
                         utc_time = parser.parse(utc_time_str)
-                        client_temp_time = utc_time.now().strftime("%Y-%m-%d %H:%M:%S")
-                replytemp = str(client_temp)
-                replytimemsg = "\n获取时间："
-                replytime = str(client_temp_time)
-                replycontent = replystat+replytemp+replytimemsg+replytime
-                reply = TextReply(content=replycontent, message=msg)
-                xml = reply.render()
+                        conn_time = utc_time.now().strftime("%Y-%m-%d %H:%M:%S")
             else:
-                replytemp = "无"
-                replycontent = replystat+replytemp
-                reply = TextReply(content=replycontent, message=msg)
+                conn_stat = "NULL"
+            if conn_stat == "on":
+                influxclient = InfluxDBClient('111.47.20.166', 8086, 'admin', '', 'telegraf')
+                replystat = "小站 " + msg.content + " 的状态：在线\n设备温度："
+                qtemp = "select * from mqtt_consumer where topic=" + "\'devices/raspi/"+msg.content+"/temperature\'" + " order by time desc limit 1"
+                tempresult = influxclient.query(qtemp)
+                if tempresult:
+                    for tr in tempresult:
+                        for t in tr:
+                            client_temp = t['value']
+                            utc_time_str = t['time']
+                            utc_time = parser.parse(utc_time_str)
+                            client_temp_time = utc_time.now().strftime("%Y-%m-%d %H:%M:%S")
+                    replytemp = str(client_temp)
+                    replytimemsg = "\n获取时间："
+                    replytime = str(client_temp_time)
+                    replycontent = replystat+replytemp+replytimemsg+replytime
+                    reply = TextReply(content=replycontent, message=msg)
+                    xml = reply.render()
+                else:
+                    replytemp = "无"
+                    replycontent = replystat+replytemp
+                    reply = TextReply(content=replycontent, message=msg)
+                    xml = reply.render()
+                return xml
+            elif conn_stat == "off":
+                replystat = "小站 " + msg.content + " 的状态：断线\n"
+                reply = TextReply(content=replystat, message=msg)
                 xml = reply.render()
-            return xml
-            cur.close()
+                return xml
+            else:
+                reply = TextReply(content='NULL', message=msg)
+                return xml
         else:
             reply = TextReply(content='请输入用户终端名：', message=msg)
             xml = reply.render()
             return xml
-            cur.close()
+        cur.close()
     else:
         reply = TextReply(message=msg)
         reply.content = '功能开发中……'
