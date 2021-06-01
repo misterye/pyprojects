@@ -52,7 +52,7 @@ singledispatch==3.4.0.3
 six==1.11.0
 tornado==4.5.3
 Twisted==17.9.0
-urllib3==1.22
+urllib3==1.26.5
 uWSGI==2.0.16
 websocket-client==0.47.0
 wechatpy==1.6.0
