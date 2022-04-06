@@ -51,7 +51,7 @@ service-identity==17.0.0
 singledispatch==3.4.0.3
 six==1.11.0
 tornado==4.5.3
-Twisted==17.9.0
+Twisted==22.2.0
 urllib3==1.22
 uWSGI==2.0.16
 websocket-client==0.47.0
