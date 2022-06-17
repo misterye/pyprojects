@@ -22,5 +22,5 @@ pyOpenSSL==17.3.0
 python-engineio==1.7.0
 python-socketio==1.7.7
 six==1.10.0
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 WTForms==2.1
